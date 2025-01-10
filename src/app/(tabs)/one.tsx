@@ -1,10 +1,20 @@
-import {StyleSheet, Text, View} from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { supabase } from '@/src/core/lib/supabase';
+import { router } from 'expo-router';
 
 export default function TabOneScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tab One</Text>
       <View style={styles.separator} />
+      <Pressable
+        onPress={async () => {
+          await supabase.auth.signOut();
+          router.replace('/auth');
+        }}
+      >
+        Sign Out
+      </Pressable>
     </View>
   );
 }

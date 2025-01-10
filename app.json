@@ -14,7 +14,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.chessmaster.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,11 +25,17 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "static",
+      "output": "single",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.1085885861309-qtojcvenji99bk10s1dl9gqvq887u3r8"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
