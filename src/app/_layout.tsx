@@ -1,6 +1,6 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
-import { router, Stack } from 'expo-router';
+import { router, Stack, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
@@ -47,18 +47,27 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+  const pathname = usePathname();
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log(session);
-      if (session) {
+      if (pathname === '/auth' && session) {
         router.replace('/(tabs)/one');
       }
+      if (!session) {
+        router.replace('/auth');
+      }
     });
+  }, [pathname]);
 
+  useEffect(() => {
+    console.log('HA');
     supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
         router.replace('/(tabs)/one');
+        console.log('STATE CHANGED');
       } else {
+        console.log('BAD');
         router.replace('/auth');
       }
     });

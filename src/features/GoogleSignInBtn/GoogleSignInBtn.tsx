@@ -9,6 +9,7 @@ export function GoogleSignInBtn() {
   GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_IOS,
   });
 
   return (
@@ -30,12 +31,16 @@ export function GoogleSignInBtn() {
           }
         } catch (error: any) {
           if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+            console.log(1);
             // user cancelled the login flow
           } else if (error.code === statusCodes.IN_PROGRESS) {
+            console.log(2);
             // operation (e.g. sign in) is in progress already
           } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+            console.log(3);
             // play services not available or outdated
           } else {
+            console.log(error);
             // some other error happened
           }
         }

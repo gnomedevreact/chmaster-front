@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { supabase } from '@/src/core/lib/supabase';
 import { router } from 'expo-router';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 export default function TabOneScreen() {
   return (
@@ -10,10 +11,18 @@ export default function TabOneScreen() {
       <Pressable
         onPress={async () => {
           await supabase.auth.signOut();
+          await GoogleSignin.signOut();
           router.replace('/auth');
         }}
       >
-        Sign Out
+        <Text className={'text-red-600'}>Sign Out</Text>
+      </Pressable>
+      <Pressable
+        onPress={async () => {
+          router.replace('/auth');
+        }}
+      >
+        <Text className={'text-red-600'}>Auth</Text>
       </Pressable>
     </View>
   );

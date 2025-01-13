@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Alert, AppState, StyleSheet, View } from 'react-native';
+import { Alert, AppState, StyleSheet, Text, View } from 'react-native';
 import { Button, Input } from '@rneui/themed';
 import { supabase } from '@/src/core/lib/supabase';
 import { GoogleSignInBtn } from '@/src/features/GoogleSignInBtn/GoogleSignInBtn';
+import { Link } from 'expo-router';
 
 AppState.addEventListener('change', (state) => {
   if (state === 'active') {
@@ -73,6 +74,9 @@ export const Auth = () => {
         <Button title="Sign up" disabled={loading} onPress={() => signUpWithEmail()} />
       </View>
       <GoogleSignInBtn />
+      <Link href={'/one'} className={'text-red-600'}>
+        <Text>LINK TO ONE</Text>
+      </Link>
     </View>
   );
 };
