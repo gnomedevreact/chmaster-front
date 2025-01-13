@@ -61,13 +61,10 @@ function RootLayoutNav() {
   }, [pathname]);
 
   useEffect(() => {
-    console.log('HA');
     supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
         router.replace('/(tabs)/one');
-        console.log('STATE CHANGED');
       } else {
-        console.log('BAD');
         router.replace('/auth');
       }
     });
@@ -76,7 +73,10 @@ function RootLayoutNav() {
   return (
     <GestureHandlerRootView>
       <Stack>
-        <Stack.Screen name="auth" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="auth"
+          options={{ headerShown: false, gestureEnabled: false }}
+        />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack>

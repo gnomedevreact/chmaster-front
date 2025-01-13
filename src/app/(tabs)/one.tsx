@@ -9,6 +9,7 @@ export default function TabOneScreen() {
       <Text style={styles.title}>Tab One</Text>
       <View style={styles.separator} />
       <Pressable
+        className={'mb-10'}
         onPress={async () => {
           await supabase.auth.signOut();
           await GoogleSignin.signOut();

@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.chessmaster.app"
+      "bundleIdentifier": "com.chessmaster.chessmaster"
     },
     "android": {
       "adaptiveIcon": {
