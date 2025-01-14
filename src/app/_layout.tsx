@@ -1,14 +1,15 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
-import { router, Stack, usePathname } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import '../../global.css';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { supabase } from '@/src/core/lib/supabase';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { SafeAreaView } from 'react-native';
+
+import '../../global.css';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -57,30 +58,32 @@ const queryClient = new QueryClient({
 });
 
 function RootLayoutNav() {
-  const pathname = usePathname();
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (pathname === '/auth' && session) {
-        router.replace('/(tabs)/one');
-      }
-      if (!session) {
-        router.replace('/auth');
-      }
-    });
-  }, [pathname]);
+  // const pathname = usePathname();
+  //
+  // useEffect(() => {
+  //   supabase.auth.getSession().then(({ data: { session } }) => {
+  //     if (pathname === '/auth' && session) {
+  //       router.replace('/(tabs)');
+  //     }
+  //     if (!session) {
+  //       router.replace('/auth');
+  //     }
+  //   });
+  // }, [pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView>
-        <Stack>
-          <Stack.Screen
-            name="auth"
-            options={{ headerShown: false, gestureEnabled: false }}
-          />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-        </Stack>
+        <SafeAreaView className={'flex-1 bg-main-400'}>
+          <Stack screenOptions={{ contentStyle: { backgroundColor: '#0F0F0F' } }}>
+            <Stack.Screen
+              name="auth"
+              options={{ headerShown: false, gestureEnabled: false }}
+            />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+          </Stack>
+        </SafeAreaView>
       </GestureHandlerRootView>
     </QueryClientProvider>
   );

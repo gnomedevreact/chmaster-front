@@ -33,7 +33,8 @@ axiosAuth.interceptors.response.use(
         return axiosAuth.request(error.config);
       }
 
-      await supabase.auth.signOut();
+      // await supabase.auth.signOut();
+      // router.replace('/auth');
     }
 
     throw error;

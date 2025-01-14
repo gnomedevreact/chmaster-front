@@ -3,7 +3,6 @@ import { SafeAreaView, StyleSheet, View } from 'react-native';
 import { useGetRandomPuzzles } from '@/src/shared/api/hooks/useGetRandomPuzzles';
 import Chessboard, { ChessboardRef } from '@gnomedevreact/ch-private';
 import { Square } from 'chess.js';
-import { Button } from '@rneui/themed';
 
 export const ChessGame = () => {
   const chessboardRef = useRef<ChessboardRef>(null);
@@ -70,29 +69,29 @@ export const ChessGame = () => {
         />
       </View>
       <View style={styles.buttonsContainer}>
-        <Button
-          title={'Reset board'}
-          onPress={() => chessboardRef.current?.resetBoard()}
-        />
-        <Button title={'Undo'} onPress={() => chessboardRef.current?.undo()} />
-        <Button
-          title={'Next'}
-          onPress={() => {
-            setCurrentPuzzle((prevValue) => prevValue + 1);
-          }}
-        />
-        <Button
-          title={'FEN'}
-          onPress={() => {
-            chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);
-          }}
-        />
-        <Button
-          title={'Toggle move'}
-          onPress={() => {
-            setMoveEnabled(!moveEnabled);
-          }}
-        />
+        {/*<Button*/}
+        {/*  title={'Reset board'}*/}
+        {/*  onPress={() => chessboardRef.current?.resetBoard()}*/}
+        {/*/>*/}
+        {/*<Button title={'Undo'} onPress={() => chessboardRef.current?.undo()} />*/}
+        {/*<Button*/}
+        {/*  title={'Next'}*/}
+        {/*  onPress={() => {*/}
+        {/*    setCurrentPuzzle((prevValue) => prevValue + 1);*/}
+        {/*  }}*/}
+        {/*/>*/}
+        {/*<Button*/}
+        {/*  title={'FEN'}*/}
+        {/*  onPress={() => {*/}
+        {/*    chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);*/}
+        {/*  }}*/}
+        {/*/>*/}
+        {/*<Button*/}
+        {/*  title={'Toggle move'}*/}
+        {/*  onPress={() => {*/}
+        {/*    setMoveEnabled(!moveEnabled);*/}
+        {/*  }}*/}
+        {/*/>*/}
       </View>
     </SafeAreaView>
   );
