@@ -13,23 +13,16 @@ export default function TabLayout() {
   return (
     <Tabs screenOptions={{ headerShown: false }}>
       <Tabs.Screen
-        name="one"
+        name="index"
         options={{
           title: 'Tab One',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="trainer"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="three"
-        options={{
-          title: 'Tab three',
+          title: 'Puzzles',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />

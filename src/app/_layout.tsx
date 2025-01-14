@@ -8,6 +8,7 @@ import 'react-native-reanimated';
 import '../../global.css';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { supabase } from '@/src/core/lib/supabase';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -46,6 +47,15 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 2,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
 function RootLayoutNav() {
   const pathname = usePathname();
 
@@ -60,26 +70,18 @@ function RootLayoutNav() {
     });
   }, [pathname]);
 
-  useEffect(() => {
-    supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        router.replace('/(tabs)/one');
-      } else {
-        router.replace('/auth');
-      }
-    });
-  }, []);
-
   return (
-    <GestureHandlerRootView>
-      <Stack>
-        <Stack.Screen
-          name="auth"
-          options={{ headerShown: false, gestureEnabled: false }}
-        />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-      </Stack>
-    </GestureHandlerRootView>
+    <QueryClientProvider client={queryClient}>
+      <GestureHandlerRootView>
+        <Stack>
+          <Stack.Screen
+            name="auth"
+            options={{ headerShown: false, gestureEnabled: false }}
+          />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+        </Stack>
+      </GestureHandlerRootView>
+    </QueryClientProvider>
   );
 }
