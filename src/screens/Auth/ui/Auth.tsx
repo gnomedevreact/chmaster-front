@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Alert, AppState } from 'react-native';
+import { Alert, AppState, View } from 'react-native';
 import { supabase } from '@/src/core/lib/supabase';
 import { Container } from '@/src/widgets/Container';
-import { Button, ButtonText } from '@/src/components/ui/button';
+import { ButtonCustom } from '@/src/shared/ui/ButtonCustom';
+import { TextStyled } from '@/src/shared/ui/TextStyled';
 
 AppState.addEventListener('change', (state) => {
   if (state === 'active') {
@@ -45,13 +46,12 @@ export const Auth = () => {
 
   return (
     <Container>
-      <Button size="md" variant="solid" action="primary">
-        <ButtonText>Hello World!</ButtonText>
-      </Button>
-
-      <Button>
-        <ButtonText>Sign Up</ButtonText>
-      </Button>
+      <View>
+        <TextStyled className={'text-[36px] font-semibold text-primary-white'}>
+          Chess Master
+        </TextStyled>
+      </View>
+      <ButtonCustom text={'Continue'} isLight />
     </Container>
   );
 };

@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaView } from 'react-native';
 
 import '../../global.css';
+import { PaperProvider } from 'react-native-paper';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -26,7 +27,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('@/src/assets/fonts/SpaceMono-Regular.ttf'),
+    NunitoSans: require('@/src/assets/fonts/NunitoSans_10pt-Regular.ttf'),
     ...FontAwesome.font,
   });
 
@@ -74,16 +75,18 @@ function RootLayoutNav() {
   return (
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView>
-        <SafeAreaView className={'flex-1 bg-main-400'}>
-          <Stack screenOptions={{ contentStyle: { backgroundColor: '#0F0F0F' } }}>
-            <Stack.Screen
-              name="auth"
-              options={{ headerShown: false, gestureEnabled: false }}
-            />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-          </Stack>
-        </SafeAreaView>
+        <PaperProvider>
+          <SafeAreaView className={'flex-1 bg-[#0F0F0F]'}>
+            <Stack screenOptions={{ contentStyle: { backgroundColor: '#0F0F0F' } }}>
+              <Stack.Screen
+                name="auth"
+                options={{ headerShown: false, gestureEnabled: false }}
+              />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+            </Stack>
+          </SafeAreaView>
+        </PaperProvider>
       </GestureHandlerRootView>
     </QueryClientProvider>
   );
