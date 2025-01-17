@@ -4,7 +4,9 @@ import { useGetRandomPuzzles } from '@/src/shared/api/hooks/useGetRandomPuzzles'
 import Chessboard, { ChessboardRef } from '@gnomedevreact/ch-private';
 import { Square } from 'chess.js';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
-import { ButtonCustom } from '@/src/shared/ui/ButtonCustom';
+import { Timer } from '@/src/widgets/Timer';
+import { FabCustom } from '@/src/shared/ui/FabCustom';
+import Slider from '@react-native-community/slider';
 
 const width = Dimensions.get('window').width;
 
@@ -18,6 +20,11 @@ export const ChessGame = () => {
   });
   const [moves, setMoves] = useState<string[]>();
   const [moveEnabled, setMoveEnabled] = useState<boolean>(false);
+
+  const [isActiveTimer, setIsActiveTimer] = useState(false);
+  const [isReset, setIsReset] = useState(false);
+
+  const [rangeValues, setRangeValues] = useState([20]);
 
   const { puzzles } = useGetRandomPuzzles({ isTrainingStart });
 
@@ -52,12 +59,36 @@ export const ChessGame = () => {
     }
   }, [puzzles, currentPuzzle]);
 
-  // if (!puzzles || !moves) return null;
+  function startTraining() {
+    setIsTrainingStart(true);
+  }
+
+  const startTimer = () => {
+    setIsActiveTimer(true);
+  };
+
+  const stopTimer = () => {
+    setIsActiveTimer(false);
+  };
+
+  const resetTimer = () => {
+    setIsReset(true);
+  };
+
+  const onRangeValuesChange = (values: number[]) => {
+    setRangeValues(values);
+  };
 
   return (
-    <View className={'flex-1 py-4'}>
+    <View className={'py-4 flex-1'}>
       <View className={'px-4'}>
         <TextStyled className={'text-[28px]'}>Start training</TextStyled>
+        <Timer
+          isActive={isActiveTimer}
+          setIsActive={setIsActiveTimer}
+          isReset={isReset}
+          setIsReset={setIsReset}
+        />
       </View>
       <View className={'flex-1 justify-center'}>
         <View style={{ minHeight: width, minWidth: width }}>
@@ -66,6 +97,7 @@ export const ChessGame = () => {
             fen={puzzles ? puzzles[currentPuzzle].fen : undefined}
             ref={chessboardRef}
             colors={{ black: '#b58863', white: '#f0d9b5' }}
+            durations={{ move: 90 }}
             onMove={({ state, move }) => {
               const formattedMove = move.from + move.to;
               setCurrentMove({ order: currentMove.order, move: formattedMove });
@@ -77,38 +109,47 @@ export const ChessGame = () => {
         </View>
       </View>
       <View className={'px-4'}>
-        <ButtonCustom
-          text={'Let’s get started'}
-          padding={10}
-          isLight
-          onPress={() => setIsTrainingStart(true)}
+        <Slider
+        // values={rangeValues}
+        // onValuesChange={onRangeValuesChange}
+        // step={10}
+        // markerStyle={{
+        //   height: 20,
+        //   width: 20,
+        //   backgroundColor: '#3498db',
+        // }}
+        // selectedStyle={{
+        //   backgroundColor: '#3498db',
+        // }}
+        // unselectedStyle={{
+        //   backgroundColor: '#d3d3d3',
+        // }}
         />
+        <View className={'flex flex-col items-center justify-start'}>
+          <FabCustom
+            size={'large'}
+            className={'bg-[#11d526]'}
+            onPress={isActiveTimer ? stopTimer : startTimer}
+          >
+            <TextStyled>{isActiveTimer ? 'Stop' : 'Start'}</TextStyled>
+          </FabCustom>
+          {isActiveTimer && (
+            <FabCustom size={'large'} className={'bg-[#e60019]'} onPress={resetTimer}>
+              <TextStyled>{'Reset'}</TextStyled>
+            </FabCustom>
+          )}
+        </View>
       </View>
-      {/*<View>*/}
-      {/*  <Button*/}
-      {/*    title={'Reset board'}*/}
-      {/*    onPress={() => chessboardRef.current?.resetBoard()}*/}
-      {/*  />*/}
-      {/*  <Button title={'Undo'} onPress={() => chessboardRef.current?.undo()} />*/}
-      {/*  <Button*/}
-      {/*    title={'Next'}*/}
-      {/*    onPress={() => {*/}
-      {/*      setCurrentPuzzle((prevValue) => prevValue + 1);*/}
-      {/*    }}*/}
-      {/*  />*/}
-      {/*  <Button*/}
-      {/*    title={'FEN'}*/}
-      {/*    onPress={() => {*/}
-      {/*      chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);*/}
-      {/*    }}*/}
-      {/*  />*/}
-      {/*  <Button*/}
-      {/*    title={'Toggle move'}*/}
-      {/*    onPress={() => {*/}
-      {/*      setMoveEnabled(!moveEnabled);*/}
-      {/*    }}*/}
-      {/*  />*/}
-      {/*</View>*/}
     </View>
   );
 };
+
+{
+  /*    onPress={() => chessboardRef.current?.resetBoard()}*/
+}
+{
+  /*      chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);*/
+}
+{
+  /*      setMoveEnabled(!moveEnabled);*/
+}

@@ -27,7 +27,6 @@ export const Header = ({ profile }: { profile: ProfileType }) => {
           icon={() => <MaterialIcons name="info-outline" size={24} color="white" />}
           size={'medium'}
           style={{ backgroundColor: '#DA0C81' }}
-          onPress={() => console.log('Pressed')}
         />
       </View>
     </View>
