@@ -7,6 +7,7 @@ const options: CreateAxiosDefaults = {
 };
 
 export const axiosAuth = axios.create(options);
+export const axiosClassic = axios.create(options);
 
 axiosAuth.interceptors.request.use(async (config) => {
   const {

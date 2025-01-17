@@ -1,6 +1,7 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
+import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
@@ -14,36 +15,54 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: { backgroundColor: '#0F0F0F', borderTopWidth: 0, elevation: 0 },
+        tabBarStyle: {
+          backgroundColor: '#0F0F0F',
+          borderTopWidth: 0,
+          elevation: 0,
+        },
         sceneStyle: { backgroundColor: '#0F0F0F' },
+        tabBarLabelStyle: {
+          fontFamily: 'NunitoSans',
+          fontSize: 10,
+          fontWeight: 400,
+          marginTop: 6,
+        },
+        tabBarActiveTintColor: '#DA0C81',
+        tabBarInactiveTintColor: '#FFFFFF',
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'Home',
+          tabBarIcon: ({ color }) => (
+            <FontAwesome6 name="house" size={24} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="trainer"
         options={{
           title: 'Puzzles',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="extension-puzzle" size={24} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="freeplay"
         options={{
           title: 'Free game',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <FontAwesome6 name="chess-board" size={24} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <FontAwesome name="user" size={24} color={color} />,
         }}
       />
     </Tabs>

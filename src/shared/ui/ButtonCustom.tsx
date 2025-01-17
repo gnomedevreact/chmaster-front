@@ -10,17 +10,21 @@ interface ButtonCustomProps {
   mode?: 'text' | 'contained' | 'outlined' | 'elevated' | 'contained-tonal';
   isLight?: boolean;
   padding?: number;
+  onPress?: () => void;
+  disabled?: boolean;
 }
 
 export const ButtonCustom = (props: ButtonCustomProps) => {
-  const { text, loading, mode, isLight, padding } = props;
+  const { text, loading, mode, isLight, padding, onPress, disabled } = props;
 
   const [isPressed, setIsPressed] = useState(false);
 
   return (
     <Button
+      onPress={onPress}
       mode={mode || 'contained'}
       loading={loading}
+      disabled={disabled}
       buttonColor={isLight ? '#DA0C81' : '#272727'}
       contentStyle={{
         padding,

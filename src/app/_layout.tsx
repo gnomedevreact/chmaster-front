@@ -1,6 +1,6 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native';
 
 import '../../global.css';
 import { PaperProvider } from 'react-native-paper';
+import FlashMessage from 'react-native-flash-message';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -28,6 +29,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     NunitoSans: require('@/src/assets/fonts/NunitoSans_10pt-Regular.ttf'),
+    NunitoSansBold: require('@/src/assets/fonts/NunitoSans_10pt-Bold.ttf'),
     ...FontAwesome.font,
   });
 
@@ -59,8 +61,8 @@ const queryClient = new QueryClient({
 });
 
 function RootLayoutNav() {
-  // const pathname = usePathname();
-  //
+  const pathname = usePathname();
+
   // useEffect(() => {
   //   supabase.auth.getSession().then(({ data: { session } }) => {
   //     if (pathname === '/auth' && session) {
@@ -77,7 +79,10 @@ function RootLayoutNav() {
       <GestureHandlerRootView>
         <PaperProvider>
           <SafeAreaView className={'flex-1 bg-[#0F0F0F]'}>
-            <Stack screenOptions={{ contentStyle: { backgroundColor: '#0F0F0F' } }}>
+            <Stack
+              screenOptions={{ contentStyle: { backgroundColor: '#0F0F0F' } }}
+              initialRouteName={'(tabs)'}
+            >
               <Stack.Screen
                 name="auth"
                 options={{ headerShown: false, gestureEnabled: false }}
@@ -85,6 +90,7 @@ function RootLayoutNav() {
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="index" options={{ headerShown: false }} />
             </Stack>
+            <FlashMessage position="top" />
           </SafeAreaView>
         </PaperProvider>
       </GestureHandlerRootView>

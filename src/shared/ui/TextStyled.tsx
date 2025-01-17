@@ -5,15 +5,16 @@ import { cn } from '@/src/shared/lib/utils/cnUtils';
 interface StyledTextProps {
   children?: React.ReactNode;
   className?: string;
+  fontFamilyName?: string;
 }
 
 export const TextStyled = (props: StyledTextProps) => {
-  const { children, className } = props;
+  const { children, className, fontFamilyName = 'NunitoSans' } = props;
 
   return (
     <Text
-      style={{ fontFamily: 'NunitoSans' }}
-      className={cn('text-[20px] font-medium', className)}
+      style={{ fontFamily: fontFamilyName }}
+      className={cn('text-[20px] font-medium text-primary-white', className)}
     >
       {children}
     </Text>

@@ -1,10 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { SafeAreaView, StyleSheet, View } from 'react-native';
+import { Dimensions, View } from 'react-native';
 import { useGetRandomPuzzles } from '@/src/shared/api/hooks/useGetRandomPuzzles';
 import Chessboard, { ChessboardRef } from '@gnomedevreact/ch-private';
 import { Square } from 'chess.js';
+import { TextStyled } from '@/src/shared/ui/TextStyled';
+import { ButtonCustom } from '@/src/shared/ui/ButtonCustom';
+
+const width = Dimensions.get('window').width;
 
 export const ChessGame = () => {
+  const [isTrainingStart, setIsTrainingStart] = useState(false);
   const chessboardRef = useRef<ChessboardRef>(null);
   const [currentPuzzle, setCurrentPuzzle] = useState(0);
   const [currentMove, setCurrentMove] = useState<{ order: number; move: null | string }>({
@@ -14,9 +19,7 @@ export const ChessGame = () => {
   const [moves, setMoves] = useState<string[]>();
   const [moveEnabled, setMoveEnabled] = useState<boolean>(false);
 
-  const { puzzles } = useGetRandomPuzzles();
-
-  useEffect(() => {}, []);
+  const { puzzles } = useGetRandomPuzzles({ isTrainingStart });
 
   useEffect(() => {
     console.log(moves);
@@ -49,65 +52,63 @@ export const ChessGame = () => {
     }
   }, [puzzles, currentPuzzle]);
 
-  if (!puzzles || !moves) return null;
+  // if (!puzzles || !moves) return null;
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.chessboardContainer}>
-        <Chessboard
-          gestureEnabled={moveEnabled}
-          fen={puzzles[currentPuzzle].fen}
-          ref={chessboardRef}
-          colors={{ black: '#b58863', white: '#f0d9b5' }}
-          onMove={({ state, move }) => {
-            const formattedMove = move.from + move.to;
-            setCurrentMove({ order: currentMove.order, move: formattedMove });
+    <View className={'flex-1 py-4'}>
+      <View className={'px-4'}>
+        <TextStyled className={'text-[28px]'}>Start training</TextStyled>
+      </View>
+      <View className={'flex-1 justify-center'}>
+        <View style={{ minHeight: width, minWidth: width }}>
+          <Chessboard
+            gestureEnabled={true}
+            fen={puzzles ? puzzles[currentPuzzle].fen : undefined}
+            ref={chessboardRef}
+            colors={{ black: '#b58863', white: '#f0d9b5' }}
+            onMove={({ state, move }) => {
+              const formattedMove = move.from + move.to;
+              setCurrentMove({ order: currentMove.order, move: formattedMove });
 
-            console.log('move', move);
-            console.log('state', state);
-          }}
+              console.log('move', move);
+              console.log('state', state);
+            }}
+          />
+        </View>
+      </View>
+      <View className={'px-4'}>
+        <ButtonCustom
+          text={'Let’s get started'}
+          padding={10}
+          isLight
+          onPress={() => setIsTrainingStart(true)}
         />
       </View>
-      <View style={styles.buttonsContainer}>
-        {/*<Button*/}
-        {/*  title={'Reset board'}*/}
-        {/*  onPress={() => chessboardRef.current?.resetBoard()}*/}
-        {/*/>*/}
-        {/*<Button title={'Undo'} onPress={() => chessboardRef.current?.undo()} />*/}
-        {/*<Button*/}
-        {/*  title={'Next'}*/}
-        {/*  onPress={() => {*/}
-        {/*    setCurrentPuzzle((prevValue) => prevValue + 1);*/}
-        {/*  }}*/}
-        {/*/>*/}
-        {/*<Button*/}
-        {/*  title={'FEN'}*/}
-        {/*  onPress={() => {*/}
-        {/*    chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);*/}
-        {/*  }}*/}
-        {/*/>*/}
-        {/*<Button*/}
-        {/*  title={'Toggle move'}*/}
-        {/*  onPress={() => {*/}
-        {/*    setMoveEnabled(!moveEnabled);*/}
-        {/*  }}*/}
-        {/*/>*/}
-      </View>
-    </SafeAreaView>
+      {/*<View>*/}
+      {/*  <Button*/}
+      {/*    title={'Reset board'}*/}
+      {/*    onPress={() => chessboardRef.current?.resetBoard()}*/}
+      {/*  />*/}
+      {/*  <Button title={'Undo'} onPress={() => chessboardRef.current?.undo()} />*/}
+      {/*  <Button*/}
+      {/*    title={'Next'}*/}
+      {/*    onPress={() => {*/}
+      {/*      setCurrentPuzzle((prevValue) => prevValue + 1);*/}
+      {/*    }}*/}
+      {/*  />*/}
+      {/*  <Button*/}
+      {/*    title={'FEN'}*/}
+      {/*    onPress={() => {*/}
+      {/*      chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);*/}
+      {/*    }}*/}
+      {/*  />*/}
+      {/*  <Button*/}
+      {/*    title={'Toggle move'}*/}
+      {/*    onPress={() => {*/}
+      {/*      setMoveEnabled(!moveEnabled);*/}
+      {/*    }}*/}
+      {/*  />*/}
+      {/*</View>*/}
+    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  chessboardContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonsContainer: {
-    padding: 16,
-  },
-});
