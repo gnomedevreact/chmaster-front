@@ -8,20 +8,21 @@ interface TimerProps {
   setIsActive: (e: boolean) => void;
   isReset: boolean;
   setIsReset: (e: boolean) => void;
+  resetGameState: () => void;
 }
 
 export const Timer = (props: TimerProps) => {
-  const { setIsActive, isActive, isReset, setIsReset } = props;
+  const { setIsActive, isActive, isReset, setIsReset, resetGameState } = props;
 
   const [seconds, setSeconds] = useState(TIMER_SECONDS);
   const [timerId, setTimerId] = useState<NodeJS.Timeout>();
 
   useEffect(() => {
     if (seconds === 0) {
-      setIsActive(false);
       clearInterval(timerId);
       setSeconds(TIMER_SECONDS);
       setIsReset(false);
+      resetGameState();
       return;
     }
 

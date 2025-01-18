@@ -1,17 +1,18 @@
-import { MessageOptions, showMessage } from 'react-native-flash-message';
+import { MessageOptions, MessageType, showMessage } from 'react-native-flash-message';
 
 interface ToastProps extends MessageOptions {
   message: string;
   backgroundColor?: string;
   color?: string;
+  type?: MessageType;
 }
 
 export function toast(props: ToastProps) {
-  const { message, backgroundColor, color, ...otherProps } = props;
+  const { message, backgroundColor, color, type = 'info', ...otherProps } = props;
 
   showMessage({
     message,
-    type: 'info',
+    type,
     backgroundColor,
     color,
     ...otherProps,

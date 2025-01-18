@@ -1,11 +1,11 @@
 import React from 'react';
 import { cn } from '@/src/shared/lib/utils/cnUtils';
-import { TextInput } from 'react-native-paper';
+import { TextInput, TextInputProps } from 'react-native-paper';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { KeyboardTypeOptions, View } from 'react-native';
 import { Control, RegisterOptions, useController } from 'react-hook-form';
 
-interface InputProps {
+interface InputProps extends TextInputProps {
   label: string;
   control: Control<any>;
   name: string;
@@ -16,7 +16,8 @@ interface InputProps {
 }
 
 export const Input = (props: InputProps) => {
-  const { label, className, control, name, keyboardType, secure, rules } = props;
+  const { label, className, control, name, keyboardType, secure, rules, ...otherProps } =
+    props;
 
   const { field } = useController({
     control,
@@ -47,6 +48,7 @@ export const Input = (props: InputProps) => {
         keyboardType={keyboardType}
         secureTextEntry={secure}
         autoCapitalize={'none'}
+        {...otherProps}
       />
     </View>
   );

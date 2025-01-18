@@ -2,11 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Dimensions, View } from 'react-native';
 import { useGetRandomPuzzles } from '@/src/shared/api/hooks/useGetRandomPuzzles';
 import Chessboard, { ChessboardRef } from '@gnomedevreact/ch-private';
-import { Square } from 'chess.js';
+import { Move, Square } from 'chess.js';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { Timer } from '@/src/widgets/Timer';
 import { FabCustom } from '@/src/shared/ui/FabCustom';
-import Slider from '@react-native-community/slider';
+import { Feather } from '@expo/vector-icons';
+import { OptionsModal } from '@/src/features/ChessGame/ui/components/OptionsModal';
+import { useQueryClient } from '@tanstack/react-query';
 
 const width = Dimensions.get('window').width;
 
@@ -24,17 +26,41 @@ export const ChessGame = () => {
   const [isActiveTimer, setIsActiveTimer] = useState(false);
   const [isReset, setIsReset] = useState(false);
 
-  const [rangeValues, setRangeValues] = useState([20]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { puzzles } = useGetRandomPuzzles({ isTrainingStart });
+  const queryClient = useQueryClient();
+  const { puzzles, resetPuzzles } = useGetRandomPuzzles({ isTrainingStart });
+
+  const resetGameState = () => {
+    setMoves(undefined);
+    setMoveEnabled(false);
+    setIsActiveTimer(false);
+    setIsTrainingStart(false);
+    resetPuzzles();
+    chessboardRef?.current?.resetBoard();
+  };
+
+  function makeMove(index: number) {
+    chessboardRef?.current?.move({
+      from: moves![index].substring(0, 2) as Square,
+      to: moves![index].substring(2) as Square,
+    });
+  }
+
+  function formatMove(currMove: Move) {
+    let move = currMove.from + currMove.to;
+
+    if (currMove.promotion) {
+      move += currMove.promotion;
+    }
+
+    return move;
+  }
 
   useEffect(() => {
-    console.log(moves);
-    if (moves) {
-      chessboardRef?.current?.move({
-        from: moves[0].substring(0, 2) as Square,
-        to: moves[1].substring(2) as Square,
-      });
+    if (moves && chessboardRef?.current) {
+      console.log(moves);
+      makeMove(0);
       setMoveEnabled(true);
     }
   }, [moves]);
@@ -42,41 +68,53 @@ export const ChessGame = () => {
   useEffect(() => {
     if (moves && currentMove.move) {
       console.log(currentMove.move, currentMove.order);
+      if (
+        currentMove.order !== 0 &&
+        currentMove.order % 2 !== 0 &&
+        currentMove.order < moves.length - 1
+      ) {
+        makeMove(currentMove.order + 1);
+        setCurrentMove({ order: currentMove.order + 2, move: null });
+        return;
+      }
+
       if (currentMove.move !== moves[currentMove.order]) {
         chessboardRef?.current?.undo();
         setCurrentMove({ order: currentMove.order, move: null });
       } else {
         setCurrentMove({ order: currentMove.order + 1, move: null });
+
+        if (currentMove.order >= moves.length - 1) {
+          setCurrentPuzzle((prevState) => prevState + 1);
+        }
       }
     }
   }, [currentMove, moves]);
 
   useEffect(() => {
     if (puzzles) {
+      if (currentPuzzle === 5) {
+        queryClient.invalidateQueries({ queryKey: ['puzzles'] });
+      }
       setMoves(puzzles[currentPuzzle].moves.split(' '));
       setCurrentMove({ order: 0, move: null });
+      console.log(puzzles[currentPuzzle].fen);
       chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);
     }
   }, [puzzles, currentPuzzle]);
 
   function startTraining() {
     setIsTrainingStart(true);
+    setIsActiveTimer(true);
   }
 
-  const startTimer = () => {
-    setIsActiveTimer(true);
-  };
-
-  const stopTimer = () => {
+  const stopTraining = () => {
     setIsActiveTimer(false);
   };
 
   const resetTimer = () => {
     setIsReset(true);
-  };
-
-  const onRangeValuesChange = (values: number[]) => {
-    setRangeValues(values);
+    resetGameState();
   };
 
   return (
@@ -88,18 +126,19 @@ export const ChessGame = () => {
           setIsActive={setIsActiveTimer}
           isReset={isReset}
           setIsReset={setIsReset}
+          resetGameState={resetGameState}
         />
       </View>
       <View className={'flex-1 justify-center'}>
         <View style={{ minHeight: width, minWidth: width }}>
           <Chessboard
-            gestureEnabled={true}
-            fen={puzzles ? puzzles[currentPuzzle].fen : undefined}
+            gestureEnabled={moveEnabled}
+            fen={puzzles ? puzzles[0].fen : undefined}
             ref={chessboardRef}
             colors={{ black: '#b58863', white: '#f0d9b5' }}
             durations={{ move: 90 }}
             onMove={({ state, move }) => {
-              const formattedMove = move.from + move.to;
+              const formattedMove = formatMove(move);
               setCurrentMove({ order: currentMove.order, move: formattedMove });
 
               console.log('move', move);
@@ -109,27 +148,16 @@ export const ChessGame = () => {
         </View>
       </View>
       <View className={'px-4'}>
-        <Slider
-        // values={rangeValues}
-        // onValuesChange={onRangeValuesChange}
-        // step={10}
-        // markerStyle={{
-        //   height: 20,
-        //   width: 20,
-        //   backgroundColor: '#3498db',
-        // }}
-        // selectedStyle={{
-        //   backgroundColor: '#3498db',
-        // }}
-        // unselectedStyle={{
-        //   backgroundColor: '#d3d3d3',
-        // }}
-        />
-        <View className={'flex flex-col items-center justify-start'}>
+        {!isActiveTimer && (
+          <FabCustom size={'large'} onPress={() => setIsModalOpen(true)}>
+            <Feather name="settings" size={36} color="white" />
+          </FabCustom>
+        )}
+        <View className={'flex flex-row items-center justify-start'}>
           <FabCustom
             size={'large'}
             className={'bg-[#11d526]'}
-            onPress={isActiveTimer ? stopTimer : startTimer}
+            onPress={isActiveTimer ? stopTraining : startTraining}
           >
             <TextStyled>{isActiveTimer ? 'Stop' : 'Start'}</TextStyled>
           </FabCustom>
@@ -140,6 +168,7 @@ export const ChessGame = () => {
           )}
         </View>
       </View>
+      <OptionsModal modalVisible={isModalOpen} setModalVisible={setIsModalOpen} />
     </View>
   );
 };

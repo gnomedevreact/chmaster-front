@@ -3,6 +3,7 @@ import { Button } from 'react-native-paper';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 
 import { StyleSheet } from 'react-native';
+import { cn } from '@/src/shared/lib/utils/cnUtils';
 
 interface ButtonCustomProps {
   text: string;
@@ -12,10 +13,12 @@ interface ButtonCustomProps {
   padding?: number;
   onPress?: () => void;
   disabled?: boolean;
+  textClassName?: string;
 }
 
 export const ButtonCustom = (props: ButtonCustomProps) => {
-  const { text, loading, mode, isLight, padding, onPress, disabled } = props;
+  const { text, loading, mode, isLight, padding, onPress, disabled, textClassName } =
+    props;
 
   const [isPressed, setIsPressed] = useState(false);
 
@@ -36,7 +39,9 @@ export const ButtonCustom = (props: ButtonCustomProps) => {
       onPressOut={() => setIsPressed(false)}
       style={[styles.button, isPressed && styles.buttonPressed]}
     >
-      <TextStyled className={'text-base font-medium'}>{text}</TextStyled>
+      <TextStyled className={cn('text-base font-medium', textClassName)}>
+        {text}
+      </TextStyled>
     </Button>
   );
 };
