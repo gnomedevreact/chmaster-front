@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native';
 import '../../global.css';
 import { PaperProvider } from 'react-native-paper';
 import FlashMessage from 'react-native-flash-message';
+import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -58,6 +59,11 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
     },
   },
+});
+
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false,
 });
 
 function RootLayoutNav() {

@@ -1,8 +1,8 @@
 import React from 'react';
-import { View } from 'react-native';
+import { FreePlay } from '@/src/screens/FreePlay';
 
 const FreeplayPage = () => {
-  return <View></View>;
+  return <FreePlay />;
 };
 
 export default FreeplayPage;

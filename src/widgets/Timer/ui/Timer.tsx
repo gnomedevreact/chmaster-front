@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { TIMER_SECONDS } from '@/src/features/ChessGame/lib/consts';
+import { useFocusEffect } from 'expo-router';
 
 interface TimerProps {
   isActive: boolean;
@@ -51,9 +52,17 @@ export const Timer = (props: TimerProps) => {
     return `${minutes < 10 ? '0' : ''}${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        clearInterval(timerId);
+      };
+    }, []),
+  );
+
   return (
-    <View>
-      <TextStyled>{formatTime(seconds)}</TextStyled>
+    <View className={'w-fit p-2 pr-6 self-start bg-primary-200 rounded'}>
+      <TextStyled className={'text-[24px]'}>{formatTime(seconds)}</TextStyled>
     </View>
   );
 };

@@ -8,26 +8,27 @@ export const useGetRandomPuzzles = ({
 }: {
   isTrainingStart: boolean;
 }) => {
-  const [puzzles, setPuzzles] = useState<Puzzle[]>();
+  const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
 
   const queryClient = useQueryClient();
 
-  const { data: fetchedPuzzles } = useQuery({
+  const { data: fetchedPuzzles, isLoading } = useQuery({
     queryKey: ['puzzles'],
-    queryFn: () => PuzzlesService.getRandomPuzzles(),
+    queryFn: () => PuzzlesService.getRandomPuzzles({ limit: puzzles.length > 0 ? 2 : 2 }),
     select: ({ data }) => data,
     enabled: isTrainingStart,
   });
 
   const resetPuzzles = () => {
     queryClient.removeQueries({ queryKey: ['puzzles'] });
+    setPuzzles([]);
   };
 
   useEffect(() => {
     if (fetchedPuzzles) {
-      setPuzzles({ ...puzzles, ...fetchedPuzzles });
+      setPuzzles((prevState) => [...prevState, ...fetchedPuzzles]);
     }
   }, [fetchedPuzzles]);
 
-  return { puzzles, resetPuzzles };
+  return { puzzles, resetPuzzles, isLoading };
 };
