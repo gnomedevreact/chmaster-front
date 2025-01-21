@@ -16,7 +16,7 @@ interface FormProps {
 export const Sliders = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [minSliderValue, setMinSliderValue] = useState(200);
-  const [maxSliderValue, setMaxSliderValue] = useState(600);
+  const [maxSliderValue, setMaxSliderValue] = useState(800);
 
   const { control, setValue } = useForm<FormProps>({
     defaultValues: {
@@ -36,7 +36,7 @@ export const Sliders = () => {
       setMinSliderValue(Number(min));
 
       setValue('minRating', min || '200');
-      setValue('maxRating', max || '600');
+      setValue('maxRating', max || '800');
 
       setIsLoaded(true);
     };

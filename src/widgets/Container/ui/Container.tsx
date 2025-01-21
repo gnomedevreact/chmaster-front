@@ -18,7 +18,7 @@ export const Container = (props: ContainerProps) => {
         overScrollMode={'never'}
         scrollEnabled={scrollEnabled}
         contentContainerStyle={{
-          flex: 1,
+          flexGrow: 1,
         }}
       >
         <View className={cn('flex-1 px-4', className)}>{children}</View>

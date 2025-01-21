@@ -5,8 +5,10 @@ import { Puzzle } from '@/src/shared/model/types/puzzles.types';
 
 export const useGetRandomPuzzles = ({
   isTrainingStart,
+  setPuzzlesCopy,
 }: {
   isTrainingStart: boolean;
+  setPuzzlesCopy: (e: (prevstate: any) => any) => void;
 }) => {
   const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
 
@@ -27,6 +29,7 @@ export const useGetRandomPuzzles = ({
   useEffect(() => {
     if (fetchedPuzzles) {
       setPuzzles((prevState) => [...prevState, ...fetchedPuzzles]);
+      setPuzzlesCopy((prevState) => [...prevState, ...fetchedPuzzles]);
     }
   }, [fetchedPuzzles]);
 

@@ -11,6 +11,9 @@ import { OptionsModal } from '@/src/features/ChessGame/ui/components/OptionsModa
 import { useQueryClient } from '@tanstack/react-query';
 import { useFocusEffect } from 'expo-router';
 import { ButtonCustom } from '@/src/shared/ui/ButtonCustom';
+import { cn } from '@/src/shared/lib/utils/cnUtils';
+import { StatsScreen } from '@/src/features/ChessGame/ui/components/StatsScreen';
+import { Puzzle } from '@/src/shared/model/types/puzzles.types';
 
 const width = Dimensions.get('window').width;
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -24,32 +27,34 @@ export const ChessGame = () => {
     move: null,
   });
   const [moves, setMoves] = useState<string[]>();
-  const [moveEnabled, setMoveEnabled] = useState<boolean>(false);
+  const [moveEnabled, setMoveEnabled] = useState<boolean>(true);
 
   const [isActiveTimer, setIsActiveTimer] = useState(false);
   const [isReset, setIsReset] = useState(false);
   const [lastInvalidated, setLastInvalidated] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [playerColor, setPlayerColor] = useState<'w' | 'b'>();
 
   const [isGameStats, setIsGameStats] = useState(false);
   const [errosCount, setErrorCount] = useState(0);
-  const [rightCount, setRightCount] = useState(0);
+  const [puzzlesCopy, setPuzzlesCopy] = useState<Puzzle[]>([]);
 
   const queryClient = useQueryClient();
-  const { puzzles, resetPuzzles, isLoading } = useGetRandomPuzzles({ isTrainingStart });
+  const { puzzles, resetPuzzles, isLoading } = useGetRandomPuzzles({
+    isTrainingStart,
+    setPuzzlesCopy,
+  });
 
   const resetGameState = () => {
     setIsTrainingStart(false);
     resetPuzzles();
-    chessboardRef?.current?.resetBoard();
     setMoves(undefined);
     setMoveEnabled(false);
     setIsActiveTimer(false);
     setCurrentPuzzle(0);
-  };
-
-  const updateMoveEnabled = (enabled: boolean) => {
-    setMoveEnabled(enabled);
+    setIsReset(true);
+    setPlayerColor(undefined);
+    chessboardRef?.current?.resetBoard();
   };
 
   function makeMove(index: number) {
@@ -71,7 +76,6 @@ export const ChessGame = () => {
 
   useEffect(() => {
     if (moves && chessboardRef?.current) {
-      console.log(moves);
       makeMove(0);
       setMoveEnabled(true);
     }
@@ -80,21 +84,22 @@ export const ChessGame = () => {
   useEffect(() => {
     (async () => {
       if (moves && currentMove.move) {
-        console.log(currentMove.move, currentMove.order);
         if (
           currentMove.move !== moves[currentMove.order] &&
-          currentMove.order % 2 !== 0
+          currentMove.order % 2 !== 0 &&
+          !chessboardRef?.current?.getState().in_checkmate
         ) {
+          setErrorCount((prevState) => prevState + 1);
           chessboardRef?.current?.highlight({
             square: currentMove.move.substring(2, 4) as Square,
             color: '#da8f7f',
           });
 
-          await sleep(2000);
+          await sleep(500);
 
           chessboardRef?.current?.undo();
           setCurrentMove({ order: currentMove.order, move: null });
-          updateMoveEnabled(true);
+          setMoveEnabled(true);
           return;
         }
 
@@ -110,7 +115,6 @@ export const ChessGame = () => {
           }));
 
           makeMove(nextOrder);
-          updateMoveEnabled(true);
           return;
         }
 
@@ -125,16 +129,16 @@ export const ChessGame = () => {
 
   useEffect(() => {
     if (puzzles.length > 0 && isTrainingStart) {
-      console.log(puzzles, currentPuzzle);
       if ((currentPuzzle + 1) % 2 === 0 && lastInvalidated !== currentPuzzle) {
         queryClient.invalidateQueries({ queryKey: ['puzzles'] });
         setLastInvalidated(currentPuzzle);
       }
-
+      console.log(puzzles);
       if (currentPuzzle === 0 || currentPuzzle !== lastInvalidated) {
-        if (currentPuzzle <= puzzles.length) {
+        if (puzzles[currentPuzzle]) {
           setMoves(puzzles[currentPuzzle].moves.split(' '));
           setCurrentMove({ order: 0, move: null });
+          setPlayerColor(undefined);
           chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);
         }
       }
@@ -144,6 +148,7 @@ export const ChessGame = () => {
   function startTraining() {
     setIsTrainingStart(true);
     setIsActiveTimer(true);
+    setPuzzlesCopy([]);
   }
 
   const stopTraining = () => {
@@ -163,10 +168,22 @@ export const ChessGame = () => {
     }, []),
   );
 
+  if (isGameStats) {
+    return (
+      <StatsScreen
+        errors={errosCount}
+        puzzles={puzzlesCopy}
+        setErrors={setErrorCount}
+        setIsStats={setIsGameStats}
+        setPuzzlesCopy={setPuzzlesCopy}
+      />
+    );
+  }
+
   return (
     <ScrollView
       className={'py-4'}
-      contentContainerStyle={{ flex: 1 }}
+      contentContainerStyle={{ flexGrow: 1 }}
       alwaysBounceVertical={false}
       overScrollMode={'never'}
     >
@@ -179,6 +196,8 @@ export const ChessGame = () => {
             isReset={isReset}
             setIsReset={setIsReset}
             resetGameState={resetGameState}
+            setIsStats={setIsGameStats}
+            puzzlesCopy={puzzlesCopy}
           />
         </View>
         {!isActiveTimer && (
@@ -187,17 +206,22 @@ export const ChessGame = () => {
           </FabCustom>
         )}
       </View>
-      <View className={'justify-center'}>
+      <View className={cn('justify-center', { 'pointer-events-none': !moveEnabled })}>
         <View style={{ minHeight: width, minWidth: width }}>
           <Chessboard
             gestureEnabled={moveEnabled}
             fen={puzzles.length > 0 ? puzzles[0].fen : undefined}
             ref={chessboardRef}
             colors={{ black: '#b58863', white: '#f0d9b5' }}
-            durations={{ move: 90 }}
+            durations={{ move: 120 }}
             onMove={({ state, move }) => {
-              if ((currentMove.order + 1) % 2 === 0) {
-                updateMoveEnabled(false);
+              if (playerColor && playerColor === move.color) {
+                setMoveEnabled(false);
+              } else {
+                setMoveEnabled(true);
+              }
+              if (!playerColor) {
+                setPlayerColor(move.color === 'w' ? 'b' : 'w');
               }
               const formattedMove = formatMove(move);
               setCurrentMove((prevState) => {

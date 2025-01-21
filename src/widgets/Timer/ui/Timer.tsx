@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { TIMER_SECONDS } from '@/src/features/ChessGame/lib/consts';
 import { useFocusEffect } from 'expo-router';
+import { Puzzle } from '@/src/shared/model/types/puzzles.types';
 
 interface TimerProps {
   isActive: boolean;
@@ -10,16 +11,29 @@ interface TimerProps {
   isReset: boolean;
   setIsReset: (e: boolean) => void;
   resetGameState: () => void;
+  setIsStats: (e: boolean) => void;
+  puzzlesCopy: Puzzle[];
 }
 
 export const Timer = (props: TimerProps) => {
-  const { setIsActive, isActive, isReset, setIsReset, resetGameState } = props;
+  const {
+    setIsActive,
+    isActive,
+    isReset,
+    setIsReset,
+    resetGameState,
+    setIsStats,
+    puzzlesCopy,
+  } = props;
 
   const [seconds, setSeconds] = useState(TIMER_SECONDS);
   const [timerId, setTimerId] = useState<NodeJS.Timeout>();
 
   useEffect(() => {
     if (seconds === 0) {
+      if (puzzlesCopy.length >= 10) {
+        setIsStats(true);
+      }
       clearInterval(timerId);
       setSeconds(TIMER_SECONDS);
       setIsReset(false);
