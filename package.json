@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
-    "@gnomedevreact/ch-private": "^0.1.7",
+    "@gnomedevreact/ch-private": "^0.1.8",
     "@gorhom/bottom-sheet": "^5.0.6",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/slider": "^4.5.5",
@@ -55,7 +55,8 @@
     "react-native-web": "~0.19.13",
     "tailwind-merge": "^2.6.0",
     "tailwindcss": "^3.4.17",
-    "zustand": "^5.0.3"
+    "zustand": "^5.0.3",
+    "expo-haptics": "~14.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

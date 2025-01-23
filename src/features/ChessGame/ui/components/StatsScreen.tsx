@@ -3,8 +3,8 @@ import { View } from 'react-native';
 import { Puzzle } from '@/src/shared/model/types/puzzles.types';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { Container } from '@/src/widgets/Container';
-import { cn } from '@/src/shared/lib/utils/cnUtils';
 import { ButtonCustom } from '@/src/shared/ui/ButtonCustom';
+import { Badge } from '@/src/shared/ui/Badge';
 
 interface StatsScreenProps {
   errors: number;
@@ -12,6 +12,8 @@ interface StatsScreenProps {
   setErrors: (e: number) => void;
   setIsStats: (e: boolean) => void;
   setPuzzlesCopy: (e: Puzzle[]) => void;
+  setCurrentPuzzleCopy: (e: number) => void;
+  currentPuzzleCopy: number;
 }
 
 function capitalize(str: string) {
@@ -26,7 +28,7 @@ function calculateAccuracy(total: number, errors: number) {
   const correct = total - errors;
   const accuracy = (correct / total) * 100;
 
-  return Math.round(accuracy * 100) / 100;
+  return accuracy < 0 ? 0 : Math.round(accuracy * 100) / 100;
 }
 
 function calculateExp(puzzles: Puzzle[]) {
@@ -62,33 +64,28 @@ const calculateRecommendedRating = (
   return roundToNearest50(recommendedRating);
 };
 
-const Badge = ({ text1, text2 }: { text1: string; text2: string }) => {
-  return (
-    <View
-      className={
-        'flex flex-row items-center justify-center self-start p-2 bg-primary-200 rounded opacity-80'
-      }
-    >
-      <TextStyled className={'text-lg mr-2'}>{text1}</TextStyled>
-      <TextStyled className={cn('text-lg text-primary-100')}>{text2}</TextStyled>
-    </View>
-  );
-};
-
-export const StatsScreen = (props: StatsScreenProps) => {
-  const { errors, setErrors, setIsStats, puzzles, setPuzzlesCopy } = props;
+export const StatsScreen = React.memo((props: StatsScreenProps) => {
+  const {
+    errors,
+    setErrors,
+    setIsStats,
+    puzzles,
+    setPuzzlesCopy,
+    setCurrentPuzzleCopy,
+    currentPuzzleCopy,
+  } = props;
 
   const bestPuzzle = puzzles.sort((a, b) => b.rating - a.rating)[0];
 
   return (
-    <Container className={'py-10'}>
+    <Container className={'py-14 bg-primary-400'}>
       <View className={'flex flex-row items-center gap-3'}>
         <TextStyled className={'text-[26px] w-[120px]'}>Solved</TextStyled>
         <TextStyled
           className={'text-[42px] text-primary-100'}
           fontFamilyName={'NunitoSansBold'}
         >
-          {puzzles.length}
+          {currentPuzzleCopy}
         </TextStyled>
       </View>
       <View className={'flex flex-row items-center gap-3'}>
@@ -148,9 +145,10 @@ export const StatsScreen = (props: StatsScreenProps) => {
             setIsStats(false);
             setErrors(0);
             setPuzzlesCopy([]);
+            setCurrentPuzzleCopy(0);
           }}
         />
       </View>
     </Container>
   );
-};
+});

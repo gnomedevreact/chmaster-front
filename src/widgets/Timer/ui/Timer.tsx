@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Pressable, View } from 'react-native';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
-import { TIMER_SECONDS } from '@/src/features/ChessGame/lib/consts';
+import { MIN_PUZZLES, TIMER_SECONDS } from '@/src/features/ChessGame/lib/consts';
 import { useFocusEffect } from 'expo-router';
 import { Puzzle } from '@/src/shared/model/types/puzzles.types';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 
 interface TimerProps {
   isActive: boolean;
@@ -15,7 +16,7 @@ interface TimerProps {
   puzzlesCopy: Puzzle[];
 }
 
-export const Timer = (props: TimerProps) => {
+export const Timer = React.memo((props: TimerProps) => {
   const {
     setIsActive,
     isActive,
@@ -31,7 +32,7 @@ export const Timer = (props: TimerProps) => {
 
   useEffect(() => {
     if (seconds === 0) {
-      if (puzzlesCopy.length >= 10) {
+      if (puzzlesCopy.length >= MIN_PUZZLES) {
         setIsStats(true);
       }
       clearInterval(timerId);
@@ -66,6 +67,37 @@ export const Timer = (props: TimerProps) => {
     return `${minutes < 10 ? '0' : ''}${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
 
+  const intervalRefPlus = useRef<NodeJS.Timeout | null>(null);
+  const intervalRefMinus = useRef<NodeJS.Timeout | null>(null);
+
+  const handlePressInPlus = () => {
+    if (!intervalRefPlus.current) {
+      intervalRefPlus.current = setInterval(() => {
+        setSeconds((prev) => (prev <= 1180 ? prev + 20 : prev));
+      }, 120);
+    }
+  };
+  const handlePressInMinus = () => {
+    if (!intervalRefMinus.current) {
+      intervalRefMinus.current = setInterval(() => {
+        setSeconds((prev) => (prev >= 80 ? prev - 20 : prev));
+      }, 120);
+    }
+  };
+
+  const handlePressOutPlus = () => {
+    if (intervalRefPlus.current) {
+      clearInterval(intervalRefPlus.current);
+      intervalRefPlus.current = null;
+    }
+  };
+  const handlePressOutMinus = () => {
+    if (intervalRefMinus.current) {
+      clearInterval(intervalRefMinus.current);
+      intervalRefMinus.current = null;
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       return () => {
@@ -75,8 +107,25 @@ export const Timer = (props: TimerProps) => {
   );
 
   return (
-    <View className={'w-fit p-2 pr-6 self-start bg-primary-200 rounded'}>
-      <TextStyled className={'text-[24px]'}>{formatTime(seconds)}</TextStyled>
+    <View className={'flex flex-row items-center gap-2'}>
+      <View
+        className={
+          'flex flex-row items-center gap-5 justify-between p-2 self-start bg-primary-200 rounded'
+        }
+      >
+        <Ionicons name="timer-outline" size={24} color="white" />
+        <TextStyled className={'text-[24px]'}>{formatTime(seconds)}</TextStyled>
+      </View>
+      {!isActive && (
+        <View className={'flex flex-row gap-4'}>
+          <Pressable onPressIn={handlePressInMinus} onPressOut={handlePressOutMinus}>
+            <AntDesign name="minuscircleo" size={32} color="white" />
+          </Pressable>
+          <Pressable onPressIn={handlePressInPlus} onPressOut={handlePressOutPlus}>
+            <AntDesign name="pluscircleo" size={32} color="white" />
+          </Pressable>
+        </View>
+      )}
     </View>
   );
-};
+});

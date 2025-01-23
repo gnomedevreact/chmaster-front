@@ -2,19 +2,26 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { PuzzlesService } from '@/src/shared/api/services/puzzles.service';
 import { useEffect, useState } from 'react';
 import { Puzzle } from '@/src/shared/model/types/puzzles.types';
+import { toast } from '@/src/shared/lib/utils/toast';
 
 export const useGetRandomPuzzles = ({
   isTrainingStart,
   setPuzzlesCopy,
+  resetGameStateLocal,
 }: {
   isTrainingStart: boolean;
   setPuzzlesCopy: (e: (prevstate: any) => any) => void;
+  resetGameStateLocal: () => void;
 }) => {
   const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
 
   const queryClient = useQueryClient();
 
-  const { data: fetchedPuzzles, isLoading } = useQuery({
+  const {
+    data: fetchedPuzzles,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['puzzles'],
     queryFn: () => PuzzlesService.getRandomPuzzles({ limit: puzzles.length > 0 ? 2 : 2 }),
     select: ({ data }) => data,
@@ -32,6 +39,17 @@ export const useGetRandomPuzzles = ({
       setPuzzlesCopy((prevState) => [...prevState, ...fetchedPuzzles]);
     }
   }, [fetchedPuzzles]);
+
+  useEffect(() => {
+    if (error) {
+      resetGameStateLocal();
+      resetPuzzles();
+      toast({
+        message: 'Something went wrong, reload the app',
+        type: 'danger',
+      });
+    }
+  }, [error]);
 
   return { puzzles, resetPuzzles, isLoading };
 };

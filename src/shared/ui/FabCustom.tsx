@@ -10,7 +10,7 @@ interface FabCustomProps {
   className?: string;
 }
 
-export const FabCustom = (props: FabCustomProps) => {
+export const FabCustom = React.memo((props: FabCustomProps) => {
   const { children, size = 'medium', className, onPress } = props;
 
   const [isPressed, setIsPressed] = useState(false);
@@ -33,7 +33,7 @@ export const FabCustom = (props: FabCustomProps) => {
       {children}
     </Pressable>
   );
-};
+});
 
 const styles = StyleSheet.create({
   button: {

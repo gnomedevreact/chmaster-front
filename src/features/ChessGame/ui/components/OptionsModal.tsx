@@ -12,7 +12,7 @@ interface OptionsModalProps {
   setModalVisible: (e: boolean) => void;
 }
 
-export const OptionsModal = (props: OptionsModalProps) => {
+export const OptionsModal = React.memo((props: OptionsModalProps) => {
   const { modalVisible, setModalVisible } = props;
 
   const bottomSheetRef = useRef<BottomSheetModal>(null);
@@ -21,14 +21,14 @@ export const OptionsModal = (props: OptionsModalProps) => {
     if (modalVisible) {
       bottomSheetRef.current?.present();
     }
-  }, [modalVisible, bottomSheetRef.current]);
+  }, [modalVisible]);
 
   return (
     <BottomSheetModalProvider>
       <BottomSheetModal
         enablePanDownToClose={true}
         ref={bottomSheetRef}
-        snapPoints={['70%']}
+        snapPoints={['70%', '75%']}
         index={0}
         onDismiss={() => setModalVisible(false)}
         backgroundStyle={{ backgroundColor: '#0F0F0F' }}
@@ -43,4 +43,4 @@ export const OptionsModal = (props: OptionsModalProps) => {
       </BottomSheetModal>
     </BottomSheetModalProvider>
   );
-};
+});

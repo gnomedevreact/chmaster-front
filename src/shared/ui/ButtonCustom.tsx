@@ -5,6 +5,8 @@ import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { StyleSheet } from 'react-native';
 import { cn } from '@/src/shared/lib/utils/cnUtils';
 
+import * as Haptics from 'expo-haptics';
+
 interface ButtonCustomProps {
   text: string;
   loading?: boolean;
@@ -16,7 +18,7 @@ interface ButtonCustomProps {
   textClassName?: string;
 }
 
-export const ButtonCustom = (props: ButtonCustomProps) => {
+export const ButtonCustom = React.memo((props: ButtonCustomProps) => {
   const { text, loading, mode, isLight, padding, onPress, disabled, textClassName } =
     props;
 
@@ -24,7 +26,12 @@ export const ButtonCustom = (props: ButtonCustomProps) => {
 
   return (
     <Button
-      onPress={onPress}
+      onPress={() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+        if (onPress) {
+          onPress();
+        }
+      }}
       mode={mode || 'contained'}
       loading={loading}
       disabled={disabled}
@@ -44,7 +51,7 @@ export const ButtonCustom = (props: ButtonCustomProps) => {
       </TextStyled>
     </Button>
   );
-};
+});
 
 const styles = StyleSheet.create({
   button: {

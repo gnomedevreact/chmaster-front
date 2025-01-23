@@ -27,16 +27,18 @@ export const Sliders = () => {
   const { dismiss } = useBottomSheetModal();
 
   useEffect(() => {
-    setIsLoaded(false);
     const getValues = async () => {
       const min = await AsyncStorage.getItem('minRating');
       const max = await AsyncStorage.getItem('maxRating');
 
-      setMaxSliderValue(Number(max));
-      setMinSliderValue(Number(min));
+      const parsedMin = Math.max(Number(min) || 200, 200); // Минимум не может быть меньше 200
+      const parsedMax = Math.min(Number(max) || 800, 3400); // Максимум не может быть больше 3400
 
-      setValue('minRating', min || '200');
-      setValue('maxRating', max || '800');
+      setMaxSliderValue(parsedMax);
+      setMinSliderValue(parsedMin);
+
+      setValue('minRating', String(parsedMin));
+      setValue('maxRating', String(parsedMax));
 
       setIsLoaded(true);
     };
@@ -45,14 +47,14 @@ export const Sliders = () => {
 
   const handleMinSliderChange = (value: number) => {
     const maxLimit = maxSliderValue - 300;
-    const newValue = Math.min(value, maxLimit);
+    const newValue = Math.max(200, Math.min(value, maxLimit));
     setMinSliderValue(newValue);
     setValue('minRating', String(newValue));
   };
 
   const handleMaxSliderChange = (value: number) => {
     const minLimit = minSliderValue + 300;
-    const newValue = Math.max(value, minLimit);
+    const newValue = Math.min(3400, Math.max(value, minLimit));
     setMaxSliderValue(newValue);
     setValue('maxRating', String(newValue));
   };
@@ -64,10 +66,6 @@ export const Sliders = () => {
     toast({ type: 'success', message: 'Options were successfully saved' });
   };
 
-  if (!isLoaded) return null;
-
-  console.log(minSliderValue, maxSliderValue);
-
   return (
     <View className={'flex flex-col gap-2'}>
       <View>
@@ -76,7 +74,7 @@ export const Sliders = () => {
           minimumTrackTintColor={'#DA0C81'}
           thumbTintColor={'#FAFAFA'}
           minimumValue={200}
-          maximumValue={maxSliderValue - 400}
+          maximumValue={Math.max(200, maxSliderValue - 400)}
           step={50}
           value={minSliderValue}
           onValueChange={handleMinSliderChange}
@@ -87,7 +85,7 @@ export const Sliders = () => {
         <Slider
           minimumTrackTintColor={'#DA0C81'}
           thumbTintColor={'#FAFAFA'}
-          minimumValue={minSliderValue + 300}
+          minimumValue={Math.min(3400, minSliderValue + 300)}
           maximumValue={3400}
           step={50}
           value={maxSliderValue}
