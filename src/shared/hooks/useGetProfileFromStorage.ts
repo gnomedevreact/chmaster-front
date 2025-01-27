@@ -2,7 +2,7 @@ import { ProfileHelper } from '@/src/shared/lib/helpers/profile.helper';
 import { useEffect, useState } from 'react';
 import { ProfileType } from '@/src/shared/model/types/profile.types';
 
-export const useGetProfile = () => {
+export const useGetProfileFromStorage = () => {
   const [profile, setProfile] = useState<ProfileType>();
 
   useEffect(() => {

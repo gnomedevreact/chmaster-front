@@ -1,7 +1,7 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
-import { FontAwesome6, Ionicons } from '@expo/vector-icons';
+import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
@@ -55,6 +55,15 @@ export default function TabLayout() {
           title: 'Free game',
           tabBarIcon: ({ color }) => (
             <FontAwesome6 name="chess-board" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="tasks"
+        options={{
+          title: 'Tasks',
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="tasks" size={24} color={color} />
           ),
         }}
       />

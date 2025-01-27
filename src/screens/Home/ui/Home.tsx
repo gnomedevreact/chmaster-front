@@ -1,12 +1,12 @@
 import React from 'react';
 import { Container } from '@/src/widgets/Container';
-import { useGetProfile } from '@/src/shared/hooks/useGetProfile';
+import { useGetProfileFromStorage } from '@/src/shared/hooks/useGetProfileFromStorage';
 
 import { Header } from './components/Header';
 import { FocusBlock } from '@/src/screens/Home/ui/components/FocusBlock';
 
 export const Home = () => {
-  const { profile } = useGetProfile();
+  const { profile } = useGetProfileFromStorage();
 
   if (!profile) {
     return null;

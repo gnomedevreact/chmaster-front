@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { Button } from 'react-native-paper';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 
@@ -16,11 +16,23 @@ interface ButtonCustomProps {
   onPress?: () => void;
   disabled?: boolean;
   textClassName?: string;
+  btnStyle?: any;
+  children?: ReactNode;
 }
 
 export const ButtonCustom = React.memo((props: ButtonCustomProps) => {
-  const { text, loading, mode, isLight, padding, onPress, disabled, textClassName } =
-    props;
+  const {
+    text,
+    loading,
+    mode,
+    isLight,
+    padding,
+    onPress,
+    disabled,
+    textClassName,
+    btnStyle,
+    children,
+  } = props;
 
   const [isPressed, setIsPressed] = useState(false);
 
@@ -44,8 +56,9 @@ export const ButtonCustom = React.memo((props: ButtonCustomProps) => {
       textColor={'#FAFAFA'}
       onPressIn={() => setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}
-      style={[styles.button, isPressed && styles.buttonPressed]}
+      style={[styles.button, isPressed && styles.buttonPressed, btnStyle]}
     >
+      {children}
       <TextStyled className={cn('text-base font-medium', textClassName)}>
         {text}
       </TextStyled>

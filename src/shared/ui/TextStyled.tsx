@@ -5,7 +5,8 @@ import { cn } from '@/src/shared/lib/utils/cnUtils';
 interface StyledTextProps {
   children?: React.ReactNode;
   className?: string;
-  fontFamilyName?: string;
+  fontFamilyName?: 'NunitoSansBold' | string;
+  fontSize?: number;
 }
 
 export const TextStyled = (props: StyledTextProps) => {

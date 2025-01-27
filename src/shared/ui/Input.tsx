@@ -13,11 +13,21 @@ interface InputProps extends TextInputProps {
   keyboardType?: KeyboardTypeOptions;
   secure?: boolean;
   rules?: RegisterOptions<any>;
+  wrapClassname?: string;
 }
 
 export const Input = (props: InputProps) => {
-  const { label, className, control, name, keyboardType, secure, rules, ...otherProps } =
-    props;
+  const {
+    label,
+    className,
+    control,
+    name,
+    keyboardType,
+    secure,
+    rules,
+    wrapClassname,
+    ...otherProps
+  } = props;
 
   const { field } = useController({
     control,
@@ -26,7 +36,7 @@ export const Input = (props: InputProps) => {
   });
 
   return (
-    <View className={'flex flex-col gap-2'}>
+    <View className={cn('flex flex-col gap-2', wrapClassname)}>
       <TextStyled className={'text-primary-white text-sm font-normal opacity-80'}>
         {label}
       </TextStyled>
@@ -34,7 +44,7 @@ export const Input = (props: InputProps) => {
         value={field.value}
         onChangeText={field.onChange}
         className={cn(
-          'w-full text-base font-normal text-primary-white rounded-xl bg-primary-200 focus:border focus:border-primary-300',
+          'w-full text-base font-normal text-primary-white rounded-xl bg-primary-200 focus:border focus:border-primary-300 whitespace-nowrap',
           className,
         )}
         underlineColor={'transparent'}

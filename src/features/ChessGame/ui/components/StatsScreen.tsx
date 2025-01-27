@@ -52,6 +52,7 @@ const calculateRecommendedRating = (
   puzzles: Puzzle[],
   totalSolved: number,
   totalErrors: number,
+  accuracy: number,
 ) => {
   const averagePuzzleRating =
     puzzles.reduce((sum, puzzle) => sum + puzzle.rating, 0) / puzzles.length;
@@ -59,8 +60,18 @@ const calculateRecommendedRating = (
   const errorPenalty = totalErrors / totalSolved;
 
   let recommendedRating = averagePuzzleRating * (1 - errorPenalty);
-
   recommendedRating = Math.max(Math.min(recommendedRating, 3200), 400);
+
+  if (accuracy < 60) {
+    const penaltyFactor = 1 - accuracy / 100;
+    const penalty = Math.round(recommendedRating * penaltyFactor * 0.2);
+    recommendedRating -= penalty;
+  } else if (accuracy > 85) {
+    const bonusFactor = (accuracy - 85) / 15;
+    const bonus = Math.round(recommendedRating * bonusFactor * 0.2);
+    recommendedRating += bonus;
+  }
+
   return roundToNearest50(recommendedRating);
 };
 
@@ -123,14 +134,24 @@ export const StatsScreen = React.memo((props: StatsScreenProps) => {
               className={'text-primary-100 text-[28px]'}
               fontFamilyName={'NunitoSansBold'}
             >
-              {calculateRecommendedRating(puzzles, puzzles.length, errors) - 200}
+              {calculateRecommendedRating(
+                puzzles,
+                puzzles.length,
+                errors,
+                calculateAccuracy(puzzles.length, errors),
+              ) - 200}
             </TextStyled>
             <TextStyled>To</TextStyled>
             <TextStyled
               className={'text-primary-100 text-[28px]'}
               fontFamilyName={'NunitoSansBold'}
             >
-              {calculateRecommendedRating(puzzles, puzzles.length, errors)}
+              {calculateRecommendedRating(
+                puzzles,
+                puzzles.length,
+                errors,
+                calculateAccuracy(puzzles.length, errors),
+              )}
             </TextStyled>
           </View>
         </View>

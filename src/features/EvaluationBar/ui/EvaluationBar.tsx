@@ -1,27 +1,25 @@
-import React, { RefObject, useEffect, useState } from 'react';
-import { View } from 'react-native';
-import { useEvaluateFen } from '@/src/features/EvaluationBar/api/hooks/useEvaluateFen';
-import { ButtonCustom } from '@/src/shared/ui/ButtonCustom';
-import { ChessboardRef } from '@gnomedevreact/ch-private';
+import React, { useEffect, useState } from 'react';
+import { Dimensions, View } from 'react-native';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
+import { AxiosResponse } from 'axios';
+
+const width = Dimensions.get('window').width;
 
 export const EvaluationBar = ({
-  chessBoardRef,
   color,
   isReset,
   setIsReset,
+  evaluation,
 }: {
-  chessBoardRef: RefObject<ChessboardRef>;
   color: 'w' | 'b';
   isReset: boolean;
   setIsReset: (e: boolean) => void;
+  evaluation: AxiosResponse<{ fen: string; evaluation: number }, any> | undefined;
 }) => {
   const [playerColor, setPlayerColor] = useState<'w' | 'b'>('b');
   const [winningPercentage, setWinningPercentage] = useState(50);
 
-  const { evaluateFen, evaluation, isPending, resetData } = useEvaluateFen();
-
-  const normalizeStockfishEvaluation = (score: number, min = -1000, max = 1000) => {
+  const normalizeStockfishEvaluation = (score: number, min = -1500, max = 1500) => {
     const normalizedPercentage = ((score - min) / (max - min)) * 100;
 
     return Math.min(100, Math.max(0, normalizedPercentage));
@@ -50,7 +48,6 @@ export const EvaluationBar = ({
 
   useEffect(() => {
     if (isReset) {
-      resetData();
       setWinningPercentage(50);
       setPlayerColor('w');
       setIsReset(false);
@@ -58,8 +55,10 @@ export const EvaluationBar = ({
   }, [isReset]);
 
   return (
-    <View className={'flex flex-col gap-2 p-4'}>
-      <View className={'w-full h-[30px] flex flex-row items-center'}>
+    <View className={'flex flex-col gap-2'}>
+      <View
+        className={'w-full h-[30px] flex flex-row items-center rounded-t overflow-hidden'}
+      >
         <View
           style={{
             width:
@@ -93,14 +92,14 @@ export const EvaluationBar = ({
           ) : null}
         </View>
       </View>
-      <ButtonCustom
-        text={
-          chessBoardRef.current?.getState().game_over ? 'Game over' : 'Analyze position'
-        }
-        onPress={() => evaluateFen(chessBoardRef.current?.getState().fen!)}
-        loading={isPending}
-        disabled={isPending || chessBoardRef.current?.getState().game_over}
-      />
+      {/*<ButtonCustom*/}
+      {/*  text={*/}
+      {/*    chessBoardRef.current?.getState().game_over ? 'Game over' : 'Analyze position'*/}
+      {/*  }*/}
+      {/*  onPress={() => evaluateFen(chessBoardRef.current?.getState().fen!)}*/}
+      {/*  loading={isPending}*/}
+      {/*  disabled={isPending || chessBoardRef.current?.getState().game_over}*/}
+      {/*/>*/}
     </View>
   );
 };
