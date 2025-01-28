@@ -16,11 +16,11 @@ import { Separator } from '@/src/shared/ui/Separator';
 import Logo from '../../../assets/images/logo.svg';
 import { useForm } from 'react-hook-form';
 import { useAuthMutations } from '@/src/shared/api/hooks/useAuthMutations';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { toast } from '@/src/shared/lib/utils/toast';
 import { router } from 'expo-router';
 import { AuthHelpers } from '@/src/shared/lib/helpers/auth.helpers';
 import { GoogleSignInBtn } from '@/src/features/GoogleSignInBtn/GoogleSignInBtn';
+import { useProfileStore } from '@/src/core/lib/store/profile.store';
 
 interface FormProps {
   email: string;
@@ -36,6 +36,7 @@ AppState.addEventListener('change', (state) => {
 });
 
 export const Auth = () => {
+  const setProfile = useProfileStore((state) => state.setProfileData);
   const [isAuth, setIsAuth] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -87,8 +88,7 @@ export const Auth = () => {
 
     if (!generalError) {
       try {
-        const jsonProfile = JSON.stringify(profileData);
-        await AsyncStorage.setItem('profile', jsonProfile);
+        setProfile(profileData);
       } catch (error) {
         console.error(error);
       }

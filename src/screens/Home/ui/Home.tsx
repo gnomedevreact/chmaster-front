@@ -1,13 +1,13 @@
 import React from 'react';
 import { Container } from '@/src/widgets/Container';
-import { useGetProfileFromStorage } from '@/src/shared/hooks/useGetProfileFromStorage';
+import { FocusBlock } from '@/src/screens/Home/ui/components/FocusBlock';
+import { useProfileStore } from '@/src/core/lib/store/profile.store';
 
 import { Header } from './components/Header';
-import { FocusBlock } from '@/src/screens/Home/ui/components/FocusBlock';
 
 export const Home = () => {
-  const { profile } = useGetProfileFromStorage();
-
+  const profile = useProfileStore((state) => state.profileData);
+  console.log(profile);
   if (!profile) {
     return null;
   }
@@ -15,7 +15,7 @@ export const Home = () => {
   return (
     <Container className={'flex flex-col gap-5 pt-4'}>
       <Header profile={profile} />
-      <FocusBlock currentDay={profile?.current_day} />
+      <FocusBlock satisfied={profile?.streak_satisfied} />
     </Container>
   );
 };

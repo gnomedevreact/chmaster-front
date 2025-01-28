@@ -1,9 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { ProfileService } from '@/src/shared/api/services/profile.service';
 import { useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useProfileStore } from '@/src/core/lib/store/profile.store';
 
 export const useGetProfile = () => {
+  const setProfile = useProfileStore((state) => state.setProfileData);
+
   const { data: profile } = useQuery({
     queryKey: ['profile'],
     queryFn: () => ProfileService.getProfile(),
@@ -11,12 +13,8 @@ export const useGetProfile = () => {
   });
 
   useEffect(() => {
-    const setProfile = async () => {
-      const jsonProfile = JSON.stringify(profile);
-      await AsyncStorage.setItem('profile', jsonProfile);
-    };
     if (profile) {
-      setProfile();
+      setProfile(profile);
     }
   }, [profile]);
 };

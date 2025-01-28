@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Puzzle } from '@/src/shared/model/types/puzzles.types';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { Container } from '@/src/widgets/Container';
 import { ButtonCustom } from '@/src/shared/ui/ButtonCustom';
 import { Badge } from '@/src/shared/ui/Badge';
+import { useUpdateProfileStats } from '@/src/shared/api/hooks/useUpdateProfileStats';
+import { useProfileStore } from '@/src/core/lib/store/profile.store';
 
 interface StatsScreenProps {
   errors: number;
@@ -85,8 +87,31 @@ export const StatsScreen = React.memo((props: StatsScreenProps) => {
     setCurrentPuzzleCopy,
     currentPuzzleCopy,
   } = props;
+  const profile = useProfileStore((state) => state.profileData);
 
+  const [isStatsUpdated, setIsStatsUpdated] = useState(false);
   const bestPuzzle = puzzles.sort((a, b) => b.rating - a.rating)[0];
+
+  const { updateStats } = useUpdateProfileStats();
+
+  useEffect(() => {
+    if (!isStatsUpdated) {
+      updateStats({
+        exp: calculateExp(puzzles),
+        puzzles: puzzles.length,
+        streak: profile?.streak_satisfied ? 0 : 1,
+        streak_completed: true,
+      });
+      setIsStatsUpdated(true);
+    }
+  }, [isStatsUpdated]);
+
+  const handleModalClose = () => {
+    setIsStats(false);
+    setErrors(0);
+    setPuzzlesCopy([]);
+    setCurrentPuzzleCopy(0);
+  };
 
   return (
     <Container className={'py-14 bg-primary-400'}>
@@ -162,12 +187,7 @@ export const StatsScreen = React.memo((props: StatsScreenProps) => {
           isLight
           padding={5}
           textClassName={'text-lg'}
-          onPress={() => {
-            setIsStats(false);
-            setErrors(0);
-            setPuzzlesCopy([]);
-            setCurrentPuzzleCopy(0);
-          }}
+          onPress={handleModalClose}
         />
       </View>
     </Container>

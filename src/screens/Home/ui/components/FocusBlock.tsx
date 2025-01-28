@@ -1,8 +1,10 @@
 import React from 'react';
 import { Pressable, View } from 'react-native';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
+import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
+import { cn } from '@/src/shared/lib/utils/cnUtils';
 
-export const FocusBlock = ({ currentDay }: { currentDay: number }) => {
+export const FocusBlock = ({ satisfied }: { satisfied: boolean }) => {
   return (
     <View
       className={
@@ -20,11 +22,18 @@ export const FocusBlock = ({ currentDay }: { currentDay: number }) => {
         </Pressable>
       </View>
       <View
-        className={
-          'flex items-center justify-center w-[52px] h-[52px] rounded-full bg-primary-300'
-        }
+        className={cn(
+          'flex items-center justify-center w-[52px] h-[52px] rounded-full opacity-80',
+          {
+            'bg-[#50C878]': satisfied,
+            'bg-[#E34234]': !satisfied,
+          },
+        )}
       >
-        <TextStyled className={'text-[22px]'}>{currentDay || 1}</TextStyled>
+        {satisfied && <AntDesign name="check" size={24} color="white" />}
+        {!satisfied && (
+          <MaterialCommunityIcons name="skull-crossbones" size={24} color="white" />
+        )}
       </View>
     </View>
   );

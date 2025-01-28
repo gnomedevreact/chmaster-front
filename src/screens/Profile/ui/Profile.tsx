@@ -1,28 +1,30 @@
 import React from 'react';
 import { Container } from '@/src/widgets/Container';
 import { useGetProfile } from '@/src/shared/api/hooks/useGetProfile';
-import { supabase } from '@/src/core/lib/supabase';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { router } from 'expo-router';
-import { useGetProfileFromStorage } from '@/src/shared/hooks/useGetProfileFromStorage';
 import { Avatar } from '@/src/widgets/Avatar';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { Button } from '@/src/shared/ui/Button';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { InfoBlock } from '@/src/widgets/InfoBlock';
 import { Pressable, View } from 'react-native';
+import { AuthHelpers } from '@/src/shared/lib/helpers/auth.helpers';
+import { toast } from '@/src/shared/lib/utils/toast';
+import { useGetProfileRank } from '@/src/shared/api/hooks/useGetProfileRank';
+import { useProfileStore } from '@/src/core/lib/store/profile.store';
 
 export const Profile = () => {
-  const { profile } = useGetProfileFromStorage();
+  const profile = useProfileStore((state) => state.profileData);
+  const { rank } = useGetProfileRank();
   useGetProfile();
 
   return (
-    <Container className={'flex flex-col gap-4 pt-5 pb-4'}>
+    <Container className={'flex flex-col gap-4 pt-5 pb-4'} isRefresh>
       <Avatar name={profile?.name || 'name'} />
       <InfoBlock className={'flex-row items-center justify-between max-h-[69px]'}>
         <View className={'flex flex-row items-center gap-2'}>
           <TextStyled fontFamilyName={'NunitoSansBold'} className={'text-[24px]'}>
-            #3000
+            {`#${rank}`}
           </TextStyled>
           <TextStyled className={'text-lg text-primary-600'}>world rating</TextStyled>
         </View>
@@ -35,13 +37,13 @@ export const Profile = () => {
         <View className={'flex flex-row items-center gap-3'}>
           <InfoBlock>
             <TextStyled className={'text-[24px]'} fontFamilyName={'NunitoSansBold'}>
-              169
+              {profile?.solved_puzzles || 0}
             </TextStyled>
             <TextStyled className={'text-lg text-primary-600'}>Solved puzzles</TextStyled>
           </InfoBlock>
           <InfoBlock>
             <TextStyled className={'text-[24px]'} fontFamilyName={'NunitoSansBold'}>
-              +169
+              {profile?.exp || 0}
             </TextStyled>
             <TextStyled className={'text-lg text-primary-600'}>EXP</TextStyled>
           </InfoBlock>
@@ -49,13 +51,13 @@ export const Profile = () => {
         <View className={'flex flex-row items-center gap-3'}>
           <InfoBlock>
             <TextStyled className={'text-[24px]'} fontFamilyName={'NunitoSansBold'}>
-              28
+              {profile?.streak || 0}
             </TextStyled>
-            <TextStyled className={'text-lg text-primary-600'}>Longest streak</TextStyled>
+            <TextStyled className={'text-lg text-primary-600'}>Streak</TextStyled>
           </InfoBlock>
           <InfoBlock>
             <TextStyled className={'text-[24px]'} fontFamilyName={'NunitoSansBold'}>
-              12
+              {profile?.solved_tasks || 0}
             </TextStyled>
             <TextStyled className={'text-lg text-primary-600'}>Solved tasks</TextStyled>
           </InfoBlock>
@@ -63,9 +65,15 @@ export const Profile = () => {
       </View>
       <Button
         onPress={async () => {
-          await supabase.auth.signOut();
-          await GoogleSignin.signOut();
-          router.replace('/auth');
+          try {
+            await AuthHelpers.logout();
+            router.replace('/auth');
+          } catch (err) {
+            toast({
+              message: 'Something went wrong',
+              type: 'danger',
+            });
+          }
         }}
         className={'mt-auto'}
       >
