@@ -55,7 +55,7 @@ export const EvaluationBar = ({
   }, [isReset]);
 
   return (
-    <View className={'flex flex-col gap-2'}>
+    <View className={'flex flex-col gap-2 px-1'}>
       <View
         className={'w-full h-[30px] flex flex-row items-center rounded-t overflow-hidden'}
       >

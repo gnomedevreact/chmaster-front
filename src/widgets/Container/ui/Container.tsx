@@ -7,15 +7,25 @@ interface ContainerProps {
   className?: string;
   scrollEnabled?: boolean;
   isRefresh?: boolean;
+  onRefreshAction?: () => void;
 }
 
 export const Container = (props: ContainerProps) => {
-  const { children, className, scrollEnabled = true, isRefresh = false } = props;
+  const {
+    children,
+    className,
+    scrollEnabled = true,
+    isRefresh = false,
+    onRefreshAction,
+  } = props;
 
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
+    if (onRefreshAction) {
+      onRefreshAction();
+    }
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);

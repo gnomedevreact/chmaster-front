@@ -13,4 +13,8 @@ export const ProfileService = {
   async updateStats(data: UpdateProfileType) {
     return await axiosAuth.post<ProfileType>('/profiles/stats-update', data);
   },
+
+  async uploadAvatar(avatarUri: string) {
+    return await axiosAuth.post<ProfileType>('/profiles/avatar-upload', { avatarUri });
+  },
 };

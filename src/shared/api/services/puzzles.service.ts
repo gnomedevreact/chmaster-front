@@ -1,13 +1,13 @@
 import { axiosAuth } from '@/src/core/lib/axios/config';
 import { Puzzle } from '@/src/shared/model/types/puzzles.types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storage } from '@/src/core/lib/store/storage';
 
 export const PuzzlesService = {
   async getRandomPuzzles({ limit }: { limit: number }) {
     return await axiosAuth.get<Puzzle[]>('/puzzles', {
       params: {
-        minRating: (await AsyncStorage.getItem('minRating')) || 200,
-        maxRating: (await AsyncStorage.getItem('maxRating')) || 600,
+        minRating: storage.getString('minRating') || 200,
+        maxRating: storage.getString('maxRating') || 800,
         limit,
       },
     });

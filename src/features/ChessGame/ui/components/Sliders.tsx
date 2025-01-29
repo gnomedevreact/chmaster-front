@@ -4,9 +4,9 @@ import { View } from 'react-native';
 import { Input } from '@/src/shared/ui/Input';
 import { useForm } from 'react-hook-form';
 import { ButtonCustom } from '@/src/shared/ui/ButtonCustom';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { toast } from '@/src/shared/lib/utils/toast';
+import { storage } from '@/src/core/lib/store/storage';
 
 interface FormProps {
   minRating: string;
@@ -14,7 +14,6 @@ interface FormProps {
 }
 
 export const Sliders = () => {
-  const [isLoaded, setIsLoaded] = useState(false);
   const [minSliderValue, setMinSliderValue] = useState(200);
   const [maxSliderValue, setMaxSliderValue] = useState(800);
 
@@ -28,19 +27,17 @@ export const Sliders = () => {
 
   useEffect(() => {
     const getValues = async () => {
-      const min = await AsyncStorage.getItem('minRating');
-      const max = await AsyncStorage.getItem('maxRating');
+      const min = storage.getString('minRating');
+      const max = storage.getString('maxRating');
 
-      const parsedMin = Math.max(Number(min) || 200, 200); // Минимум не может быть меньше 200
-      const parsedMax = Math.min(Number(max) || 800, 3400); // Максимум не может быть больше 3400
+      const parsedMin = Math.max(Number(min) || 200, 200);
+      const parsedMax = Math.min(Number(max) || 800, 3400);
 
       setMaxSliderValue(parsedMax);
       setMinSliderValue(parsedMin);
 
       setValue('minRating', String(parsedMin));
       setValue('maxRating', String(parsedMax));
-
-      setIsLoaded(true);
     };
     getValues();
   }, []);
@@ -60,8 +57,8 @@ export const Sliders = () => {
   };
 
   const saveValues = async () => {
-    await AsyncStorage.setItem('minRating', String(minSliderValue));
-    await AsyncStorage.setItem('maxRating', String(maxSliderValue));
+    storage.set('minRating', String(minSliderValue));
+    storage.set('maxRating', String(maxSliderValue));
     dismiss();
     toast({ type: 'success', message: 'Options were successfully saved' });
   };

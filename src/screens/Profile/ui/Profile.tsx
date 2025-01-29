@@ -12,14 +12,20 @@ import { AuthHelpers } from '@/src/shared/lib/helpers/auth.helpers';
 import { toast } from '@/src/shared/lib/utils/toast';
 import { useGetProfileRank } from '@/src/shared/api/hooks/useGetProfileRank';
 import { useProfileStore } from '@/src/core/lib/store/profile.store';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const Profile = () => {
+  const queryClient = useQueryClient();
   const profile = useProfileStore((state) => state.profileData);
   const { rank } = useGetProfileRank();
   useGetProfile();
 
   return (
-    <Container className={'flex flex-col gap-4 pt-5 pb-4'} isRefresh>
+    <Container
+      className={'flex flex-col gap-4 pt-5 pb-4'}
+      isRefresh
+      onRefreshAction={() => queryClient.invalidateQueries({ queryKey: ['rank'] })}
+    >
       <Avatar name={profile?.name || 'name'} />
       <InfoBlock className={'flex-row items-center justify-between max-h-[69px]'}>
         <View className={'flex flex-row items-center gap-2'}>

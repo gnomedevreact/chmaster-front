@@ -196,7 +196,7 @@ export const ChessGame = () => {
         <View>
           <View className={'w-full flex flex-row items-center justify-between mb-2'}>
             <TextStyled className={'text-[28px]'}>Start training</TextStyled>
-            {isTrainingStart && puzzles[currentPuzzle] ? (
+            {isTrainingStart && puzzles[currentPuzzle] && isActiveTimer ? (
               <View className={'self-end'}>
                 <Badge text1={'Rating'} text2={`${puzzles[currentPuzzle]?.rating}`} />
               </View>

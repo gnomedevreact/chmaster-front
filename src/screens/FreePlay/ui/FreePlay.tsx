@@ -38,26 +38,24 @@ export const FreePlay = () => {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>
       <View className={'py-4 flex-1'}>
         <View className={'flex-1 justify-center'}>
-          <View className={'flex-col gap-5 px-4'}>
-            <View className={'flex flex-row items-end gap-5'}>
-              <Input
-                control={control}
-                label={'FEN'}
-                name={'fen'}
-                wrapClassname={'flex-1'}
-                multiline={true}
-              />
-              <Button className={'w-[58px]'} onPress={handleSubmit(applyFen)}>
-                <AntDesign name="rightcircle" size={24} color="white" />
-              </Button>
-            </View>
-            <EvaluationBar
-              evaluation={evaluation}
-              color={playerColor}
-              isReset={isReset}
-              setIsReset={setIsReset}
+          <View className={'flex flex-row items-end gap-5 px-4 mb-4'}>
+            <Input
+              control={control}
+              label={'FEN'}
+              name={'fen'}
+              wrapClassname={'flex-1'}
+              multiline={true}
             />
+            <Button className={'w-[58px]'} onPress={handleSubmit(applyFen)}>
+              <AntDesign name="rightcircle" size={24} color="white" />
+            </Button>
           </View>
+          <EvaluationBar
+            evaluation={evaluation}
+            color={playerColor}
+            isReset={isReset}
+            setIsReset={setIsReset}
+          />
           <View style={{ minHeight: width, minWidth: width }} className={'items-center'}>
             <Chessboard
               onMove={({ state, move }) => {
