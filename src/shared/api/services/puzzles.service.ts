@@ -1,6 +1,7 @@
 import { axiosAuth } from '@/src/core/lib/axios/config';
 import { Puzzle } from '@/src/shared/model/types/puzzles.types';
 import { storage } from '@/src/core/lib/store/storage';
+import { TaskType } from '@/src/shared/model/types/tasks.types';
 
 export const PuzzlesService = {
   async getRandomPuzzles({ limit }: { limit: number }) {
@@ -9,6 +10,15 @@ export const PuzzlesService = {
         minRating: storage.getString('minRating') || 200,
         maxRating: storage.getString('maxRating') || 800,
         limit,
+      },
+    });
+  },
+
+  async getPuzzlesBySearchTerm({ theme, opening }: { theme?: string; opening?: string }) {
+    return await axiosAuth.get<TaskType[]>('/puzzles/by-search', {
+      params: {
+        searchTerm: theme,
+        opening,
       },
     });
   },

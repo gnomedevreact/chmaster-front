@@ -2,8 +2,8 @@ import { useMutation } from '@tanstack/react-query';
 import { ProfileService } from '@/src/shared/api/services/profile.service';
 import { UpdateProfileType } from '@/src/shared/model/types/profile.types';
 import { toast } from '@/src/shared/lib/utils/toast';
-import { isAxiosError } from 'axios';
 import { useProfileStore } from '@/src/core/lib/store/profile.store';
+import { formatError } from '@/src/shared/lib/utils/formatError';
 
 export const useUpdateProfileStats = () => {
   const setProfile = useProfileStore((state) => state.setProfileData);
@@ -14,10 +14,10 @@ export const useUpdateProfileStats = () => {
     onSuccess({ data }) {
       setProfile(data);
     },
-    onError(error) {
+    onError(error: any) {
       toast({
         type: 'danger',
-        message: isAxiosError(error) && error?.response?.data.response.message,
+        message: formatError(error.response),
       });
     },
   });

@@ -1,10 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 import { AuthService } from '@/src/shared/api/services/auth.service';
 import { toast } from '@/src/shared/lib/utils/toast';
-import { isAxiosError } from 'axios';
 import { AuthHelpers } from '@/src/shared/lib/helpers/auth.helpers';
 import { router } from 'expo-router';
 import { useProfileStore } from '@/src/core/lib/store/profile.store';
+import { formatError } from '@/src/shared/lib/utils/formatError';
 
 export const useAuthMutations = () => {
   const setProfile = useProfileStore((state) => state.setProfileData);
@@ -20,10 +20,10 @@ export const useAuthMutations = () => {
         await AuthHelpers.logout();
       }
     },
-    async onError(error) {
+    async onError(error: any) {
       toast({
         type: 'danger',
-        message: isAxiosError(error) && error?.response?.data.response.message,
+        message: formatError(error.response),
       });
     },
   });
@@ -42,10 +42,10 @@ export const useAuthMutations = () => {
           await AuthHelpers.logout();
         }
       },
-      async onError(error) {
+      async onError(error: any) {
         toast({
           type: 'danger',
-          message: 'Something went wrong',
+          message: formatError(error.response),
         });
 
         await AuthHelpers.logout();

@@ -1,8 +1,8 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Tasks } from '@/src/screens/Tasks';
 
 const TasksPage = () => {
-  return <View></View>;
+  return <Tasks />;
 };
 
 export default TasksPage;

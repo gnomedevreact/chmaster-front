@@ -4,6 +4,14 @@ export type TaskType = {
   name: string;
   description: string;
   orderNum: number;
-  status: string;
+  status: 'completed' | 'in_progress' | 'locked';
   createdAt: string;
+  theme: string;
+  opening: string;
+};
+
+export type UserTaskType = {
+  id: string;
+  status: 'completed' | 'in_progress' | 'locked';
+  orderNum: number;
 };
