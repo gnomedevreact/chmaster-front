@@ -1,0 +1,300 @@
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Dimensions, ScrollView, View } from 'react-native';
+import Chessboard, { ChessboardRef } from '@gnomedevreact/ch-private';
+import { Move, Square } from 'chess.js';
+import { TextStyled } from '@/src/shared/ui/TextStyled';
+import { useQueryClient } from '@tanstack/react-query';
+import { useFocusEffect } from 'expo-router';
+import { cn } from '@/src/shared/lib/utils/cnUtils';
+import { ActivityIndicator } from 'react-native-paper';
+import * as Haptics from 'expo-haptics';
+import { Badge } from '@/src/shared/ui/Badge';
+import { TaskStatusType, TaskType } from '@/src/shared/model/types/tasks.types';
+import { useGetPuzzlesByTheme } from '@/src/shared/api/hooks/PuzzlesHooks/useGetPuzzlesByTask';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { Button } from '@/src/shared/ui/Button';
+
+import ConfettiCannon from 'react-native-confetti-cannon';
+import { PUZZLES_QUANTITY } from '@/src/features/TaskChessGame/lib/consts';
+import { useCompleteTask } from '@/src/shared/api/hooks/TasksHooks/useCompleteTask';
+
+const width = Dimensions.get('window').width;
+const height = Dimensions.get('window').height;
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export const TasksChessGame = ({
+  task,
+  closeModal,
+  taskStatus,
+  userTaskId,
+}: {
+  task: TaskType;
+  closeModal: () => void;
+  taskStatus: TaskStatusType;
+  userTaskId: string;
+}) => {
+  const [isTrainingStart, setIsTrainingStart] = useState(false);
+  const chessboardRef = useRef<ChessboardRef>(null);
+  const [currentPuzzle, setCurrentPuzzle] = useState(0);
+  const [currentMove, setCurrentMove] = useState<{ order: number; move: null | string }>({
+    order: 0,
+    move: null,
+  });
+  const [moves, setMoves] = useState<string[]>();
+  const [moveEnabled, setMoveEnabled] = useState<boolean>(false);
+
+  const [lastInvalidated, setLastInvalidated] = useState<number | null>(null);
+  const [playerColor, setPlayerColor] = useState<'w' | 'b'>();
+
+  const [isConfetti, setIsConfetti] = useState<boolean>(false);
+
+  const resetGameStateLocal = () => {
+    setIsTrainingStart(false);
+    setMoves(undefined);
+    setMoveEnabled(false);
+    setCurrentPuzzle(0);
+    setPlayerColor(undefined);
+    setLastInvalidated(null);
+    chessboardRef?.current?.resetBoard();
+  };
+
+  const queryClient = useQueryClient();
+  const { puzzles, resetPuzzles, isLoading } = useGetPuzzlesByTheme({
+    isTrainingStart,
+    resetGameStateLocal,
+    task,
+  });
+  const { completeTask, isPendingCompletion } = useCompleteTask();
+
+  const resetGameState = () => {
+    resetGameStateLocal();
+    resetPuzzles();
+  };
+
+  function makeMove(index: number) {
+    chessboardRef?.current?.move({
+      from: moves![index].substring(0, 2) as Square,
+      to: moves![index].substring(2) as Square,
+    });
+  }
+
+  const formatMove = useCallback((currMove: Move) => {
+    let move = currMove.from + currMove.to;
+    if (currMove.promotion) {
+      move += currMove.promotion;
+    }
+    return move;
+  }, []);
+
+  useEffect(() => {
+    if (moves && chessboardRef?.current) {
+      makeMove(0);
+      setMoveEnabled(true);
+    }
+  }, [moves]);
+
+  useEffect(() => {
+    (async () => {
+      if (moves && currentMove.move) {
+        if (
+          currentMove.move !== moves[currentMove.order] &&
+          currentMove.order % 2 !== 0 &&
+          !chessboardRef?.current?.getState().in_checkmate
+        ) {
+          chessboardRef?.current?.highlight({
+            square: currentMove.move.substring(2, 4) as Square,
+            color: '#da8f7f',
+          });
+
+          await sleep(500);
+
+          chessboardRef?.current?.undo();
+          setCurrentMove({ order: currentMove.order, move: null });
+          setMoveEnabled(true);
+          return;
+        }
+
+        if (
+          currentMove.order !== 0 &&
+          currentMove.order % 2 !== 0 &&
+          currentMove.order < moves.length - 1
+        ) {
+          const nextOrder = currentMove.order + 1;
+          setCurrentMove((prevState) => ({
+            order: nextOrder,
+            move: null,
+          }));
+
+          makeMove(nextOrder);
+          return;
+        }
+
+        setCurrentMove({ order: currentMove.order + 1, move: null });
+
+        if (currentMove.order >= moves.length - 1) {
+          setCurrentPuzzle((prevState) => prevState + 1);
+        }
+      }
+    })();
+  }, [currentMove, moves]);
+
+  useEffect(() => {
+    if (puzzles.length > 0 && isTrainingStart) {
+      if (currentPuzzle === PUZZLES_QUANTITY) {
+        completeTask(userTaskId);
+        setIsConfetti(true);
+        resetGameState();
+        return;
+      }
+
+      if (puzzles.length === currentPuzzle && lastInvalidated !== currentPuzzle) {
+        queryClient.invalidateQueries({ queryKey: ['puzzles tasks', task.id] });
+        setLastInvalidated(currentPuzzle);
+        return;
+      }
+
+      if (puzzles[currentPuzzle]) {
+        setMoves(puzzles[currentPuzzle].moves.split(' '));
+        setCurrentMove({ order: 0, move: null });
+        setPlayerColor(undefined);
+        chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);
+      }
+    }
+  }, [puzzles, currentPuzzle, isTrainingStart]);
+
+  const startTraining = useCallback(() => {
+    setIsTrainingStart(true);
+    setMoveEnabled(true);
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        resetGameState();
+      };
+    }, []),
+  );
+
+  return (
+    <SafeAreaProvider>
+      <SafeAreaView className={'flex-1 bg-[#0F0F0F]'}>
+        <ScrollView
+          className={'bg-primary-400'}
+          contentContainerStyle={{ flexGrow: 1 }}
+          alwaysBounceVertical={false}
+          overScrollMode={'never'}
+          removeClippedSubviews
+        >
+          <View className={'py-4 flex-1'}>
+            <View className={'flex flex-row justify-between px-4 mb-10'}>
+              <View>
+                <Button
+                  className={'w-[50px] h-[50px] mb-3'}
+                  onPress={closeModal}
+                  isLight={false}
+                >
+                  <Ionicons name="arrow-back" size={20} color="white" />
+                </Button>
+                <View>
+                  <TextStyled className={'text-[20px]'} fontFamilyName={'NunitoSansBold'}>
+                    {task.name}
+                  </TextStyled>
+                </View>
+                <TextStyled className={'text-[16px] text-primary-600'}>
+                  {task.description}
+                </TextStyled>
+              </View>
+            </View>
+            <View
+              className={cn('justify-center items-center relative', {
+                'pointer-events-none': !moveEnabled,
+              })}
+            >
+              <View
+                className={'items-center'}
+                style={{ minHeight: width, minWidth: width }}
+              >
+                <Chessboard
+                  gestureEnabled={moveEnabled}
+                  fen={puzzles.length > 0 ? puzzles[0].fen : undefined}
+                  ref={chessboardRef}
+                  colors={{ black: '#b58863', white: '#f0d9b5' }}
+                  durations={{ move: 120 }}
+                  onMove={({ state, move }) => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+                    if (playerColor && playerColor === move.color) {
+                      setMoveEnabled(false);
+                    } else {
+                      setMoveEnabled(true);
+                    }
+                    if (!playerColor) {
+                      setPlayerColor(move.color === 'w' ? 'b' : 'w');
+                    }
+                    const formattedMove = formatMove(move);
+                    setCurrentMove((prevState) => {
+                      return { order: prevState.order, move: formattedMove };
+                    });
+                  }}
+                />
+              </View>
+              {isLoading && (
+                <View
+                  className={`absolute top-0 flex items-center justify-center bg-primary-200 opacity-80 z-[99999]`}
+                  style={{
+                    width: Math.floor(width / 8) * 8,
+                    height: Math.floor(width / 8) * 8,
+                  }}
+                >
+                  <ActivityIndicator color={'#DA0C81'} size={'large'} />
+                </View>
+              )}
+            </View>
+            {isTrainingStart && puzzles[currentPuzzle] ? (
+              <View className={'self-end'}>
+                <Badge text1={'Rating'} text2={`${puzzles[currentPuzzle]?.rating}`} />
+              </View>
+            ) : null}
+            <View className={'flex flex-col gap-3 px-4 mt-auto'}>
+              <Button
+                onPress={
+                  taskStatus === 'in_progress'
+                    ? isTrainingStart
+                      ? undefined
+                      : startTraining
+                    : undefined
+                }
+                disabled={
+                  isLoading ||
+                  taskStatus === 'completed' ||
+                  isTrainingStart ||
+                  isPendingCompletion
+                }
+                isLoading={isPendingCompletion}
+                className={cn({ 'bg-[#4F7942]': taskStatus === 'completed' })}
+              >
+                <TextStyled className={'text-base'}>
+                  {taskStatus === 'in_progress'
+                    ? isTrainingStart
+                      ? `${currentPuzzle}/${PUZZLES_QUANTITY}`
+                      : 'Start'
+                    : 'Completed'}
+                </TextStyled>
+              </Button>
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+      {isConfetti && (
+        <ConfettiCannon
+          count={100}
+          origin={{ x: -30, y: height }}
+          fadeOut={true}
+          colors={['#DA0C81', '#3C3C3C']}
+          explosionSpeed={700}
+          onAnimationEnd={() => setIsConfetti(false)}
+        />
+      )}
+    </SafeAreaProvider>
+  );
+};

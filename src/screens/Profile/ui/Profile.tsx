@@ -30,7 +30,7 @@ export const Profile = () => {
       <InfoBlock className={'flex-row items-center justify-between max-h-[69px]'}>
         <View className={'flex flex-row items-center gap-2'}>
           <TextStyled fontFamilyName={'NunitoSansBold'} className={'text-[24px]'}>
-            {`#${rank}`}
+            {`#${rank || '-'}`}
           </TextStyled>
           <TextStyled className={'text-lg text-primary-600'}>world rating</TextStyled>
         </View>

@@ -7,12 +7,12 @@ import 'react-native-reanimated';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { SafeAreaView } from 'react-native';
 
 import '../../global.css';
 import { PaperProvider } from 'react-native-paper';
 import FlashMessage from 'react-native-flash-message';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -84,20 +84,22 @@ function RootLayoutNav() {
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView>
         <PaperProvider>
-          <SafeAreaView className={'flex-1 bg-[#0F0F0F]'}>
-            <Stack
-              screenOptions={{ contentStyle: { backgroundColor: '#0F0F0F' } }}
-              initialRouteName={'(tabs)'}
-            >
-              <Stack.Screen
-                name="auth"
-                options={{ headerShown: false, gestureEnabled: false }}
-              />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-            </Stack>
-            <FlashMessage position="top" />
-          </SafeAreaView>
+          <SafeAreaProvider>
+            <SafeAreaView className={'flex-1 bg-[#0F0F0F]'}>
+              <Stack
+                screenOptions={{ contentStyle: { backgroundColor: '#0F0F0F' } }}
+                initialRouteName={'(tabs)'}
+              >
+                <Stack.Screen
+                  name="auth"
+                  options={{ headerShown: false, gestureEnabled: false }}
+                />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+              </Stack>
+              <FlashMessage position="top" />
+            </SafeAreaView>
+          </SafeAreaProvider>
         </PaperProvider>
       </GestureHandlerRootView>
     </QueryClientProvider>

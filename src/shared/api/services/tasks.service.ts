@@ -11,6 +11,6 @@ export const TasksService = {
   },
 
   async completeTask(taskId: string) {
-    return await axiosAuth.post(`/complete/${taskId}`);
+    return await axiosAuth.post(`/puzzles/complete/${taskId}`);
   },
 };
