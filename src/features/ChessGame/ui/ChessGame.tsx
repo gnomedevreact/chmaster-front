@@ -74,20 +74,24 @@ export const ChessGame = () => {
     resetPuzzles();
   };
 
-  function makeMove(index: number) {
-    chessboardRef?.current?.move({
-      from: moves![index].substring(0, 2) as Square,
-      to: moves![index].substring(2) as Square,
-    });
-  }
+  const makeMove = useCallback(
+    (index: number) => {
+      if (!chessboardRef.current || !moves) return;
+      chessboardRef.current.move({
+        from: moves[index].substring(0, 2) as Square,
+        to: moves[index].substring(2) as Square,
+      });
+    },
+    [moves],
+  );
 
-  const formatMove = useCallback((currMove: Move) => {
+  const formatMove = (currMove: Move) => {
     let move = currMove.from + currMove.to;
     if (currMove.promotion) {
       move += currMove.promotion;
     }
     return move;
-  }, []);
+  };
 
   useEffect(() => {
     if (moves && chessboardRef?.current) {
@@ -96,54 +100,69 @@ export const ChessGame = () => {
     }
   }, [moves]);
 
-  useEffect(() => {
-    (async () => {
-      if (moves && currentMove.move) {
-        if (
-          currentMove.move !== moves[currentMove.order] &&
-          currentMove.order % 2 !== 0 &&
-          !chessboardRef?.current?.getState().in_checkmate
-        ) {
-          setErrorCount((prevState) => prevState + 1);
-          chessboardRef?.current?.highlight({
-            square: currentMove.move.substring(2, 4) as Square,
-            color: '#da8f7f',
-          });
+  const handleErrorMove = useCallback(async () => {
+    setErrorCount((prevState) => prevState + 1);
+    chessboardRef?.current?.highlight({
+      square: currentMove?.move?.substring(2, 4) as Square,
+      color: '#da8f7f',
+    });
 
-          await sleep(500);
+    await sleep(500);
 
-          chessboardRef?.current?.undo();
-          setCurrentMove({ order: currentMove.order, move: null });
-          setMoveEnabled(true);
-          return;
-        }
+    chessboardRef?.current?.undo();
+    setCurrentMove({ order: currentMove.order, move: null });
+    setMoveEnabled(true);
+    return;
+  }, [currentMove.move]);
 
-        if (
-          currentMove.order !== 0 &&
-          currentMove.order % 2 !== 0 &&
-          currentMove.order < moves.length - 1
-        ) {
-          const nextOrder = currentMove.order + 1;
-          setCurrentMove((prevState) => ({
-            order: nextOrder,
-            move: null,
-          }));
+  const handleAutoMove = useCallback(() => {
+    const nextOrder = currentMove.order + 1;
+    setCurrentMove((prevState) => ({
+      order: nextOrder,
+      move: null,
+    }));
 
-          makeMove(nextOrder);
-          return;
-        }
+    makeMove(nextOrder);
+    return;
+  }, [currentMove.order, moves, makeMove]);
 
-        setCurrentMove({ order: currentMove.order + 1, move: null });
+  const handlePlayerMove = useCallback(() => {
+    if (moves) {
+      setCurrentMove({ order: currentMove.order + 1, move: null });
 
-        if (currentMove.order >= moves.length - 1) {
-          setCurrentPuzzle((prevState) => prevState + 1);
-          setCurrentPuzzleCopy((prevState) => prevState + 1);
-        }
+      if (currentMove.order >= moves.length - 1) {
+        setCurrentPuzzle((prevState) => prevState + 1);
+        setCurrentPuzzleCopy((prevState) => prevState + 1);
       }
-    })();
+    }
+  }, [moves, currentMove.order]);
+
+  useEffect(() => {
+    if (!moves || !currentMove.move) return;
+
+    if (
+      currentMove.move !== moves[currentMove.order] &&
+      currentMove.order % 2 !== 0 &&
+      !chessboardRef.current?.getState().in_checkmate
+    ) {
+      handleErrorMove();
+      return;
+    }
+
+    if (
+      currentMove.order !== 0 &&
+      currentMove.order % 2 !== 0 &&
+      currentMove.order < moves.length - 1
+    ) {
+      handleAutoMove();
+      return;
+    }
+
+    handlePlayerMove();
   }, [currentMove, moves]);
 
   useEffect(() => {
+    console.count('rerender');
     if (puzzles.length > 0 && isTrainingStart) {
       if (puzzles.length === currentPuzzle && lastInvalidated !== currentPuzzle) {
         queryClient.invalidateQueries({ queryKey: ['puzzles'] });
@@ -160,21 +179,21 @@ export const ChessGame = () => {
     }
   }, [puzzles, currentPuzzle, isTrainingStart]);
 
-  const startTraining = useCallback(() => {
+  const startTraining = () => {
     setIsTrainingStart(true);
     setIsActiveTimer(true);
     setMoveEnabled(true);
-  }, []);
+  };
 
-  const stopTraining = useCallback(() => {
+  const stopTraining = () => {
     setIsActiveTimer(false);
     setMoveEnabled(false);
-  }, []);
+  };
 
-  const resetTimer = useCallback(() => {
+  const resetTimer = () => {
     setIsReset(true);
     resetGameState();
-  }, []);
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -207,7 +226,7 @@ export const ChessGame = () => {
             setIsActive={setIsActiveTimer}
             isReset={isReset}
             setIsReset={setIsReset}
-            resetGameState={() => resetGameState()}
+            resetGameState={resetGameState}
             setIsStats={setIsGameStats}
             puzzlesCopy={puzzlesCopy}
           />

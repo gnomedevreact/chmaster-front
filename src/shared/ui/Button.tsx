@@ -33,7 +33,7 @@ export const Button = (props: ButtonProps) => {
       )}
       disabled={disabled}
     >
-      {isLoading && <ActivityIndicator color={'#FAFAFA'} />}
+      {isLoading && <ActivityIndicator size={'small'} color={'#FAFAFA'} />}
       {children}
     </Pressable>
   );

@@ -48,6 +48,7 @@ export const TasksChessGame = ({
   const [playerColor, setPlayerColor] = useState<'w' | 'b'>();
 
   const [isConfetti, setIsConfetti] = useState<boolean>(false);
+  const [hints, setHints] = useState(3);
 
   const resetGameStateLocal = () => {
     setIsTrainingStart(false);
@@ -65,7 +66,7 @@ export const TasksChessGame = ({
     resetGameStateLocal,
     task,
   });
-  const { completeTask, isPendingCompletion } = useCompleteTask();
+  const { completeTask, isPendingCompletion, isComplete } = useCompleteTask();
 
   const resetGameState = () => {
     resetGameStateLocal();
@@ -94,49 +95,63 @@ export const TasksChessGame = ({
     }
   }, [moves]);
 
-  useEffect(() => {
-    (async () => {
-      if (moves && currentMove.move) {
-        if (
-          currentMove.move !== moves[currentMove.order] &&
-          currentMove.order % 2 !== 0 &&
-          !chessboardRef?.current?.getState().in_checkmate
-        ) {
-          chessboardRef?.current?.highlight({
-            square: currentMove.move.substring(2, 4) as Square,
-            color: '#da8f7f',
-          });
+  const handleErrorMove = useCallback(async () => {
+    chessboardRef?.current?.highlight({
+      square: currentMove?.move?.substring(2, 4) as Square,
+      color: '#da8f7f',
+    });
 
-          await sleep(500);
+    await sleep(500);
 
-          chessboardRef?.current?.undo();
-          setCurrentMove({ order: currentMove.order, move: null });
-          setMoveEnabled(true);
-          return;
-        }
+    chessboardRef?.current?.undo();
+    setCurrentMove({ order: currentMove.order, move: null });
+    setMoveEnabled(true);
+    return;
+  }, [currentMove.move]);
 
-        if (
-          currentMove.order !== 0 &&
-          currentMove.order % 2 !== 0 &&
-          currentMove.order < moves.length - 1
-        ) {
-          const nextOrder = currentMove.order + 1;
-          setCurrentMove((prevState) => ({
-            order: nextOrder,
-            move: null,
-          }));
+  const handleAutoMove = useCallback(() => {
+    const nextOrder = currentMove.order + 1;
+    setCurrentMove((prevState) => ({
+      order: nextOrder,
+      move: null,
+    }));
 
-          makeMove(nextOrder);
-          return;
-        }
+    makeMove(nextOrder);
+    return;
+  }, [currentMove.order, moves, makeMove]);
 
-        setCurrentMove({ order: currentMove.order + 1, move: null });
+  const handlePlayerMove = useCallback(() => {
+    if (moves) {
+      setCurrentMove({ order: currentMove.order + 1, move: null });
 
-        if (currentMove.order >= moves.length - 1) {
-          setCurrentPuzzle((prevState) => prevState + 1);
-        }
+      if (currentMove.order >= moves.length - 1) {
+        setCurrentPuzzle((prevState) => prevState + 1);
       }
-    })();
+    }
+  }, [moves, currentMove.order]);
+
+  useEffect(() => {
+    if (!moves || !currentMove.move) return;
+
+    if (
+      currentMove.move !== moves[currentMove.order] &&
+      currentMove.order % 2 !== 0 &&
+      !chessboardRef.current?.getState().in_checkmate
+    ) {
+      handleErrorMove();
+      return;
+    }
+
+    if (
+      currentMove.order !== 0 &&
+      currentMove.order % 2 !== 0 &&
+      currentMove.order < moves.length - 1
+    ) {
+      handleAutoMove();
+      return;
+    }
+
+    handlePlayerMove();
   }, [currentMove, moves]);
 
   useEffect(() => {
@@ -159,6 +174,7 @@ export const TasksChessGame = ({
         setCurrentMove({ order: 0, move: null });
         setPlayerColor(undefined);
         chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);
+        setHints(3);
       }
     }
   }, [puzzles, currentPuzzle, isTrainingStart]);
@@ -167,6 +183,20 @@ export const TasksChessGame = ({
     setIsTrainingStart(true);
     setMoveEnabled(true);
   }, []);
+
+  const highLightNextMove = useCallback(() => {
+    if (moves && hints > 0) {
+      chessboardRef?.current?.highlight({
+        square: moves[currentMove.order].substring(0, 2) as Square,
+        color: '#50C87880',
+      });
+      chessboardRef?.current?.highlight({
+        square: moves[currentMove.order].substring(2) as Square,
+        color: '#50C87880',
+      });
+      setHints((prev) => prev - 1);
+    }
+  }, [moves, currentMove.order, hints]);
 
   useFocusEffect(
     useCallback(() => {
@@ -256,29 +286,41 @@ export const TasksChessGame = ({
               </View>
             ) : null}
             <View className={'flex flex-col gap-3 px-4 mt-auto'}>
+              {isTrainingStart && (
+                <Button
+                  className={cn('self-end p-4', {
+                    'bg-[#4F7942]': hints > 0,
+                    'bg-primary-500': hints <= 0,
+                  })}
+                  onPress={isTrainingStart ? highLightNextMove : undefined}
+                >
+                  <Ionicons name="bulb-sharp" size={24} color="white" />
+                </Button>
+              )}
               <Button
                 onPress={
                   taskStatus === 'in_progress'
                     ? isTrainingStart
                       ? undefined
                       : startTraining
-                    : undefined
+                    : taskStatus === 'completed' || isComplete
+                      ? closeModal
+                      : closeModal
                 }
-                disabled={
-                  isLoading ||
-                  taskStatus === 'completed' ||
-                  isTrainingStart ||
-                  isPendingCompletion
-                }
+                disabled={isLoading || isTrainingStart || isPendingCompletion}
                 isLoading={isPendingCompletion}
-                className={cn({ 'bg-[#4F7942]': taskStatus === 'completed' })}
+                className={cn({
+                  'bg-[#4F7942]': taskStatus === 'completed' || isComplete,
+                })}
               >
                 <TextStyled className={'text-base'}>
                   {taskStatus === 'in_progress'
                     ? isTrainingStart
                       ? `${currentPuzzle}/${PUZZLES_QUANTITY}`
                       : 'Start'
-                    : 'Completed'}
+                    : taskStatus === 'completed' || isComplete
+                      ? 'Completed'
+                      : 'Start'}
                 </TextStyled>
               </Button>
             </View>
@@ -288,7 +330,7 @@ export const TasksChessGame = ({
       {isConfetti && (
         <ConfettiCannon
           count={100}
-          origin={{ x: -30, y: height }}
+          origin={{ x: 0, y: 0 }}
           fadeOut={true}
           colors={['#DA0C81', '#3C3C3C']}
           explosionSpeed={700}
