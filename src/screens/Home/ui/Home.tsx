@@ -6,6 +6,8 @@ import { useProfileStore } from '@/src/core/lib/store/profile.store';
 import { Header } from './components/Header';
 import { useGetProfile } from '@/src/shared/api/hooks/useGetProfile';
 import { useQueryClient } from '@tanstack/react-query';
+import { LinkBlock } from '@/src/screens/Home/ui/components/LinkBlock';
+import { View } from 'react-native';
 
 export const Home = () => {
   const queryClient = useQueryClient();
@@ -24,6 +26,24 @@ export const Home = () => {
     >
       <Header profile={profile} />
       <FocusBlock satisfied={profile?.streak_satisfied} />
+      <View className={'flex flex-col items-center gap-3'}>
+        <LinkBlock
+          title={'Watch Tutorials'}
+          text={
+            'Explore a collection of expert-led chess training videos to sharpen your strategy, improve your tactics, and take your game to the next level.'
+          }
+          image={require('@/src/assets/images/test.webp')}
+          link={'/videos'}
+        />
+        <LinkBlock
+          title={'Watch Tutorials'}
+          text={
+            'Explore a collection of expert-led chess training videos to sharpen your strategy, improve your tactics, and take your game to the next level.'
+          }
+          image={require('@/src/assets/images/test2.webp')}
+          link={'/videos'}
+        />
+      </View>
     </Container>
   );
 };

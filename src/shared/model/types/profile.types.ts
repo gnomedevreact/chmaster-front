@@ -2,7 +2,7 @@ import { TaskType } from '@/src/shared/model/types/tasks.types';
 
 export type ProfileType = {
   id: string;
-  userId: string;
+  user_id: string;
   name: string;
   chessRating: number;
   solved_puzzles: number;

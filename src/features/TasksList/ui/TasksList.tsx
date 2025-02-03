@@ -71,8 +71,6 @@ export const TasksList = () => {
 
   if (isLoadingTasks || isLoadingUserTasks || !userTasks) return null;
 
-  console.log(userTasks);
-
   return (
     <View>
       <View className={'flex flex-row gap-4 justify-between flex-wrap'}>

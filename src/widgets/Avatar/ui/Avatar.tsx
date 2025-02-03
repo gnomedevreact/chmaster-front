@@ -48,7 +48,7 @@ export const Avatar = (props: AvatarProps) => {
     try {
       const { data, error } = await supabase.storage
         .from('avatars')
-        .upload(`${profile?.id}.png`, decode(image), {
+        .upload(`${profile?.user_id}_image.png`, decode(image), {
           cacheControl: '3600',
           upsert: true,
           contentType: 'image/png',

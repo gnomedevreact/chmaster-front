@@ -2,6 +2,7 @@ import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
 import { FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons';
+import { useGetTasks } from '@/src/shared/api/hooks/TasksHooks/useGetTasks';
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
@@ -11,6 +12,8 @@ function TabBarIcon(props: {
 }
 
 export default function TabLayout() {
+  useGetTasks();
+
   return (
     <Tabs
       screenOptions={{
