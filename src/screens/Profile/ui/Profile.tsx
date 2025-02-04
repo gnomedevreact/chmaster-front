@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container } from '@/src/widgets/Container';
 import { useGetProfile } from '@/src/shared/api/hooks/useGetProfile';
 import { router } from 'expo-router';
@@ -13,8 +13,12 @@ import { toast } from '@/src/shared/lib/utils/toast';
 import { useGetProfileRank } from '@/src/shared/api/hooks/useGetProfileRank';
 import { useProfileStore } from '@/src/core/lib/store/profile.store';
 import { useQueryClient } from '@tanstack/react-query';
+import { InfoModal } from '@/src/widgets/Avatar/ui/components/InfoModal';
+import { FabCustom } from '@/src/shared/ui/FabCustom';
 
 export const Profile = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   const queryClient = useQueryClient();
   const profile = useProfileStore((state) => state.profileData);
   const { rank } = useGetProfileRank();
@@ -86,6 +90,18 @@ export const Profile = () => {
         <MaterialIcons name="logout" size={24} color="white" />
         <TextStyled className={'text-lg'}>Log out</TextStyled>
       </Button>
+      <InfoModal
+        modalVisible={isModalVisible}
+        setModalVisible={setIsModalVisible}
+        name={profile?.name || ''}
+      />
+      <FabCustom
+        size={'medium'}
+        onPress={() => setIsModalVisible(true)}
+        className={'absolute top-4 right-4'}
+      >
+        <Feather name="settings" size={24} color="white" />
+      </FabCustom>
     </Container>
   );
 };

@@ -11,7 +11,7 @@ export const Tasks = () => {
         <TextStyled className={'text-[32px]'} fontFamilyName={'NunitoSansBold'}>
           Puzzle Challenges
         </TextStyled>
-        <TextStyled className={'text-base text-primary-600'}>
+        <TextStyled className={'text-lg text-primary-600'}>
           Explore a collection of chess puzzles covering various themes and difficulty
           levels. Sharpen your tactical skills, improve your strategic thinking, and
           challenge yourself with engaging chess problems designed to enhance your

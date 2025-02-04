@@ -8,19 +8,18 @@ import { useRouter } from 'expo-router';
 
 interface LinkBlockProps {
   title: string;
-  text: string;
   image: ImageSourcePropType;
   link: any;
 }
 
 export const LinkBlock = (props: LinkBlockProps) => {
-  const { title, text, link, image } = props;
+  const { title, link, image } = props;
 
   const { push } = useRouter();
 
   return (
     <Pressable
-      className={'w-full h-[100px] rounded-[8px] overflow-hidden'}
+      className={'w-full h-[150px] rounded-[8px] overflow-hidden'}
       onPress={() => push(link)}
     >
       <ImageBackground source={image} className={'h-full'}>
@@ -29,7 +28,10 @@ export const LinkBlock = (props: LinkBlockProps) => {
           className={'h-full w-full p-3 flex flex-col justify-center items-start'}
         >
           <View className={'w-full flex flex-row items-center justify-between gap-2'}>
-            <TextStyled fontFamilyName={'NunitoSansBold'} className={'text-[32px]'}>
+            <TextStyled
+              fontFamilyName={'NunitoSansBold'}
+              className={'text-[32px] text-wrap whitespace-pre'}
+            >
               {title}
             </TextStyled>
             <Button className={'bg-primary-100 p-2'} onPress={() => push('/videos')}>

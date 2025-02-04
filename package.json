@@ -65,7 +65,8 @@
     "expo-notifications": "~0.29.13",
     "expo-device": "~7.0.2",
     "expo-constants": "~17.0.5",
-    "expo-video": "~2.0.5"
+    "expo-video": "~2.0.5",
+    "expo-image": "~2.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

@@ -29,17 +29,11 @@ export const Home = () => {
       <View className={'flex flex-col items-center gap-3'}>
         <LinkBlock
           title={'Watch Tutorials'}
-          text={
-            'Explore a collection of expert-led chess training videos to sharpen your strategy, improve your tactics, and take your game to the next level.'
-          }
           image={require('@/src/assets/images/test.webp')}
           link={'/videos'}
         />
         <LinkBlock
-          title={'Watch Tutorials'}
-          text={
-            'Explore a collection of expert-led chess training videos to sharpen your strategy, improve your tactics, and take your game to the next level.'
-          }
+          title={'Find Your Chess Opening'}
           image={require('@/src/assets/images/test2.webp')}
           link={'/videos'}
         />

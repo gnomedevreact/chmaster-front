@@ -1,5 +1,9 @@
 import { axiosAuth } from '@/src/core/lib/axios/config';
-import { ProfileType, UpdateProfileType } from '@/src/shared/model/types/profile.types';
+import {
+  ProfileType,
+  UpdateProfileInfoType,
+  UpdateProfileType,
+} from '@/src/shared/model/types/profile.types';
 
 export const ProfileService = {
   async getProfile() {
@@ -11,10 +15,14 @@ export const ProfileService = {
   },
 
   async updateStats(data: UpdateProfileType) {
-    return await axiosAuth.post<ProfileType>('/profiles/stats-update', data);
+    return await axiosAuth.put<ProfileType>('/profiles/stats-update', data);
   },
 
   async uploadAvatar(avatarUri: string) {
-    return await axiosAuth.post<ProfileType>('/profiles/avatar-upload', { avatarUri });
+    return await axiosAuth.put<ProfileType>('/profiles/avatar-upload', { avatarUri });
+  },
+
+  async updateProfile(data: UpdateProfileInfoType) {
+    return await axiosAuth.put('/profiles/update', data);
   },
 };

@@ -20,6 +20,9 @@ export const useCompleteTask = () => {
         queryClient.invalidateQueries({
           queryKey: ['user tasks'],
         });
+        queryClient.invalidateQueries({
+          queryKey: ['profile'],
+        });
       });
     },
     onError(error: any) {

@@ -9,6 +9,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { decode } from 'base64-arraybuffer';
 import { useUploadAvatar } from '@/src/shared/api/hooks/useUploadAvatar';
 import { useProfileStore } from '@/src/core/lib/store/profile.store';
+import { Entypo } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 
 interface AvatarProps {
   name: string;
@@ -26,7 +28,7 @@ export const Avatar = (props: AvatarProps) => {
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 0.8,
+      quality: 0.6,
       base64: true,
     });
 
@@ -78,7 +80,7 @@ export const Avatar = (props: AvatarProps) => {
     <View className={'flex flex-col gap-3 items-center justify-center pt-10'}>
       <Pressable
         className={
-          'flex items-center justify-center rounded-full bg-primary-200 overflow-hidden'
+          'relative flex items-center justify-center rounded-full bg-primary-200'
         }
         style={{ width: 150, height: 150 }}
         onPress={pickImage}
@@ -88,13 +90,23 @@ export const Avatar = (props: AvatarProps) => {
             source={{
               uri: `${profile.avatar}?t=${new Date().getTime()}`,
             }}
-            className={'w-[150px] h-[150px]'}
+            className={'w-[150px] h-[150px] rounded-full'}
           />
         ) : (
           <TextStyled className={'text-[62px]'}>
             {name.substring(0, 2).toUpperCase()}
           </TextStyled>
         )}
+        <View
+          className={'absolute bottom-0 right-3 size-10 rounded-full overflow-hidden'}
+        >
+          <BlurView
+            intensity={40}
+            className={'flex items-center justify-center w-full h-full'}
+          >
+            <Entypo name="image" size={16} color="white" />
+          </BlurView>
+        </View>
       </Pressable>
       <TextStyled className={'text-[28px]'}>
         {name.substring(0, 1).toUpperCase() + name.substring(1)}

@@ -14,6 +14,7 @@ interface InputProps extends TextInputProps {
   secure?: boolean;
   rules?: RegisterOptions<any>;
   wrapClassname?: string;
+  errorText?: string;
 }
 
 export const Input = (props: InputProps) => {
@@ -26,6 +27,7 @@ export const Input = (props: InputProps) => {
     secure,
     rules,
     wrapClassname,
+    errorText,
     ...otherProps
   } = props;
 
@@ -37,8 +39,12 @@ export const Input = (props: InputProps) => {
 
   return (
     <View className={cn('flex flex-col gap-2', wrapClassname)}>
-      <TextStyled className={'text-primary-white text-sm font-normal opacity-80'}>
-        {label}
+      <TextStyled
+        className={cn('text-primary-white text-sm font-normal opacity-80', {
+          'text-[#DC143C]': errorText,
+        })}
+      >
+        {errorText ? `${label}: (${errorText})` : label}
       </TextStyled>
       <TextInput
         value={field.value}

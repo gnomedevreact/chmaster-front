@@ -23,3 +23,8 @@ export type UpdateProfileType = {
   streak_completed?: boolean;
   streak?: number;
 };
+
+export type UpdateProfileInfoType = {
+  name?: string;
+  chessRating?: number;
+};

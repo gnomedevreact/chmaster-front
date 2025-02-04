@@ -28,6 +28,7 @@ export const Button = (props: ButtonProps) => {
         {
           'bg-primary-100': isLight,
           'bg-primary-200': !isLight,
+          'opacity-80': disabled,
         },
         className,
       )}

@@ -73,12 +73,16 @@ export const TasksChessGame = ({
     resetPuzzles();
   };
 
-  function makeMove(index: number) {
-    chessboardRef?.current?.move({
-      from: moves![index].substring(0, 2) as Square,
-      to: moves![index].substring(2) as Square,
-    });
-  }
+  const makeMove = useCallback(
+    (index: number) => {
+      if (!chessboardRef.current || !moves) return;
+      chessboardRef.current.move({
+        from: moves[index].substring(0, 2) as Square,
+        to: moves[index].substring(2) as Square,
+      });
+    },
+    [moves],
+  );
 
   const formatMove = useCallback((currMove: Move) => {
     let move = currMove.from + currMove.to;
@@ -288,7 +292,7 @@ export const TasksChessGame = ({
             <View className={'flex flex-col gap-3 px-4 mt-auto'}>
               {isTrainingStart && (
                 <Button
-                  className={cn('self-end p-4', {
+                  className={cn('self-start p-4', {
                     'bg-[#4F7942]': hints > 0,
                     'bg-primary-500': hints <= 0,
                   })}
