@@ -34,7 +34,7 @@ export const LinkBlock = (props: LinkBlockProps) => {
             >
               {title}
             </TextStyled>
-            <Button className={'bg-primary-100 p-2'} onPress={() => push('/videos')}>
+            <Button className={'bg-primary-100 p-2'} onPress={() => push(link)}>
               <AntDesign name="arrowright" size={24} color="white" />
             </Button>
           </View>

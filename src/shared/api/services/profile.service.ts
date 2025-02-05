@@ -25,4 +25,8 @@ export const ProfileService = {
   async updateProfile(data: UpdateProfileInfoType) {
     return await axiosAuth.put('/profiles/update', data);
   },
+
+  async getTopProfiles() {
+    return await axiosAuth.get<ProfileType[]>('/profiles/top-profiles');
+  },
 };

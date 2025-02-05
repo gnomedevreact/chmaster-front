@@ -97,6 +97,7 @@ function RootLayoutNav() {
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen name="videos" options={{ headerShown: false }} />
                 <Stack.Screen name="quiz" options={{ headerShown: false }} />
+                <Stack.Screen name="top" options={{ headerShown: false }} />
               </Stack>
               <FlashMessage position="top" />
             </SafeAreaView>

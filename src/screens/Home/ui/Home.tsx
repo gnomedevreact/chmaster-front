@@ -35,7 +35,7 @@ export const Home = () => {
         <LinkBlock
           title={'Find Your Chess Opening'}
           image={require('@/src/assets/images/test2.webp')}
-          link={'/videos'}
+          link={'/quiz'}
         />
       </View>
     </Container>

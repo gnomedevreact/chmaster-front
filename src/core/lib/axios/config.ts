@@ -1,5 +1,6 @@
 import axios, { CreateAxiosDefaults } from 'axios';
 import { supabase } from '@/src/core/lib/supabase';
+import { router } from 'expo-router';
 
 const options: CreateAxiosDefaults = {
   baseURL: process.env.EXPO_PUBLIC_BACKEND_URL,
@@ -34,8 +35,8 @@ axiosAuth.interceptors.response.use(
         return axiosAuth.request(error.config);
       }
 
-      // await supabase.auth.signOut();
-      // router.replace('/auth');
+      await supabase.auth.signOut();
+      router.replace('/auth');
     }
 
     throw error;

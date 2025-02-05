@@ -136,10 +136,9 @@ export const Auth = () => {
                 text={'Continue'}
                 isLight
                 loading={isPending || loading}
-                // disabled={!!(errors.email || errors.password) || isFormEmpty}
+                disabled={!!(errors.email || errors.password) || isFormEmpty}
                 onPress={
                   isAuth ? handleSubmit(signInWithEmail) : handleSubmit(signUpWithEmail)
-                  // () => router.replace('/(tabs)')
                 }
               />
               <Pressable onPress={() => setIsAuth(!isAuth)}>

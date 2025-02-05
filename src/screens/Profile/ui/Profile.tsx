@@ -38,7 +38,10 @@ export const Profile = () => {
           </TextStyled>
           <TextStyled className={'text-lg text-primary-600'}>world rating</TextStyled>
         </View>
-        <Pressable className={'p-3 bg-primary-100 rounded-[14px]'}>
+        <Pressable
+          className={'p-3 bg-primary-100 rounded-[14px]'}
+          onPress={() => router.push('/top')}
+        >
           <Feather name="external-link" size={24} color="white" />
         </Pressable>
       </InfoBlock>
