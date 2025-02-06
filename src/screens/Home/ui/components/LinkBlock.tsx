@@ -5,22 +5,35 @@ import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { Button } from '@/src/shared/ui/Button';
 import { AntDesign } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { presentPaywallIfNeeded } from '@/src/shared/lib/utils/presentPaywall';
 
 interface LinkBlockProps {
   title: string;
   image: ImageSourcePropType;
   link: any;
+  subscription?: boolean;
 }
 
 export const LinkBlock = (props: LinkBlockProps) => {
-  const { title, link, image } = props;
+  const { title, link, image, subscription } = props;
 
   const { push } = useRouter();
+
+  const handleLink = async () => {
+    if (subscription) {
+      const isNeeded = await presentPaywallIfNeeded();
+      if (isNeeded) {
+        push(link);
+      }
+    }
+
+    push(link);
+  };
 
   return (
     <Pressable
       className={'w-full h-[150px] rounded-[8px] overflow-hidden'}
-      onPress={() => push(link)}
+      onPress={handleLink}
     >
       <ImageBackground source={image} className={'h-full'}>
         <BlurView
@@ -34,7 +47,7 @@ export const LinkBlock = (props: LinkBlockProps) => {
             >
               {title}
             </TextStyled>
-            <Button className={'bg-primary-100 p-2'} onPress={() => push(link)}>
+            <Button className={'bg-primary-100 p-2'} onPress={handleLink}>
               <AntDesign name="arrowright" size={24} color="white" />
             </Button>
           </View>

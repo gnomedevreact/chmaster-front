@@ -31,11 +31,13 @@ export const Home = () => {
           title={'Watch Tutorials'}
           image={require('@/src/assets/images/test.webp')}
           link={'/videos'}
+          subscription={true}
         />
         <LinkBlock
           title={'Find Your Chess Opening'}
           image={require('@/src/assets/images/test2.webp')}
           link={'/quiz'}
+          subscription={true}
         />
       </View>
     </Container>

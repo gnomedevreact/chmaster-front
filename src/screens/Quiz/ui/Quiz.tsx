@@ -9,11 +9,14 @@ import Test from '@/src/screens/Quiz/ui/components/Test';
 
 import Horse from '../../../assets/images/horse.svg';
 import Horse2 from '../../../assets/images/horse2.svg';
+import { useCheckSubscription } from '@/src/shared/hooks/useCheckSubscription';
 
 export const Quiz = () => {
   const [currentIndex, setCurrentIndex] = useState(1);
   const [isWhite, setIsWhite] = useState<boolean>();
   const { back } = useRouter();
+
+  useCheckSubscription();
 
   const startTest = () => {
     return currentIndex === 1 ? setIsWhite(true) : setIsWhite(false);
