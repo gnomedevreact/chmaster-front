@@ -1,6 +1,6 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
-import { Stack, usePathname } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
@@ -13,6 +13,9 @@ import { PaperProvider } from 'react-native-paper';
 import FlashMessage from 'react-native-flash-message';
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { Platform } from 'react-native';
+import Purchases from 'react-native-purchases';
+import { useProfileStore } from '@/src/core/lib/store/profile.store';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -66,19 +69,26 @@ configureReanimatedLogger({
   strict: false,
 });
 
-function RootLayoutNav() {
-  const pathname = usePathname();
+const APIKeys = {
+  apple: 'appl_yfABHlQRJlkvQYVTRMHjVpuenyP',
+  google: 's',
+};
 
-  // useEffect(() => {
-  //   supabase.auth.getSession().then(({ data: { session } }) => {
-  //     if (pathname === '/auth' && session) {
-  //       router.replace('/(tabs)');
-  //     }
-  //     if (!session) {
-  //       router.replace('/auth');
-  //     }
-  //   });
-  // }, [pathname]);
+function RootLayoutNav() {
+  const profile = useProfileStore((state) => state.profileData);
+
+  useEffect(() => {
+    const setup = () => {
+      if (profile) {
+        if (Platform.OS == 'android') {
+          Purchases.configure({ apiKey: APIKeys.google });
+        } else {
+          Purchases.configure({ apiKey: APIKeys.apple!, appUserID: profile.id });
+        }
+      }
+    };
+    setup();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -95,8 +105,14 @@ function RootLayoutNav() {
                   options={{ headerShown: false, gestureEnabled: false }}
                 />
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="videos" options={{ headerShown: false }} />
-                <Stack.Screen name="quiz" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="videos"
+                  options={{ headerShown: false, gestureEnabled: false }}
+                />
+                <Stack.Screen
+                  name="quiz"
+                  options={{ headerShown: false, gestureEnabled: false }}
+                />
                 <Stack.Screen name="top" options={{ headerShown: false }} />
               </Stack>
               <FlashMessage position="top" />
