@@ -7,7 +7,10 @@ import { Header } from './components/Header';
 import { useGetProfile } from '@/src/shared/api/hooks/useGetProfile';
 import { useQueryClient } from '@tanstack/react-query';
 import { LinkBlock } from '@/src/screens/Home/ui/components/LinkBlock';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Entypo, MaterialIcons } from '@expo/vector-icons';
+import { TextStyled } from '@/src/shared/ui/TextStyled';
+import { router } from 'expo-router';
 
 export const Home = () => {
   const queryClient = useQueryClient();
@@ -20,12 +23,36 @@ export const Home = () => {
 
   return (
     <Container
-      className={'flex flex-col gap-5 pt-4'}
+      className={'flex flex-col gap-5 py-4 pb-10'}
       isRefresh={true}
       onRefreshAction={() => queryClient.invalidateQueries({ queryKey: ['rank'] })}
     >
       <Header profile={profile} />
       <FocusBlock satisfied={profile?.streak_satisfied} />
+      <View className={'flex flex-row gap-3'}>
+        <Pressable
+          className={
+            'flex items-center justify-center flex-1 bg-primary-200 h-[150px] rounded-[14px] border border-primary-300'
+          }
+          onPress={() => router.push('/feed')}
+        >
+          <Entypo name="chat" size={80} color="white" />
+          <TextStyled className={'text-primary-600'} fontFamilyName={'NunitoSansBold'}>
+            Threads
+          </TextStyled>
+        </Pressable>
+        <Pressable
+          className={
+            'flex items-center justify-center flex-1 bg-primary-200 h-[150px] rounded-[14px] border border-primary-300'
+          }
+          onPress={() => router.push('/plan')}
+        >
+          <MaterialIcons name="task-alt" size={80} color="white" />
+          <TextStyled className={'text-primary-600'} fontFamilyName={'NunitoSansBold'}>
+            Pro plan
+          </TextStyled>
+        </Pressable>
+      </View>
       <View className={'flex flex-col items-center gap-3'}>
         <LinkBlock
           title={'Watch Tutorials'}

@@ -78,15 +78,17 @@ function RootLayoutNav() {
   const profile = useProfileStore((state) => state.profileData);
 
   useEffect(() => {
-    const setup = () => {
-      if (profile) {
+    const setup = async () => {
+      const isConfigured = await Purchases.isConfigured();
+      if (!isConfigured) {
         if (Platform.OS == 'android') {
           Purchases.configure({ apiKey: APIKeys.google });
         } else {
-          Purchases.configure({ apiKey: APIKeys.apple!, appUserID: profile.id });
+          Purchases.configure({ apiKey: APIKeys.apple! });
         }
       }
     };
+
     setup();
   }, []);
 
@@ -114,6 +116,8 @@ function RootLayoutNav() {
                   options={{ headerShown: false, gestureEnabled: false }}
                 />
                 <Stack.Screen name="top" options={{ headerShown: false }} />
+                <Stack.Screen name="feed" options={{ headerShown: false }} />
+                <Stack.Screen name="plan" options={{ headerShown: false }} />
               </Stack>
               <FlashMessage position="top" />
             </SafeAreaView>

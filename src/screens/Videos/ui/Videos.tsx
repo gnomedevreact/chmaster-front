@@ -1,25 +1,20 @@
 import React from 'react';
 import { Container } from '@/src/widgets/Container';
-import { Ionicons } from '@expo/vector-icons';
-import { Button } from '@/src/shared/ui/Button';
-import { useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { useGetVideoUrls } from '@/src/screens/Videos/hooks/useGetVideoUrls';
 import { VideoBlock } from '@/src/screens/Videos/ui/components/VideoBlock';
 import { useCheckSubscription } from '@/src/shared/hooks/useCheckSubscription';
+import { BackButton } from '@/src/shared/ui/BackButton';
 
 export const Videos = () => {
-  const { back } = useRouter();
   const { urls } = useGetVideoUrls();
 
   useCheckSubscription();
 
   return (
     <Container className={'py-4 gap-4'}>
-      <Button className={'w-[50px] h-[50px] mb-3'} isLight={false} onPress={() => back()}>
-        <Ionicons name="arrow-back" size={20} color="white" />
-      </Button>
+      <BackButton />
       <View className={'flex flex-col gap-2 mb-10'}>
         <TextStyled className={'text-[28px]'} fontFamilyName={'NunitoSansBold'}>
           Chess Tutorial Videos

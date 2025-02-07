@@ -9,7 +9,6 @@ import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { InfoBlock } from '@/src/widgets/InfoBlock';
 import { Pressable, View } from 'react-native';
 import { AuthHelpers } from '@/src/shared/lib/helpers/auth.helpers';
-import { toast } from '@/src/shared/lib/utils/toast';
 import { useGetProfileRank } from '@/src/shared/api/hooks/useGetProfileRank';
 import { useProfileStore } from '@/src/core/lib/store/profile.store';
 import { useQueryClient } from '@tanstack/react-query';
@@ -78,15 +77,7 @@ export const Profile = () => {
       </View>
       <Button
         onPress={async () => {
-          try {
-            await AuthHelpers.logout();
-            router.replace('/auth');
-          } catch (err) {
-            toast({
-              message: 'Something went wrong',
-              type: 'danger',
-            });
-          }
+          await AuthHelpers.logout();
         }}
         className={'mt-auto'}
       >

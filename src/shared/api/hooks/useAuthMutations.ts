@@ -5,6 +5,7 @@ import { AuthHelpers } from '@/src/shared/lib/helpers/auth.helpers';
 import { router } from 'expo-router';
 import { useProfileStore } from '@/src/core/lib/store/profile.store';
 import { formatError } from '@/src/shared/lib/utils/formatError';
+import Purchases from 'react-native-purchases';
 
 export const useAuthMutations = () => {
   const setProfile = useProfileStore((state) => state.setProfileData);
@@ -12,13 +13,11 @@ export const useAuthMutations = () => {
   const { mutate: signUpMutation, isPending } = useMutation({
     mutationKey: ['signup'],
     mutationFn: (data: { email: string; password: string }) => AuthService.signUp(data),
-    async onSuccess({ data }) {
-      try {
-        setProfile(data);
-        router.replace('/(tabs)');
-      } catch (error) {
-        await AuthHelpers.logout();
-      }
+    async onSuccess() {
+      toast({
+        message: 'Now you can login to application',
+        type: 'success',
+      });
     },
     async onError(error: any) {
       toast({
@@ -34,8 +33,8 @@ export const useAuthMutations = () => {
       mutationFn: ({ userId }: { userId: string }) =>
         AuthService.createProfile({ userId }),
       async onSuccess({ data }) {
-        console.log(data);
         try {
+          await Purchases.logIn(data.id);
           setProfile(data);
           router.replace('/(tabs)');
         } catch (error) {

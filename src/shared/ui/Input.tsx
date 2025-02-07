@@ -6,7 +6,7 @@ import { KeyboardTypeOptions, View } from 'react-native';
 import { Control, RegisterOptions, useController } from 'react-hook-form';
 
 interface InputProps extends TextInputProps {
-  label: string;
+  label?: string;
   control: Control<any>;
   name: string;
   className?: string;
@@ -39,13 +39,15 @@ export const Input = (props: InputProps) => {
 
   return (
     <View className={cn('flex flex-col gap-2', wrapClassname)}>
-      <TextStyled
-        className={cn('text-primary-white text-sm font-normal opacity-80', {
-          'text-[#DC143C]': errorText,
-        })}
-      >
-        {errorText ? `${label}: (${errorText})` : label}
-      </TextStyled>
+      {label && (
+        <TextStyled
+          className={cn('text-primary-white text-sm font-normal opacity-80', {
+            'text-[#DC143C]': errorText,
+          })}
+        >
+          {errorText ? `${label}: (${errorText})` : label}
+        </TextStyled>
+      )}
       <TextInput
         value={field.value}
         onChangeText={field.onChange}

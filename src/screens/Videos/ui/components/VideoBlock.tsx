@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { Pressable, View } from 'react-native';
-import { useVideoPlayer, VideoThumbnail, VideoView } from 'expo-video';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { BlurView } from 'expo-blur';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useEvent } from 'expo';
@@ -17,7 +17,6 @@ export const VideoBlock = ({
   videoSource: string;
   path: string;
 }) => {
-  const [thumbNail, setThumbNail] = useState<VideoThumbnail>();
   const videoPlayerRef = useRef<VideoView>(null);
 
   const player = useVideoPlayer(videoSource, async (player) => {
@@ -32,17 +31,6 @@ export const VideoBlock = ({
   };
 
   const videoInfo = useMemo(() => convertVideoInfo(path), [path]);
-
-  useEffect(() => {
-    if (player) {
-      (async () => {
-        const thumb = await player.generateThumbnailsAsync(10);
-        if (thumb) {
-          setThumbNail(thumb[0]);
-        }
-      })();
-    }
-  }, []);
 
   return (
     <View className={'flex flex-col gap-5 p-6 bg-primary-200 rounded-[14px]'}>

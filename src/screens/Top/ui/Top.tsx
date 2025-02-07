@@ -4,10 +4,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { Button } from '@/src/shared/ui/Button';
 import { router } from 'expo-router';
 import { useGetTopProfiles } from '@/src/shared/api/hooks/ProfilesHooks/useGetTopProfiles';
-import { Image, View } from 'react-native';
+import { View } from 'react-native';
 import { ProfileType } from '@/src/shared/model/types/profile.types';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { useQueryClient } from '@tanstack/react-query';
+import { MiniAvatar } from '@/src/shared/ui/MiniAvatar';
 
 const ProfileBlock = ({ profile, index }: { profile: ProfileType; index: number }) => {
   return (
@@ -17,18 +18,7 @@ const ProfileBlock = ({ profile, index }: { profile: ProfileType; index: number 
       }
     >
       <View className={'flex flex-row items-center gap-3'}>
-        <View
-          className={
-            'flex items-center justify-center w-14 h-14 rounded-full overflow-hidden bg-primary-500'
-          }
-        >
-          {profile.avatar && (
-            <Image source={{ uri: profile.avatar }} className={'w-14 h-14'} />
-          )}
-          {!profile.avatar && (
-            <TextStyled>{profile.name.substring(0, 2).toUpperCase()}</TextStyled>
-          )}
-        </View>
+        <MiniAvatar profileAvatar={{ avatarUri: profile.avatar, name: profile.name }} />
         <View className={'flex flex-col'}>
           <TextStyled className={'text-base text-primary-600'}>{profile.name}</TextStyled>
           <TextStyled className={'text-base'}>{`${profile.exp} EXP`}</TextStyled>

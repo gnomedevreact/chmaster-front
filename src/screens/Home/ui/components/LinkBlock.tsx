@@ -25,6 +25,8 @@ export const LinkBlock = (props: LinkBlockProps) => {
       if (isNeeded) {
         push(link);
       }
+
+      return;
     }
 
     push(link);

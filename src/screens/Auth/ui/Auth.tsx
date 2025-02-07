@@ -21,6 +21,7 @@ import { router } from 'expo-router';
 import { AuthHelpers } from '@/src/shared/lib/helpers/auth.helpers';
 import { GoogleSignInBtn } from '@/src/features/GoogleSignInBtn/GoogleSignInBtn';
 import { useProfileStore } from '@/src/core/lib/store/profile.store';
+import Purchases from 'react-native-purchases';
 
 interface FormProps {
   email: string;
@@ -88,6 +89,7 @@ export const Auth = () => {
 
     if (!generalError) {
       try {
+        await Purchases.logIn(profileData.id);
         setProfile(profileData);
       } catch (error) {
         console.error(error);
