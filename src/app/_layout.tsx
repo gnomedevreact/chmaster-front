@@ -15,7 +15,6 @@ import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-rean
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Platform } from 'react-native';
 import Purchases from 'react-native-purchases';
-import { useProfileStore } from '@/src/core/lib/store/profile.store';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -75,8 +74,6 @@ const APIKeys = {
 };
 
 function RootLayoutNav() {
-  const profile = useProfileStore((state) => state.profileData);
-
   useEffect(() => {
     const setup = async () => {
       const isConfigured = await Purchases.isConfigured();
@@ -119,11 +116,15 @@ function RootLayoutNav() {
                 <Stack.Screen name="feed" options={{ headerShown: false }} />
                 <Stack.Screen name="plan" options={{ headerShown: false }} />
               </Stack>
-              <FlashMessage position="top" />
             </SafeAreaView>
           </SafeAreaProvider>
         </PaperProvider>
       </GestureHandlerRootView>
+      <FlashMessage
+        position="top"
+        style={{ zIndex: 9999, elevation: 9999 }}
+        floating={true}
+      />
     </QueryClientProvider>
   );
 }

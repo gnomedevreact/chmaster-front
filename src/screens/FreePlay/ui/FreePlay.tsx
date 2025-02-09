@@ -16,7 +16,9 @@ import { useEvaluateFen } from '@/src/features/EvaluationBar/api/hooks/useEvalua
 const width = Dimensions.get('window').width;
 
 export const FreePlay = () => {
-  const { control, handleSubmit, reset } = useForm<{ fen: string }>();
+  const { control, handleSubmit, reset } = useForm<{ fen: string }>({
+    reValidateMode: 'onBlur',
+  });
   const [isReset, setIsReset] = useState(false);
   const [lastMove, setLastMove] = useState<
     { from: Square; to: Square; color: 'w' | 'b' }[]

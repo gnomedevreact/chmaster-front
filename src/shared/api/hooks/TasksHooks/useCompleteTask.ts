@@ -10,15 +10,12 @@ export const useCompleteTask = () => {
 
   const { mutate: completeTask, isPending: isPendingCompleteTask } = useMutation({
     mutationKey: ['complete task'],
-    mutationFn: (taskId: string) => TasksService.completeTask(taskId),
+    mutationFn: () => TasksService.completeTask(),
     onSuccess() {
       setIsComplete(true);
       startTransition(() => {
         queryClient.invalidateQueries({
-          queryKey: ['puzzles tasks'],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ['user tasks'],
+          queryKey: ['tasks'],
         });
         queryClient.invalidateQueries({
           queryKey: ['profile'],

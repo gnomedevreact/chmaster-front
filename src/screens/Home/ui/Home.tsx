@@ -5,7 +5,6 @@ import { useProfileStore } from '@/src/core/lib/store/profile.store';
 
 import { Header } from './components/Header';
 import { useGetProfile } from '@/src/shared/api/hooks/useGetProfile';
-import { useQueryClient } from '@tanstack/react-query';
 import { LinkBlock } from '@/src/screens/Home/ui/components/LinkBlock';
 import { Pressable, View } from 'react-native';
 import { Entypo, MaterialIcons } from '@expo/vector-icons';
@@ -13,7 +12,6 @@ import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { router } from 'expo-router';
 
 export const Home = () => {
-  const queryClient = useQueryClient();
   const profile = useProfileStore((state) => state.profileData);
   useGetProfile();
 
@@ -22,11 +20,7 @@ export const Home = () => {
   }
 
   return (
-    <Container
-      className={'flex flex-col gap-5 py-4 pb-10'}
-      isRefresh={true}
-      onRefreshAction={() => queryClient.invalidateQueries({ queryKey: ['rank'] })}
-    >
+    <Container className={'flex flex-col gap-5 py-4 pb-10'}>
       <Header profile={profile} />
       <FocusBlock satisfied={profile?.streak_satisfied} />
       <View className={'flex flex-row gap-3'}>

@@ -8,10 +8,9 @@ export type TaskType = {
   opening: string;
 };
 
-export type UserTaskType = {
-  id: string;
-  status: TaskStatusType;
-  orderNum: number;
+export type GetAllTasks = {
+  tasks: TaskType[];
+  current_task: number;
 };
 
 export type TaskStatusType = 'completed' | 'in_progress' | 'locked';

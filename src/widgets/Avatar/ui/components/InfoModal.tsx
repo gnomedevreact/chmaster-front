@@ -30,6 +30,7 @@ export const InfoModal = (props: InfoModalProps) => {
     defaultValues: {
       name,
     },
+    reValidateMode: 'onBlur',
   });
 
   const { updateProfile, isPending } = useUpdateProfile();
@@ -50,6 +51,7 @@ export const InfoModal = (props: InfoModalProps) => {
       presentationStyle={'formSheet'}
       animationType={'slide'}
       className={'flex-1'}
+      onRequestClose={() => setModalVisible(false)}
     >
       <View className={'flex flex-1 flex-col gap-4 pb-4 bg-primary-400 p-4'}>
         <Button

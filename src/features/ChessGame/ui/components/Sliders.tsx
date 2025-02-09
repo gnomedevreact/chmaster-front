@@ -22,6 +22,7 @@ export const Sliders = () => {
       minRating: String(minSliderValue),
       maxRating: String(maxSliderValue),
     },
+    reValidateMode: 'onBlur',
   });
   const { dismiss } = useBottomSheetModal();
 

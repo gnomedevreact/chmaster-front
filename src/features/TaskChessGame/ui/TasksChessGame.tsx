@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Dimensions, ScrollView, View } from 'react-native';
+import { Dimensions, InteractionManager, ScrollView, View } from 'react-native';
 import Chessboard, { ChessboardRef } from '@gnomedevreact/ch-private';
 import { Move, Square } from 'chess.js';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
@@ -8,7 +8,6 @@ import { useFocusEffect } from 'expo-router';
 import { cn } from '@/src/shared/lib/utils/cnUtils';
 import { ActivityIndicator } from 'react-native-paper';
 import * as Haptics from 'expo-haptics';
-import { Badge } from '@/src/shared/ui/Badge';
 import { TaskStatusType, TaskType } from '@/src/shared/model/types/tasks.types';
 import { useGetPuzzlesByTheme } from '@/src/shared/api/hooks/PuzzlesHooks/useGetPuzzlesByTask';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -20,19 +19,16 @@ import { PUZZLES_QUANTITY } from '@/src/features/TaskChessGame/lib/consts';
 import { useCompleteTask } from '@/src/shared/api/hooks/TasksHooks/useCompleteTask';
 
 const width = Dimensions.get('window').width;
-const height = Dimensions.get('window').height;
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const TasksChessGame = ({
   task,
   closeModal,
   taskStatus,
-  userTaskId,
 }: {
   task: TaskType;
   closeModal: () => void;
   taskStatus: TaskStatusType;
-  userTaskId: string;
 }) => {
   const [isTrainingStart, setIsTrainingStart] = useState(false);
   const chessboardRef = useRef<ChessboardRef>(null);
@@ -94,8 +90,10 @@ export const TasksChessGame = ({
 
   useEffect(() => {
     if (moves && chessboardRef?.current) {
-      makeMove(0);
-      setMoveEnabled(true);
+      InteractionManager.runAfterInteractions(() => {
+        makeMove(0);
+        setMoveEnabled(true);
+      });
     }
   }, [moves]);
 
@@ -137,49 +135,53 @@ export const TasksChessGame = ({
   useEffect(() => {
     if (!moves || !currentMove.move) return;
 
-    if (
-      currentMove.move !== moves[currentMove.order] &&
-      currentMove.order % 2 !== 0 &&
-      !chessboardRef.current?.getState().in_checkmate
-    ) {
-      handleErrorMove();
-      return;
-    }
+    InteractionManager.runAfterInteractions(() => {
+      if (
+        currentMove.move !== moves[currentMove.order] &&
+        currentMove.order % 2 !== 0 &&
+        !chessboardRef.current?.getState().in_checkmate
+      ) {
+        handleErrorMove();
+        return;
+      }
 
-    if (
-      currentMove.order !== 0 &&
-      currentMove.order % 2 !== 0 &&
-      currentMove.order < moves.length - 1
-    ) {
-      handleAutoMove();
-      return;
-    }
+      if (
+        currentMove.order !== 0 &&
+        currentMove.order % 2 !== 0 &&
+        currentMove.order < moves.length - 1
+      ) {
+        handleAutoMove();
+        return;
+      }
 
-    handlePlayerMove();
+      handlePlayerMove();
+    });
   }, [currentMove, moves]);
 
   useEffect(() => {
     if (puzzles.length > 0 && isTrainingStart) {
-      if (currentPuzzle === PUZZLES_QUANTITY) {
-        completeTask(userTaskId);
-        setIsConfetti(true);
-        resetGameState();
-        return;
-      }
+      InteractionManager.runAfterInteractions(() => {
+        if (currentPuzzle === PUZZLES_QUANTITY) {
+          completeTask();
+          setIsConfetti(true);
+          resetGameState();
+          return;
+        }
 
-      if (puzzles.length === currentPuzzle && lastInvalidated !== currentPuzzle) {
-        queryClient.invalidateQueries({ queryKey: ['puzzles tasks', task.id] });
-        setLastInvalidated(currentPuzzle);
-        return;
-      }
+        if (puzzles.length === currentPuzzle && lastInvalidated !== currentPuzzle) {
+          queryClient.invalidateQueries({ queryKey: ['puzzles tasks', task.id] });
+          setLastInvalidated(currentPuzzle);
+          return;
+        }
 
-      if (puzzles[currentPuzzle]) {
-        setMoves(puzzles[currentPuzzle].moves.split(' '));
-        setCurrentMove({ order: 0, move: null });
-        setPlayerColor(undefined);
-        chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);
-        setHints(3);
-      }
+        if (puzzles[currentPuzzle]) {
+          setMoves(puzzles[currentPuzzle].moves.split(' '));
+          setCurrentMove({ order: 0, move: null });
+          setPlayerColor(undefined);
+          chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);
+          setHints(3);
+        }
+      });
     }
   }, [puzzles, currentPuzzle, isTrainingStart]);
 
@@ -284,11 +286,6 @@ export const TasksChessGame = ({
                 </View>
               )}
             </View>
-            {isTrainingStart && puzzles[currentPuzzle] ? (
-              <View className={'self-end'}>
-                <Badge text1={'Rating'} text2={`${puzzles[currentPuzzle]?.rating}`} />
-              </View>
-            ) : null}
             <View className={'flex flex-col gap-3 px-4 mt-auto'}>
               {isTrainingStart && (
                 <Button
@@ -303,13 +300,9 @@ export const TasksChessGame = ({
               )}
               <Button
                 onPress={
-                  taskStatus === 'in_progress'
-                    ? isTrainingStart
-                      ? undefined
-                      : startTraining
-                    : taskStatus === 'completed' || isComplete
-                      ? closeModal
-                      : closeModal
+                  isPendingCompletion || isComplete || taskStatus === 'completed'
+                    ? closeModal
+                    : startTraining
                 }
                 disabled={isLoading || isTrainingStart || isPendingCompletion}
                 isLoading={isPendingCompletion}
@@ -318,12 +311,10 @@ export const TasksChessGame = ({
                 })}
               >
                 <TextStyled className={'text-base'}>
-                  {taskStatus === 'in_progress'
-                    ? isTrainingStart
+                  {taskStatus === 'completed' || isComplete
+                    ? 'Completed'
+                    : isTrainingStart
                       ? `${currentPuzzle}/${PUZZLES_QUANTITY}`
-                      : 'Start'
-                    : taskStatus === 'completed' || isComplete
-                      ? 'Completed'
                       : 'Start'}
                 </TextStyled>
               </Button>

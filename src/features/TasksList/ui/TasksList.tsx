@@ -8,6 +8,7 @@ import { TaskStatusType, TaskType } from '@/src/shared/model/types/tasks.types';
 import { cn } from '@/src/shared/lib/utils/cnUtils';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { TasksChessGame } from '@/src/features/TaskChessGame';
+import { presentPaywallIfNeeded } from '@/src/shared/lib/utils/presentPaywall';
 
 const TaskBlock = ({
   index,
@@ -20,9 +21,18 @@ const TaskBlock = ({
   setActiveTask?: () => void;
   isDisabled?: boolean;
 }) => {
+  const handlePress = async () => {
+    const isSubscribed = await presentPaywallIfNeeded();
+
+    if (isSubscribed) {
+      setActiveTask!();
+      return;
+    }
+  };
+
   return (
     <Pressable
-      onPress={setActiveTask}
+      onPress={index === 9 ? handlePress : setActiveTask}
       className={cn(
         'relative flex flex-col items-center justify-center gap-1 w-[30%] h-[110px] p-2 bg-primary-200 rounded-md border border-transparent',
         {
@@ -65,17 +75,18 @@ const TaskBlock = ({
 };
 
 export const TasksList = () => {
-  const { userTasks, tasks, isLoadingUserTasks, isLoadingTasks } = useGetTasks();
+  const { allTasks, isLoadingTasks } = useGetTasks();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [activeTask, setActiveTask] = useState<TaskType>();
+  const [activeIndex, setActiveIndex] = useState<number>();
 
-  if (isLoadingTasks || isLoadingUserTasks || !userTasks) return null;
+  if (isLoadingTasks) return null;
 
   return (
     <View>
       <View className={'flex flex-row gap-4 justify-between flex-wrap'}>
-        {tasks?.map((task, index) => {
-          if (!userTasks[index]) {
+        {allTasks?.tasks?.map((task, index) => {
+          if (index > allTasks.current_task) {
             return (
               <TaskBlock index={index} key={index} status={'locked'} isDisabled={true} />
             );
@@ -85,9 +96,10 @@ export const TasksList = () => {
             <TaskBlock
               index={index}
               key={index}
-              status={userTasks[index].status}
+              status={allTasks.current_task > index ? 'completed' : 'in_progress'}
               setActiveTask={() => {
                 setActiveTask(task);
+                setActiveIndex(index);
                 setIsTaskModalOpen(true);
               }}
             />
@@ -97,12 +109,9 @@ export const TasksList = () => {
       {isTaskModalOpen && activeTask && (
         <Modal visible={isTaskModalOpen} transparent={false} animationType={'slide'}>
           <TasksChessGame
-            task={activeTask!}
-            userTaskId={
-              userTasks.filter((item) => item.orderNum === activeTask.orderNum)[0].id
-            }
+            task={activeTask}
             taskStatus={
-              userTasks.filter((item) => item.orderNum === activeTask.orderNum)[0].status
+              allTasks!.current_task > activeIndex! ? 'completed' : 'in_progress'
             }
             closeModal={() => setIsTaskModalOpen(false)}
           />

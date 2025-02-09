@@ -7,6 +7,9 @@ export type PostType = {
   createdAt: string;
   profileId: string;
   profile: ProfileType;
+  _count: {
+    comments: number;
+  };
 };
 
 export type GetPostsType = {

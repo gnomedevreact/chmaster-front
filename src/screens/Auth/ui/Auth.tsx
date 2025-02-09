@@ -51,8 +51,8 @@ export const Auth = () => {
       email: '',
       password: '',
     },
-    mode: 'onChange',
-    reValidateMode: 'onChange',
+    mode: 'onBlur',
+    reValidateMode: 'onBlur',
   });
 
   const { signUpMutation, isPending } = useAuthMutations();

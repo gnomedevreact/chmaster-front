@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Dimensions, Modal, ScrollView, View } from 'react-native';
+import { Dimensions, InteractionManager, Modal, ScrollView, View } from 'react-native';
 import { useGetRandomPuzzles } from '@/src/shared/api/hooks/useGetRandomPuzzles';
 import Chessboard, { ChessboardRef } from '@gnomedevreact/ch-private';
 import { Move, Square } from 'chess.js';
@@ -95,8 +95,10 @@ export const ChessGame = () => {
 
   useEffect(() => {
     if (moves && chessboardRef?.current) {
-      makeMove(0);
-      setMoveEnabled(true);
+      InteractionManager.runAfterInteractions(() => {
+        makeMove(0);
+        setMoveEnabled(true);
+      });
     }
   }, [moves]);
 
@@ -140,42 +142,45 @@ export const ChessGame = () => {
   useEffect(() => {
     if (!moves || !currentMove.move) return;
 
-    if (
-      currentMove.move !== moves[currentMove.order] &&
-      currentMove.order % 2 !== 0 &&
-      !chessboardRef.current?.getState().in_checkmate
-    ) {
-      handleErrorMove();
-      return;
-    }
-
-    if (
-      currentMove.order !== 0 &&
-      currentMove.order % 2 !== 0 &&
-      currentMove.order < moves.length - 1
-    ) {
-      handleAutoMove();
-      return;
-    }
-
-    handlePlayerMove();
-  }, [currentMove, moves]);
-
-  useEffect(() => {
-    console.count('rerender');
-    if (puzzles.length > 0 && isTrainingStart) {
-      if (puzzles.length === currentPuzzle && lastInvalidated !== currentPuzzle) {
-        queryClient.invalidateQueries({ queryKey: ['puzzles'] });
-        setLastInvalidated(currentPuzzle);
+    InteractionManager.runAfterInteractions(() => {
+      if (
+        currentMove.move !== moves[currentMove.order] &&
+        currentMove.order % 2 !== 0 &&
+        !chessboardRef.current?.getState().in_checkmate
+      ) {
+        handleErrorMove();
         return;
       }
 
-      if (puzzles[currentPuzzle]) {
-        setMoves(puzzles[currentPuzzle].moves.split(' '));
-        setCurrentMove({ order: 0, move: null });
-        setPlayerColor(undefined);
-        chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);
+      if (
+        currentMove.order !== 0 &&
+        currentMove.order % 2 !== 0 &&
+        currentMove.order < moves.length - 1
+      ) {
+        handleAutoMove();
+        return;
       }
+
+      handlePlayerMove();
+    });
+  }, [currentMove, moves]);
+
+  useEffect(() => {
+    if (puzzles.length > 0 && isTrainingStart) {
+      InteractionManager.runAfterInteractions(() => {
+        if (puzzles.length === currentPuzzle && lastInvalidated !== currentPuzzle) {
+          queryClient.invalidateQueries({ queryKey: ['puzzles'] });
+          setLastInvalidated(currentPuzzle);
+          return;
+        }
+
+        if (puzzles[currentPuzzle]) {
+          setMoves(puzzles[currentPuzzle].moves.split(' '));
+          setCurrentMove({ order: 0, move: null });
+          setPlayerColor(undefined);
+          chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);
+        }
+      });
     }
   }, [puzzles, currentPuzzle, isTrainingStart]);
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, View } from 'react-native';
 import { Input } from '@/src/shared/ui/Input';
 import { Button } from '@/src/shared/ui/Button';
@@ -15,7 +15,15 @@ interface FormProps {
 export const ContentInput = () => {
   const [image, setImage] = useState<string | null>(null);
 
-  const { control, handleSubmit, reset } = useForm<FormProps>();
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isSubmitSuccessful },
+  } = useForm<FormProps>({
+    reValidateMode: 'onBlur',
+    mode: 'onBlur',
+  });
   const { createPost, isPending } = useCreatePost();
 
   const pickImage = async () => {
@@ -36,7 +44,6 @@ export const ContentInput = () => {
   const submit = ({ content }: FormProps) => {
     let formData = new FormData();
 
-    reset();
     removeImage();
 
     formData.append('content', content);
@@ -51,6 +58,12 @@ export const ContentInput = () => {
 
     createPost(formData);
   };
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+  }, [isSubmitSuccessful, reset]);
 
   return (
     <View>
