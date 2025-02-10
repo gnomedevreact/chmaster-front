@@ -2,7 +2,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -15,6 +15,8 @@ import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-rean
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Platform } from 'react-native';
 import Purchases from 'react-native-purchases';
+import SplashScreenCustom from '@/src/shared/ui/SplashScreenCustom';
+import { Asset } from 'expo-asset';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -29,7 +31,20 @@ export const unstable_settings = {
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+const preloadImages = async () => {
+  const images = [
+    require('../assets/images/new.png'),
+    require('../assets/images/test.webp'),
+    require('../assets/images/horse.svg'),
+    require('../assets/images/test2.webp'),
+    require('../assets/images/horse2.svg'),
+  ];
+  const cacheImages = images.map((image) => Asset.fromModule(image).downloadAsync());
+  return Promise.all(cacheImages);
+};
+
 export default function RootLayout() {
+  const [isReady, setIsReady] = useState(false);
   const [loaded, error] = useFonts({
     NunitoSans: require('@/src/assets/fonts/NunitoSans_10pt-Regular.ttf'),
     NunitoSansBold: require('@/src/assets/fonts/NunitoSans_10pt-Bold.ttf'),
@@ -42,10 +57,18 @@ export default function RootLayout() {
   }, [error]);
 
   useEffect(() => {
-    if (loaded) {
+    if (loaded && isReady) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, isReady]);
+
+  useEffect(() => {
+    async function loadAssets() {
+      await preloadImages();
+      setIsReady(true);
+    }
+    loadAssets();
+  }, []);
 
   if (!loaded) {
     return null;
@@ -74,6 +97,16 @@ const APIKeys = {
 };
 
 function RootLayoutNav() {
+  const [isSplashVisible, setIsSplashVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsSplashVisible(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     const setup = async () => {
       const isConfigured = await Purchases.isConfigured();
@@ -88,6 +121,10 @@ function RootLayoutNav() {
 
     setup();
   }, []);
+
+  if (isSplashVisible) {
+    return <SplashScreenCustom onFinish={() => setIsSplashVisible(false)} />;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>

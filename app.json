@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "chessmaster",
+    "name": "ChessMaster.",
     "slug": "chessmaster",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,9 +9,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./src/assets/images/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0F0F0F"
     },
     "ios": {
       "supportsTablet": true,
@@ -20,7 +19,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#0F0F0F"
       },
       "package": "com.chessmaster.app"
     },
