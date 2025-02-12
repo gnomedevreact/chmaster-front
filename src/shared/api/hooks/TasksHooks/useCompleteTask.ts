@@ -23,7 +23,6 @@ export const useCompleteTask = () => {
       });
     },
     onError(error: any) {
-      console.error(error);
       toast({
         message: error.message,
         type: 'danger',

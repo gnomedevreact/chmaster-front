@@ -1,8 +1,8 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Plan } from '@/src/screens/Plan';
 
 const PlanPage = () => {
-  return <View></View>;
+  return <Plan />;
 };
 
 export default PlanPage;

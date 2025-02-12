@@ -9,6 +9,7 @@ import { cn } from '@/src/shared/lib/utils/cnUtils';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { TasksChessGame } from '@/src/features/TaskChessGame';
 import { presentPaywallIfNeeded } from '@/src/shared/lib/utils/presentPaywall';
+import { ActivityIndicator } from 'react-native-paper';
 
 const TaskBlock = ({
   index,
@@ -69,7 +70,7 @@ const TaskBlock = ({
       <TextStyled className={'text-[24px]'} fontFamilyName={'NunitoSansBold'}>
         {convertToRoman(index + 1)}
       </TextStyled>
-      <TextStyled className={'text-base text-primary-300'}>day</TextStyled>
+      <TextStyled className={'text-base text-primary-300'}>task</TextStyled>
     </Pressable>
   );
 };
@@ -80,7 +81,9 @@ export const TasksList = () => {
   const [activeTask, setActiveTask] = useState<TaskType>();
   const [activeIndex, setActiveIndex] = useState<number>();
 
-  if (isLoadingTasks) return null;
+  if (isLoadingTasks) {
+    return <ActivityIndicator color={'#FAFAFA'} />;
+  }
 
   return (
     <View>

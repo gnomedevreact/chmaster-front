@@ -14,6 +14,9 @@ export type ProfileType = {
   streak_satisfied: boolean;
   streak: number;
   exp: number;
+  current_task: number;
+  current_phase: number;
+  current_exercise: number;
 };
 
 export type UpdateProfileType = {
