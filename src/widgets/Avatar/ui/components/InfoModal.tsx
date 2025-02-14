@@ -1,5 +1,4 @@
-import React, { useEffect, useRef } from 'react';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import React from 'react';
 import { Modal, View } from 'react-native';
 import { Button } from '@/src/shared/ui/Button';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
@@ -21,7 +20,6 @@ interface FormProps {
 export const InfoModal = (props: InfoModalProps) => {
   const { modalVisible, setModalVisible, name } = props;
 
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
   const {
     control,
     handleSubmit,
@@ -34,12 +32,6 @@ export const InfoModal = (props: InfoModalProps) => {
   });
 
   const { updateProfile, isPending } = useUpdateProfile();
-
-  useEffect(() => {
-    if (modalVisible) {
-      bottomSheetRef.current?.present();
-    }
-  }, [modalVisible]);
 
   const submit = (data: FormProps) => {
     updateProfile(data);

@@ -62,10 +62,13 @@ export const Input = (props: InputProps) => {
           backgroundColor: 'transparent',
           height: 48,
           borderRadius: 14,
+          color: '#FAFAFA',
         }}
         keyboardType={keyboardType}
         secureTextEntry={secure}
         autoCapitalize={'none'}
+        textColor={'#FAFAFA'}
+        theme={{ colors: { text: '#FAFAFA' } }}
         {...otherProps}
       />
     </View>

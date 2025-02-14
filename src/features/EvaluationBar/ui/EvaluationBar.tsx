@@ -92,14 +92,6 @@ export const EvaluationBar = ({
           ) : null}
         </View>
       </View>
-      {/*<ButtonCustom*/}
-      {/*  text={*/}
-      {/*    chessBoardRef.current?.getState().game_over ? 'Game over' : 'Analyze position'*/}
-      {/*  }*/}
-      {/*  onPress={() => evaluateFen(chessBoardRef.current?.getState().fen!)}*/}
-      {/*  loading={isPending}*/}
-      {/*  disabled={isPending || chessBoardRef.current?.getState().game_over}*/}
-      {/*/>*/}
     </View>
   );
 };

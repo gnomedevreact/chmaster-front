@@ -93,7 +93,7 @@ configureReanimatedLogger({
 
 const APIKeys = {
   apple: 'appl_yfABHlQRJlkvQYVTRMHjVpuenyP',
-  google: 's',
+  google: 'goog_JPQuCXThfpxujKWvBxfGvupPoXE',
 };
 
 function RootLayoutNav() {
@@ -108,13 +108,14 @@ function RootLayoutNav() {
   }, []);
 
   useEffect(() => {
+    Purchases.setLogLevel(Purchases.LOG_LEVEL.DEBUG);
     const setup = async () => {
       const isConfigured = await Purchases.isConfigured();
       if (!isConfigured) {
         if (Platform.OS == 'android') {
           Purchases.configure({ apiKey: APIKeys.google });
         } else {
-          Purchases.configure({ apiKey: APIKeys.apple! });
+          Purchases.configure({ apiKey: APIKeys.apple });
         }
       }
     };

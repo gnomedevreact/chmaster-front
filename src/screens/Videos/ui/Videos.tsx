@@ -4,8 +4,8 @@ import { View } from 'react-native';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { useGetVideoUrls } from '@/src/screens/Videos/hooks/useGetVideoUrls';
 import { VideoBlock } from '@/src/screens/Videos/ui/components/VideoBlock';
-import { useCheckSubscription } from '@/src/shared/hooks/useCheckSubscription';
 import { BackButton } from '@/src/shared/ui/BackButton';
+import { useCheckSubscription } from '@/src/shared/hooks/useCheckSubscription';
 
 export const Videos = () => {
   const { urls } = useGetVideoUrls();

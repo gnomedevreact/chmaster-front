@@ -17,6 +17,7 @@ export type ProfileType = {
   current_task: number;
   current_phase: number;
   current_exercise: number;
+  exercise_done: boolean;
 };
 
 export type UpdateProfileType = {

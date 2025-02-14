@@ -45,7 +45,7 @@ export const LinkBlock = (props: LinkBlockProps) => {
           <View className={'w-full flex flex-row items-center justify-between gap-2'}>
             <TextStyled
               fontFamilyName={'NunitoSansBold'}
-              className={'text-[32px] text-wrap whitespace-pre'}
+              className={'text-[32px] text-wrap whitespace-pre max-w-[300px]'}
             >
               {title}
             </TextStyled>

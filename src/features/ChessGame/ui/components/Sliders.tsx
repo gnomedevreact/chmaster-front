@@ -1,11 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import Slider from '@react-native-community/slider';
 import { View } from 'react-native';
 import { Input } from '@/src/shared/ui/Input';
 import { useForm } from 'react-hook-form';
-import { ButtonCustom } from '@/src/shared/ui/ButtonCustom';
-import { useBottomSheetModal } from '@gorhom/bottom-sheet';
-import { toast } from '@/src/shared/lib/utils/toast';
 import { storage } from '@/src/core/lib/store/storage';
 
 interface FormProps {
@@ -13,10 +10,17 @@ interface FormProps {
   maxRating: string;
 }
 
-export const Sliders = () => {
-  const [minSliderValue, setMinSliderValue] = useState(200);
-  const [maxSliderValue, setMaxSliderValue] = useState(800);
-
+export const Sliders = ({
+  maxSliderValue,
+  minSliderValue,
+  setMinSliderValue,
+  setMaxSliderValue,
+}: {
+  minSliderValue: number;
+  maxSliderValue: number;
+  setMinSliderValue: (e: number) => void;
+  setMaxSliderValue: (e: number) => void;
+}) => {
   const { control, setValue } = useForm<FormProps>({
     defaultValues: {
       minRating: String(minSliderValue),
@@ -24,7 +28,6 @@ export const Sliders = () => {
     },
     reValidateMode: 'onBlur',
   });
-  const { dismiss } = useBottomSheetModal();
 
   useEffect(() => {
     const getValues = async () => {
@@ -57,13 +60,6 @@ export const Sliders = () => {
     setValue('maxRating', String(newValue));
   };
 
-  const saveValues = async () => {
-    storage.set('minRating', String(minSliderValue));
-    storage.set('maxRating', String(maxSliderValue));
-    dismiss();
-    toast({ type: 'success', message: 'Options were successfully saved' });
-  };
-
   return (
     <View className={'flex flex-col gap-2'}>
       <View>
@@ -90,13 +86,6 @@ export const Sliders = () => {
           onValueChange={handleMaxSliderChange}
         />
       </View>
-      <ButtonCustom
-        text={'Save'}
-        isLight
-        padding={6}
-        textClassName={'text-xl'}
-        onPress={saveValues}
-      />
     </View>
   );
 };

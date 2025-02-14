@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Dimensions, InteractionManager, Modal, ScrollView, View } from 'react-native';
+import { InteractionManager, ScrollView, View } from 'react-native';
 import { useGetRandomPuzzles } from '@/src/shared/api/hooks/useGetRandomPuzzles';
-import Chessboard, { ChessboardRef } from '@gnomedevreact/ch-private';
+import { ChessboardRef } from '@gnomedevreact/ch-private';
 import { Move, Square } from 'chess.js';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { Timer } from '@/src/widgets/Timer';
@@ -10,17 +10,12 @@ import { Feather } from '@expo/vector-icons';
 import { OptionsModal } from '@/src/features/ChessGame/ui/components/OptionsModal';
 import { useQueryClient } from '@tanstack/react-query';
 import { useFocusEffect } from 'expo-router';
-import { ButtonCustom } from '@/src/shared/ui/ButtonCustom';
-import { cn } from '@/src/shared/lib/utils/cnUtils';
 import { StatsScreen } from '@/src/features/ChessGame/ui/components/StatsScreen';
 import { Puzzle } from '@/src/shared/model/types/puzzles.types';
-import { ActivityIndicator } from 'react-native-paper';
-import * as Haptics from 'expo-haptics';
 import { MIN_PUZZLES } from '@/src/features/ChessGame/lib/consts';
 import { Badge } from '@/src/shared/ui/Badge';
-
-const width = Dimensions.get('window').width;
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+import { Button } from '@/src/shared/ui/Button';
+import { Board } from '@/src/features/ChessGame/ui/components/Board';
 
 export const ChessGame = () => {
   const [isTrainingStart, setIsTrainingStart] = useState(false);
@@ -43,6 +38,8 @@ export const ChessGame = () => {
   const [errosCount, setErrorCount] = useState(0);
   const [puzzlesCopy, setPuzzlesCopy] = useState<Puzzle[]>([]);
   const [currentPuzzleCopy, setCurrentPuzzleCopy] = useState(0);
+
+  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const resetGameStateLocal = () => {
     setIsTrainingStart(false);
@@ -77,7 +74,7 @@ export const ChessGame = () => {
   const makeMove = useCallback(
     (index: number) => {
       if (!chessboardRef.current || !moves) return;
-      chessboardRef.current.move({
+      chessboardRef?.current?.move({
         from: moves[index].substring(0, 2) as Square,
         to: moves[index].substring(2) as Square,
       });
@@ -85,20 +82,18 @@ export const ChessGame = () => {
     [moves],
   );
 
-  const formatMove = (currMove: Move) => {
+  const formatMove = useCallback((currMove: Move) => {
     let move = currMove.from + currMove.to;
     if (currMove.promotion) {
       move += currMove.promotion;
     }
     return move;
-  };
+  }, []);
 
   useEffect(() => {
     if (moves && chessboardRef?.current) {
-      InteractionManager.runAfterInteractions(() => {
-        makeMove(0);
-        setMoveEnabled(true);
-      });
+      makeMove(0);
+      setMoveEnabled(true);
     }
   }, [moves]);
 
@@ -125,8 +120,7 @@ export const ChessGame = () => {
     }));
 
     makeMove(nextOrder);
-    return;
-  }, [currentMove.order, moves, makeMove]);
+  }, [currentMove.order, makeMove]);
 
   const handlePlayerMove = useCallback(() => {
     if (moves) {
@@ -167,38 +161,47 @@ export const ChessGame = () => {
 
   useEffect(() => {
     if (puzzles.length > 0 && isTrainingStart) {
-      InteractionManager.runAfterInteractions(() => {
-        if (puzzles.length === currentPuzzle && lastInvalidated !== currentPuzzle) {
-          queryClient.invalidateQueries({ queryKey: ['puzzles'] });
-          setLastInvalidated(currentPuzzle);
-          return;
-        }
+      if (puzzles.length === currentPuzzle && lastInvalidated !== currentPuzzle) {
+        queryClient.invalidateQueries({ queryKey: ['puzzles'] });
+        setLastInvalidated(currentPuzzle);
+        return;
+      }
 
-        if (puzzles[currentPuzzle]) {
-          setMoves(puzzles[currentPuzzle].moves.split(' '));
-          setCurrentMove({ order: 0, move: null });
-          setPlayerColor(undefined);
-          chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);
-        }
-      });
+      if (puzzles[currentPuzzle]) {
+        setMoves(puzzles[currentPuzzle].moves.split(' '));
+        setCurrentMove({ order: 0, move: null });
+        setPlayerColor(undefined);
+        chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);
+      }
     }
   }, [puzzles, currentPuzzle, isTrainingStart]);
 
-  const startTraining = () => {
+  const startTraining = useCallback(() => {
     setIsTrainingStart(true);
     setIsActiveTimer(true);
     setMoveEnabled(true);
-  };
+  }, []);
 
-  const stopTraining = () => {
+  const stopTraining = useCallback(() => {
     setIsActiveTimer(false);
     setMoveEnabled(false);
-  };
+  }, []);
 
-  const resetTimer = () => {
+  const resetTimer = useCallback(() => {
     setIsReset(true);
     resetGameState();
-  };
+  }, []);
+
+  const openSettings = useCallback(() => {
+    setIsModalOpen(true);
+  }, []);
+
+  const closeGameStatsModal = useCallback(() => {
+    setIsGameStats(false);
+    setPuzzlesCopy([]);
+    setErrorCount(0);
+    setCurrentPuzzleCopy(0);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -237,84 +240,43 @@ export const ChessGame = () => {
           />
         </View>
         {!isActiveTimer && (
-          <FabCustom size={'medium'} onPress={() => setIsModalOpen(true)}>
+          <FabCustom size={'medium'} onPress={openSettings}>
             <Feather name="settings" size={24} color="white" />
           </FabCustom>
         )}
       </View>
-      <View
-        className={cn('justify-center items-center relative', {
-          'pointer-events-none': !moveEnabled,
-        })}
-      >
-        <View className={'items-center'} style={{ minHeight: width, minWidth: width }}>
-          <Chessboard
-            gestureEnabled={moveEnabled}
-            fen={puzzles.length > 0 ? puzzles[0].fen : undefined}
-            ref={chessboardRef}
-            colors={{ black: '#b58863', white: '#f0d9b5' }}
-            durations={{ move: 120 }}
-            onMove={({ state, move }) => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-              if (playerColor && playerColor === move.color) {
-                setMoveEnabled(false);
-              } else {
-                setMoveEnabled(true);
-              }
-              if (!playerColor) {
-                setPlayerColor(move.color === 'w' ? 'b' : 'w');
-              }
-              const formattedMove = formatMove(move);
-              setCurrentMove((prevState) => {
-                return { order: prevState.order, move: formattedMove };
-              });
-            }}
-          />
-        </View>
-        {isLoading && (
-          <View
-            className={`absolute top-0 flex items-center justify-center bg-primary-200 opacity-80 z-[99999]`}
-            style={{
-              width: Math.floor(width / 8) * 8,
-              height: Math.floor(width / 8) * 8,
-            }}
-          >
-            <ActivityIndicator color={'#DA0C81'} size={'large'} />
-          </View>
+      <Board
+        moveEnabled={moveEnabled}
+        setMoveEnabled={setMoveEnabled}
+        chessboardRef={chessboardRef}
+        playerColor={playerColor}
+        setPlayerColor={setPlayerColor}
+        isLoading={isLoading}
+        formatMove={formatMove}
+        setCurrentMove={setCurrentMove}
+      />
+      <View className={'flex flex-col gap-3 px-4 mt-auto'}>
+        <Button onPress={isActiveTimer ? stopTraining : startTraining}>
+          <TextStyled>{isActiveTimer ? 'Stop' : 'Start'}</TextStyled>
+        </Button>
+        {isActiveTimer && (
+          <Button onPress={resetTimer} isLight={false}>
+            <TextStyled className={'text-lg'}>Reset</TextStyled>
+          </Button>
         )}
       </View>
-      <View className={'flex flex-col gap-3 px-4 mt-auto'}>
-        <ButtonCustom
-          text={isActiveTimer ? 'Stop' : 'Start'}
-          onPress={isActiveTimer ? stopTraining : startTraining}
-          isLight
-        />
-        {isActiveTimer && <ButtonCustom text={'Reset'} onPress={resetTimer} />}
-      </View>
       <OptionsModal modalVisible={isModalOpen} setModalVisible={setIsModalOpen} />
-      {isGameStats && (
-        <Modal
-          visible={isGameStats}
-          transparent={false}
-          animationType={'slide'}
-          onRequestClose={() => {
-            setIsGameStats(false);
-            setPuzzlesCopy([]);
-            setErrorCount(0);
-            setCurrentPuzzleCopy(0);
-          }}
-        >
-          <StatsScreen
-            errors={errosCount}
-            puzzles={puzzlesCopy}
-            setErrors={setErrorCount}
-            setIsStats={setIsGameStats}
-            setPuzzlesCopy={setPuzzlesCopy}
-            setCurrentPuzzleCopy={setCurrentPuzzleCopy}
-            currentPuzzleCopy={currentPuzzleCopy}
-          />
-        </Modal>
-      )}
+      <StatsScreen
+        errors={errosCount}
+        puzzles={puzzlesCopy}
+        setErrors={setErrorCount}
+        setIsStats={setIsGameStats}
+        setPuzzlesCopy={setPuzzlesCopy}
+        setCurrentPuzzleCopy={setCurrentPuzzleCopy}
+        currentPuzzleCopy={currentPuzzleCopy}
+        isGameStats={isGameStats}
+        closeGameStatsModal={closeGameStatsModal}
+      />
     </ScrollView>
   );
 };

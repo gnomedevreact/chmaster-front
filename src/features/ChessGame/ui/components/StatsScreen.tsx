@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Modal, View } from 'react-native';
 import { Puzzle } from '@/src/shared/model/types/puzzles.types';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { Container } from '@/src/widgets/Container';
-import { ButtonCustom } from '@/src/shared/ui/ButtonCustom';
 import { Badge } from '@/src/shared/ui/Badge';
 import { useUpdateProfileStats } from '@/src/shared/api/hooks/useUpdateProfileStats';
 import { useProfileStore } from '@/src/core/lib/store/profile.store';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { Button } from '@/src/shared/ui/Button';
 
 interface StatsScreenProps {
   errors: number;
@@ -17,6 +17,8 @@ interface StatsScreenProps {
   setPuzzlesCopy: (e: Puzzle[]) => void;
   setCurrentPuzzleCopy: (e: number) => void;
   currentPuzzleCopy: number;
+  isGameStats: boolean;
+  closeGameStatsModal: () => void;
 }
 
 function capitalize(str: string) {
@@ -87,6 +89,8 @@ export const StatsScreen = React.memo((props: StatsScreenProps) => {
     setPuzzlesCopy,
     setCurrentPuzzleCopy,
     currentPuzzleCopy,
+    isGameStats,
+    closeGameStatsModal,
   } = props;
   const profile = useProfileStore((state) => state.profileData);
 
@@ -115,86 +119,93 @@ export const StatsScreen = React.memo((props: StatsScreenProps) => {
   };
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView className={'flex-1 bg-[#0F0F0F]'}>
-        <Container className={'py-4 bg-primary-400'}>
-          <View className={'flex flex-row items-center gap-3'}>
-            <TextStyled className={'text-[26px] w-[120px]'}>Solved</TextStyled>
-            <TextStyled
-              className={'text-[42px] text-primary-100'}
-              fontFamilyName={'NunitoSansBold'}
-            >
-              {currentPuzzleCopy}
-            </TextStyled>
-          </View>
-          <View className={'flex flex-row items-center gap-3'}>
-            <TextStyled className={'text-[26px] w-[120px]'}>Mistakes</TextStyled>
-            <TextStyled
-              className={'text-[42px] text-[#b20000]'}
-              fontFamilyName={'NunitoSansBold'}
-            >
-              {errors}
-            </TextStyled>
-          </View>
-          <View className={'flex flex-col gap-5 mt-5 mb-5'}>
-            <View className={'flex flex-row gap-5'}>
-              <Badge
-                text1={`Accuracy`}
-                text2={`${calculateAccuracy(puzzles.length, errors)}%`}
-              />
-              <Badge text1={`+${calculateExp(puzzles)}`} text2={'EXP'} />
-            </View>
-            <TextStyled className={'text-[28px]'}>Hardest solved puzzle</TextStyled>
-            <View className={'flex flex-row flex-wrap gap-2'}>
-              <Badge text1={`Rating`} text2={`${bestPuzzle.rating}`} />
-              <Badge text1={`Popularity`} text2={`${bestPuzzle.popularity}%`} />
-              <Badge
-                text1={`Theme`}
-                text2={`${capitalize(splitByCapitalLetters(bestPuzzle.themes.split(' ')[0]))}`}
-              />
-              <Badge text1={`Attempts`} text2={`${bestPuzzle.attempts}`} />
-            </View>
-            <View>
-              <TextStyled>Recommended puzzle rating :</TextStyled>
-              <View className={'flex flex-row items-center gap-3'}>
-                <TextStyled>From</TextStyled>
-                <TextStyled
-                  className={'text-primary-100 text-[28px]'}
-                  fontFamilyName={'NunitoSansBold'}
-                >
-                  {calculateRecommendedRating(
-                    puzzles,
-                    puzzles.length,
-                    errors,
-                    calculateAccuracy(puzzles.length, errors),
-                  ) - 200}
-                </TextStyled>
-                <TextStyled>To</TextStyled>
-                <TextStyled
-                  className={'text-primary-100 text-[28px]'}
-                  fontFamilyName={'NunitoSansBold'}
-                >
-                  {calculateRecommendedRating(
-                    puzzles,
-                    puzzles.length,
-                    errors,
-                    calculateAccuracy(puzzles.length, errors),
-                  )}
-                </TextStyled>
-              </View>
-            </View>
-          </View>
-          <View className={'mt-auto'}>
-            <ButtonCustom
-              text={'Continue'}
-              isLight
-              padding={5}
-              textClassName={'text-lg'}
-              onPress={handleModalClose}
-            />
-          </View>
-        </Container>
-      </SafeAreaView>
-    </SafeAreaProvider>
+    <>
+      {isGameStats && (
+        <Modal
+          visible={isGameStats}
+          transparent={false}
+          animationType={'slide'}
+          onRequestClose={closeGameStatsModal}
+        >
+          <SafeAreaProvider>
+            <SafeAreaView className={'flex-1 bg-[#0F0F0F]'}>
+              <Container className={'py-4 bg-primary-400'}>
+                <View className={'flex flex-row items-center gap-3'}>
+                  <TextStyled className={'text-[26px] w-[120px]'}>Solved</TextStyled>
+                  <TextStyled
+                    className={'text-[42px] text-primary-100'}
+                    fontFamilyName={'NunitoSansBold'}
+                  >
+                    {currentPuzzleCopy}
+                  </TextStyled>
+                </View>
+                <View className={'flex flex-row items-center gap-3'}>
+                  <TextStyled className={'text-[26px] w-[120px]'}>Mistakes</TextStyled>
+                  <TextStyled
+                    className={'text-[42px] text-[#b20000]'}
+                    fontFamilyName={'NunitoSansBold'}
+                  >
+                    {errors}
+                  </TextStyled>
+                </View>
+                <View className={'flex flex-col gap-5 mt-5 mb-5'}>
+                  <View className={'flex flex-row gap-5'}>
+                    <Badge
+                      text1={`Accuracy`}
+                      text2={`${calculateAccuracy(puzzles.length, errors)}%`}
+                    />
+                    <Badge text1={`+${calculateExp(puzzles)}`} text2={'EXP'} />
+                  </View>
+                  <TextStyled className={'text-[28px]'}>Hardest solved puzzle</TextStyled>
+                  <View className={'flex flex-row flex-wrap gap-2'}>
+                    <Badge text1={`Rating`} text2={`${bestPuzzle.rating}`} />
+                    <Badge text1={`Popularity`} text2={`${bestPuzzle.popularity}%`} />
+                    <Badge
+                      text1={`Theme`}
+                      text2={`${capitalize(splitByCapitalLetters(bestPuzzle.themes.split(' ')[0]))}`}
+                    />
+                    <Badge text1={`Attempts`} text2={`${bestPuzzle.attempts}`} />
+                  </View>
+                  <View>
+                    <TextStyled>Recommended puzzle rating :</TextStyled>
+                    <View className={'flex flex-row items-center gap-3'}>
+                      <TextStyled>From</TextStyled>
+                      <TextStyled
+                        className={'text-primary-100 text-[28px]'}
+                        fontFamilyName={'NunitoSansBold'}
+                      >
+                        {calculateRecommendedRating(
+                          puzzles,
+                          puzzles.length,
+                          errors,
+                          calculateAccuracy(puzzles.length, errors),
+                        ) - 200}
+                      </TextStyled>
+                      <TextStyled>To</TextStyled>
+                      <TextStyled
+                        className={'text-primary-100 text-[28px]'}
+                        fontFamilyName={'NunitoSansBold'}
+                      >
+                        {calculateRecommendedRating(
+                          puzzles,
+                          puzzles.length,
+                          errors,
+                          calculateAccuracy(puzzles.length, errors),
+                        )}
+                      </TextStyled>
+                    </View>
+                  </View>
+                </View>
+                <View className={'mt-auto'}>
+                  <Button onPress={handleModalClose}>
+                    <TextStyled className={'text-lg'}>Continue</TextStyled>
+                  </Button>
+                </View>
+              </Container>
+            </SafeAreaView>
+          </SafeAreaProvider>
+        </Modal>
+      )}
+    </>
   );
 });

@@ -22,6 +22,7 @@ const ExercisesSection = ({
   currentPhase,
   setActiveExercise,
   openModal,
+  exercise_done,
 }: {
   exercises: ExerciseType[];
   phase: number;
@@ -33,10 +34,12 @@ const ExercisesSection = ({
     phase: number;
   }) => void;
   openModal: () => void;
+  exercise_done: boolean;
 }) => {
   const [isShown, setIsShown] = useState(false);
 
   const isLocked = phase > currentPhase;
+  const isLockedUntilTomorrow = exercise_done;
 
   const currentExerciseRecalculated =
     phase > 1 ? currentExercise - (phase - 1) * 25 : currentExercise;
@@ -64,20 +67,24 @@ const ExercisesSection = ({
             <Pressable
               className={'flex flex-row justify-between p-3 border-l border-primary-500'}
               onPress={
-                currentExerciseRecalculated >= index
-                  ? () => {
-                      setActiveExercise({ exercise, orderNum: index, phase });
-                      openModal();
-                    }
-                  : undefined
+                currentExerciseRecalculated === index && isLockedUntilTomorrow
+                  ? undefined
+                  : currentExerciseRecalculated >= index
+                    ? () => {
+                        setActiveExercise({ exercise, orderNum: index, phase });
+                        openModal();
+                      }
+                    : undefined
               }
               key={index}
             >
-              <TextStyled
-                className={'text-primary-600'}
-              >{`#${index + 1} Exercise (day ${index + 1})`}</TextStyled>
+              <TextStyled className={'text-primary-600'}>
+                {isLockedUntilTomorrow && currentExerciseRecalculated === index
+                  ? 'Locked until tomorrow'
+                  : `#${index + 1} Exercise (day ${index + 1})`}
+              </TextStyled>
               <View className={'flex items-center justify-center w-10 h-10'}>
-                {currentExerciseRecalculated === index && (
+                {currentExerciseRecalculated === index && !isLockedUntilTomorrow && (
                   <MaterialCommunityIcons
                     name="progress-clock"
                     size={30}
@@ -89,6 +96,9 @@ const ExercisesSection = ({
                 )}
                 {currentExerciseRecalculated < index && (
                   <FontAwesome name="lock" size={30} color="#71797E" />
+                )}
+                {currentExerciseRecalculated === index && isLockedUntilTomorrow && (
+                  <MaterialCommunityIcons name="hours-24" size={30} color="#89CFF0" />
                 )}
               </View>
             </Pressable>
@@ -138,6 +148,7 @@ export const ExercisesList = ({
             currentExercise={currentExercise}
             setActiveExercise={setActiveExercise}
             openModal={openModal}
+            exercise_done={data.exercise_done}
             key={index}
           />
         );

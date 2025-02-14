@@ -9,4 +9,5 @@ export type GetExercisesType = {
   exercises: ExerciseType[];
   current_exercise: number;
   current_phase: number;
+  exercise_done: boolean;
 };

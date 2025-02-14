@@ -9,6 +9,10 @@ export const PuzzlesService = {
         minRating: storage.getString('minRating') || 200,
         maxRating: storage.getString('maxRating') || 800,
         limit,
+        searchTerm:
+          storage.getString('theme') === 'ALL'
+            ? undefined
+            : storage.getString('theme') || undefined,
       },
     });
   },

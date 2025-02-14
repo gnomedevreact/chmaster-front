@@ -21,7 +21,6 @@ export async function presentPaywallIfNeeded() {
   try {
     const customerInfo = await Purchases.getCustomerInfo();
     const active = customerInfo.activeSubscriptions[0];
-    console.log(customerInfo);
 
     if (!active) {
       await presentPaywall();

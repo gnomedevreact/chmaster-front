@@ -23,7 +23,7 @@ export const useGetRandomPuzzles = ({
     error,
   } = useQuery({
     queryKey: ['puzzles'],
-    queryFn: () => PuzzlesService.getRandomPuzzles({ limit: puzzles.length > 0 ? 2 : 2 }),
+    queryFn: () => PuzzlesService.getRandomPuzzles({ limit: puzzles.length > 0 ? 5 : 5 }),
     select: ({ data }) => data,
     enabled: isTrainingStart,
   });
@@ -34,6 +34,17 @@ export const useGetRandomPuzzles = ({
   };
 
   useEffect(() => {
+    if (isTrainingStart && fetchedPuzzles!.length <= 0) {
+      toast({
+        message: 'No such puzzles (try to change min/max rating)',
+        type: 'danger',
+      });
+      resetGameStateLocal();
+      resetPuzzles();
+
+      return;
+    }
+
     if (fetchedPuzzles) {
       setPuzzles((prevState) => [...prevState, ...fetchedPuzzles]);
       setPuzzlesCopy((prevState) => [...prevState, ...fetchedPuzzles]);

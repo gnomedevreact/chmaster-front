@@ -8,12 +8,9 @@ import {
 } from 'react-native';
 import { supabase } from '@/src/core/lib/supabase';
 import { Container } from '@/src/widgets/Container';
-import { ButtonCustom } from '@/src/shared/ui/ButtonCustom';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { Input } from '@/src/shared/ui/Input';
 import { Separator } from '@/src/shared/ui/Separator';
-
-import Logo from '../../../assets/images/logo.svg';
 import { useForm } from 'react-hook-form';
 import { useAuthMutations } from '@/src/shared/api/hooks/useAuthMutations';
 import { toast } from '@/src/shared/lib/utils/toast';
@@ -22,6 +19,7 @@ import { AuthHelpers } from '@/src/shared/lib/helpers/auth.helpers';
 import { GoogleSignInBtn } from '@/src/features/GoogleSignInBtn/GoogleSignInBtn';
 import { useProfileStore } from '@/src/core/lib/store/profile.store';
 import Purchases from 'react-native-purchases';
+import { Button } from '@/src/shared/ui/Button';
 
 interface FormProps {
   email: string;
@@ -134,15 +132,15 @@ export const Auth = () => {
           </View>
           <View className={'flex flex-col gap-8'}>
             <View className={'flex flex-col gap-6'}>
-              <ButtonCustom
-                text={'Continue'}
-                isLight
-                loading={isPending || loading}
+              <Button
+                isLoading={isPending || loading}
                 disabled={!!(errors.email || errors.password) || isFormEmpty}
                 onPress={
                   isAuth ? handleSubmit(signInWithEmail) : handleSubmit(signUpWithEmail)
                 }
-              />
+              >
+                <TextStyled className={'text-base'}>Continue</TextStyled>
+              </Button>
               <Pressable onPress={() => setIsAuth(!isAuth)}>
                 <TextStyled
                   className={
@@ -155,12 +153,6 @@ export const Auth = () => {
             </View>
             <Separator />
             <GoogleSignInBtn />
-          </View>
-          <View className={'flex-1 flex flex-col items-center justify-end gap-4'}>
-            <Logo />
-            <TextStyled className={'text-[36px] font-semibold text-primary-white'}>
-              Chess Master
-            </TextStyled>
           </View>
         </View>
       </TouchableWithoutFeedback>

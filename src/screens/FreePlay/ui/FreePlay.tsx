@@ -10,7 +10,6 @@ import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { Input } from '@/src/shared/ui/Input';
 import { useForm } from 'react-hook-form';
 import { validateFen } from '@/src/shared/lib/utils/validateFen';
-import { ButtonCustom } from '@/src/shared/ui/ButtonCustom';
 import { useEvaluateFen } from '@/src/features/EvaluationBar/api/hooks/useEvaluateFen';
 
 const width = Dimensions.get('window').width;
@@ -119,16 +118,18 @@ export const FreePlay = () => {
                 <Entypo name="chevron-right" size={24} color="white" />
               </Button>
             </View>
-            <ButtonCustom
-              text={
-                chessboardRef.current?.getState().game_over
-                  ? 'Game over'
-                  : 'Analyze position'
-              }
+            <Button
               onPress={() => evaluateFen(chessboardRef.current?.getState().fen!)}
-              loading={isPending}
+              isLoading={isPending}
               disabled={isPending || chessboardRef.current?.getState().game_over}
-            />
+              isLight={false}
+            >
+              <TextStyled>
+                {chessboardRef.current?.getState().game_over
+                  ? 'Game over'
+                  : 'Analyze position'}
+              </TextStyled>
+            </Button>
           </View>
         </View>
       </View>
