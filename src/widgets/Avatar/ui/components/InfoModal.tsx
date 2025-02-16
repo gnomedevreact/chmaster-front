@@ -45,7 +45,7 @@ export const InfoModal = (props: InfoModalProps) => {
       className={'flex-1'}
       onRequestClose={() => setModalVisible(false)}
     >
-      <View className={'flex flex-1 flex-col gap-4 pb-4 bg-primary-400 p-4'}>
+      <View className={'flex flex-1 flex-col gap-4 pb-20 bg-primary-400 p-4'}>
         <Button
           className={'w-[50px] h-[50px] mb-10'}
           isLight={false}
@@ -76,6 +76,9 @@ export const InfoModal = (props: InfoModalProps) => {
             <TextStyled className={'text-base'}>Save</TextStyled>
           </Button>
         </View>
+        <TextStyled className={'self-center mt-auto text-primary-600'}>
+          chessmaster.help@gmail.com
+        </TextStyled>
       </View>
     </Modal>
   );

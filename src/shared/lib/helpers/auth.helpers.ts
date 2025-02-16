@@ -6,8 +6,10 @@ import { storage } from '@/src/core/lib/store/storage';
 import { router } from 'expo-router';
 
 export const AuthHelpers = {
-  async logout() {
-    router.replace('/auth');
+  async logout(replace: boolean = true) {
+    if (replace) {
+      router.replace('/auth');
+    }
     await supabase.auth.signOut();
     await GoogleSignin.signOut();
     await AsyncStorage.clear();

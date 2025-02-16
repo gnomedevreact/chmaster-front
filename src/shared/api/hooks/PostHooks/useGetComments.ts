@@ -9,6 +9,7 @@ export const useGetComments = (postId: string) => {
     initialPageParam: null,
     getNextPageParam: (lastPage) => lastPage.data.nextCursor,
     staleTime: 1000 * 60 * 5,
+    enabled: !!postId,
   });
 
   return { data, fetchNextPage, hasNextPage, isFetchingNextPage };

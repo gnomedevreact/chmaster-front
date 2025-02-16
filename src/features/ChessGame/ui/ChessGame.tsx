@@ -268,17 +268,19 @@ export const ChessGame = () => {
         )}
       </View>
       <OptionsModal modalVisible={isModalOpen} setModalVisible={setIsModalOpen} />
-      <StatsScreen
-        errors={errosCount}
-        puzzles={puzzlesCopy}
-        setErrors={setErrorCount}
-        setIsStats={setIsGameStats}
-        setPuzzlesCopy={setPuzzlesCopy}
-        setCurrentPuzzleCopy={setCurrentPuzzleCopy}
-        currentPuzzleCopy={currentPuzzleCopy}
-        isGameStats={isGameStats}
-        closeGameStatsModal={closeGameStatsModal}
-      />
+      {isGameStats && (
+        <StatsScreen
+          errors={errosCount}
+          puzzles={puzzlesCopy}
+          setErrors={setErrorCount}
+          setIsStats={setIsGameStats}
+          setPuzzlesCopy={setPuzzlesCopy}
+          setCurrentPuzzleCopy={setCurrentPuzzleCopy}
+          currentPuzzleCopy={currentPuzzleCopy}
+          isGameStats={isGameStats}
+          closeGameStatsModal={closeGameStatsModal}
+        />
+      )}
     </ScrollView>
   );
 };

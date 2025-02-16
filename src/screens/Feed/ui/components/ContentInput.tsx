@@ -23,6 +23,9 @@ export const ContentInput = () => {
   } = useForm<FormProps>({
     reValidateMode: 'onBlur',
     mode: 'onBlur',
+    defaultValues: {
+      content: '',
+    },
   });
   const { createPost, isPending } = useCreatePost();
 

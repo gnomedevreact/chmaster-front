@@ -31,7 +31,6 @@ export const Timer = React.memo((props: TimerProps) => {
 
   useEffect(() => {
     if (seconds === 0) {
-      console.log(puzzlesCopy);
       if (puzzlesCopy >= MIN_PUZZLES) {
         setIsStats(true);
       }

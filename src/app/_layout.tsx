@@ -96,13 +96,6 @@ const APIKeys = {
   apple: 'appl_yfABHlQRJlkvQYVTRMHjVpuenyP',
   google: 'goog_JPQuCXThfpxujKWvBxfGvupPoXE',
 };
-// Notifications.setNotificationHandler({
-//   handleNotification: async () => ({
-//     shouldShowAlert: true,
-//     shouldPlaySound: false,
-//     shouldSetBadge: false,
-//   }),
-// });
 
 function RootLayoutNav() {
   const [isSplashVisible, setIsSplashVisible] = useState(true);
@@ -116,7 +109,6 @@ function RootLayoutNav() {
   }, []);
 
   useEffect(() => {
-    Purchases.setLogLevel(Purchases.LOG_LEVEL.DEBUG);
     const setup = async () => {
       const isConfigured = await Purchases.isConfigured();
       if (!isConfigured) {

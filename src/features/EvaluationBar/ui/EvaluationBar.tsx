@@ -30,11 +30,8 @@ export const EvaluationBar = ({
   }
 
   const updateEvaluationBar = (score: number) => {
-    console.log(score);
-
     const normalizedPercentage = normalizeStockfishEvaluation(score);
 
-    console.log(normalizedPercentage);
     setWinningPercentage(Math.floor(normalizedPercentage));
   };
 

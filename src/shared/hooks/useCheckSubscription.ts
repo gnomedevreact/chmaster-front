@@ -16,7 +16,6 @@ export const useCheckSubscription = async () => {
           return;
         }
       } catch (error) {
-        console.log('Error checking subscription:', error);
         return false;
       }
     })();

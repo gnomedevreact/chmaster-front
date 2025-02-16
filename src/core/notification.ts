@@ -28,8 +28,4 @@ export async function scheduleDailyNotification() {
       minute: 30,
     },
   });
-  console.log('✅ Уведомления запущены');
-
-  const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
-  console.log('Запланированные уведомления:', scheduledNotifications);
 }

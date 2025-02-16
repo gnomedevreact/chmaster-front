@@ -29,7 +29,6 @@ export async function presentPaywallIfNeeded() {
 
     return true;
   } catch (error) {
-    console.log('Error checking subscription:', error);
     return false;
   }
 }

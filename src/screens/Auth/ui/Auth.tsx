@@ -14,7 +14,7 @@ import { Separator } from '@/src/shared/ui/Separator';
 import { useForm } from 'react-hook-form';
 import { useAuthMutations } from '@/src/shared/api/hooks/useAuthMutations';
 import { toast } from '@/src/shared/lib/utils/toast';
-import { router } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { AuthHelpers } from '@/src/shared/lib/helpers/auth.helpers';
 import { GoogleSignInBtn } from '@/src/features/GoogleSignInBtn/GoogleSignInBtn';
 import { useProfileStore } from '@/src/core/lib/store/profile.store';
@@ -49,8 +49,8 @@ export const Auth = () => {
       email: '',
       password: '',
     },
-    mode: 'onBlur',
-    reValidateMode: 'onBlur',
+    mode: 'onChange',
+    reValidateMode: 'onChange',
   });
 
   const { signUpMutation, isPending } = useAuthMutations();
@@ -82,7 +82,7 @@ export const Auth = () => {
         message: generalError.message,
       });
 
-      await AuthHelpers.logout();
+      await AuthHelpers.logout(false);
     }
 
     if (!generalError) {
@@ -107,7 +107,7 @@ export const Auth = () => {
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>
         <View className={'flex-1 flex flex-col gap-4'}>
           <View className={'flex flex-col gap-4 mb-6'}>
-            <TextStyled className={'text-2xl font-medium text-primary-white'}>
+            <TextStyled className={'text-[28px] font-medium text-primary-white'}>
               {!isAuth ? 'Sign Up' : 'Sign In'}
             </TextStyled>
             <Input
@@ -144,7 +144,7 @@ export const Auth = () => {
               <Pressable onPress={() => setIsAuth(!isAuth)}>
                 <TextStyled
                   className={
-                    'text-base font-medium text-primary-white self-center opacity-80'
+                    'text-lg font-medium text-primary-white self-center opacity-80'
                   }
                 >
                   {isAuth ? 'Sign Up' : 'Sign In'}
@@ -153,6 +153,13 @@ export const Auth = () => {
             </View>
             <Separator />
             <GoogleSignInBtn />
+            <View className={'mt-auto'}>
+              <TextStyled className={'text-primary-600 self-center text-[8px]'}>
+                By continuing, you agree to the{' '}
+                <Link href={'https://chmaster-terms.vercel.app/'}>Terms of Use</Link> and{' '}
+                <Link href={'https://chmaster-privacy.vercel.app/'}>Privacy Policy</Link>.
+              </TextStyled>
+            </View>
           </View>
         </View>
       </TouchableWithoutFeedback>

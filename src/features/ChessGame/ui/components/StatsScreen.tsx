@@ -109,7 +109,7 @@ export const StatsScreen = React.memo((props: StatsScreenProps) => {
       });
       setIsStatsUpdated(true);
     }
-  }, [isStatsUpdated]);
+  }, [isStatsUpdated, puzzles]);
 
   const handleModalClose = () => {
     setIsStats(false);

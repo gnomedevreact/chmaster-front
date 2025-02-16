@@ -17,7 +17,6 @@ const ChessOpeningQuiz = ({ isWhite }: { isWhite: boolean }) => {
   const { push } = useRouter();
 
   const handleAnswer = (next: number | 'result', resultKey: keyof typeof results) => {
-    console.log(next, resultKey);
     if (next === 'result' && resultKey) {
       setResult(results[resultKey]);
     } else {

@@ -49,21 +49,17 @@ export function GoogleSignInBtn() {
           }
         } catch (error: any) {
           if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-            console.log(1);
           } else if (error.code === statusCodes.IN_PROGRESS) {
-            console.log(2);
             toast({
               type: 'danger',
               message: error.message,
             });
           } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-            console.log(3);
             toast({
               type: 'danger',
               message: error.message,
             });
           } else {
-            console.log(error);
             toast({
               type: 'danger',
               message: error.message,
