@@ -64,7 +64,8 @@ export const Themes = ({ setTheme }: { setTheme: (e: string) => void }) => {
               <TextStyled
                 className={cn({
                   'text-primary-white': theme === checkedTheme,
-                  'text-primary-100': theme === checkedTheme,
+                  'text-primary-100':
+                    theme === checkedTheme || (!checkedTheme && theme === 'ALL'),
                 })}
               >
                 {theme}

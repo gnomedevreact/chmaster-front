@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { InteractionManager, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useGetRandomPuzzles } from '@/src/shared/api/hooks/useGetRandomPuzzles';
 import { ChessboardRef } from '@gnomedevreact/ch-private';
 import { Move, Square } from 'chess.js';
@@ -16,6 +16,8 @@ import { MIN_PUZZLES } from '@/src/features/ChessGame/lib/consts';
 import { Badge } from '@/src/shared/ui/Badge';
 import { Button } from '@/src/shared/ui/Button';
 import { Board } from '@/src/features/ChessGame/ui/components/Board';
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const ChessGame = () => {
   const [isTrainingStart, setIsTrainingStart] = useState(false);
@@ -38,8 +40,6 @@ export const ChessGame = () => {
   const [errosCount, setErrorCount] = useState(0);
   const [puzzlesCopy, setPuzzlesCopy] = useState<Puzzle[]>([]);
   const [currentPuzzleCopy, setCurrentPuzzleCopy] = useState(0);
-
-  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const resetGameStateLocal = () => {
     setIsTrainingStart(false);
@@ -71,16 +71,13 @@ export const ChessGame = () => {
     resetPuzzles();
   };
 
-  const makeMove = useCallback(
-    (index: number) => {
-      if (!chessboardRef.current || !moves) return;
-      chessboardRef?.current?.move({
-        from: moves[index].substring(0, 2) as Square,
-        to: moves[index].substring(2) as Square,
-      });
-    },
-    [moves],
-  );
+  const makeMove = useCallback((moves: string[] | undefined, index: number) => {
+    if (!moves) return;
+    chessboardRef?.current?.move({
+      from: moves[index].substring(0, 2) as Square,
+      to: moves[index].substring(2) as Square,
+    });
+  }, []);
 
   const formatMove = useCallback((currMove: Move) => {
     let move = currMove.from + currMove.to;
@@ -90,73 +87,77 @@ export const ChessGame = () => {
     return move;
   }, []);
 
-  useEffect(() => {
-    if (moves && chessboardRef?.current) {
-      makeMove(0);
-      setMoveEnabled(true);
-    }
-  }, [moves]);
-
-  const handleErrorMove = useCallback(async () => {
+  const handleErrorMove = useCallback(async (move: string) => {
     setErrorCount((prevState) => prevState + 1);
     chessboardRef?.current?.highlight({
-      square: currentMove?.move?.substring(2, 4) as Square,
+      square: move.substring(2, 4) as Square,
       color: '#da8f7f',
     });
 
     await sleep(500);
 
     chessboardRef?.current?.undo();
-    setCurrentMove({ order: currentMove.order, move: null });
+    setCurrentMove((prevState) => ({ order: prevState.order, move: null }));
     setMoveEnabled(true);
     return;
-  }, [currentMove.move]);
+  }, []);
 
-  const handleAutoMove = useCallback(() => {
-    const nextOrder = currentMove.order + 1;
-    setCurrentMove((prevState) => ({
-      order: nextOrder,
-      move: null,
-    }));
+  const handleAutoMove = useCallback(
+    (moves: string[], index: number) => {
+      setCurrentMove((prevState) => ({
+        order: index || prevState.order + 1,
+        move: null,
+      }));
 
-    makeMove(nextOrder);
-  }, [currentMove.order, makeMove]);
+      setTimeout(() => {
+        makeMove(moves, index);
+      }, 40);
+      return;
+    },
+    [currentMove.order],
+  );
 
-  const handlePlayerMove = useCallback(() => {
-    if (moves) {
-      setCurrentMove({ order: currentMove.order + 1, move: null });
+  const handlePlayerMove = useCallback(
+    (currentOrder: number) => {
+      if (moves) {
+        setCurrentMove((prevState) => ({ order: prevState.order + 1, move: null }));
 
-      if (currentMove.order >= moves.length - 1) {
-        setCurrentPuzzle((prevState) => prevState + 1);
-        setCurrentPuzzleCopy((prevState) => prevState + 1);
+        if (currentOrder >= moves.length - 1) {
+          setCurrentPuzzle((prevState) => prevState + 1);
+          setCurrentPuzzleCopy((prevState) => prevState + 1);
+        }
       }
-    }
-  }, [moves, currentMove.order]);
+    },
+    [moves],
+  );
 
   useEffect(() => {
     if (!moves || !currentMove.move) return;
 
-    InteractionManager.runAfterInteractions(() => {
-      if (
-        currentMove.move !== moves[currentMove.order] &&
-        currentMove.order % 2 !== 0 &&
-        !chessboardRef.current?.getState().in_checkmate
-      ) {
-        handleErrorMove();
-        return;
-      }
+    if (currentMove.order === 0 && currentMove.move === 'auto') {
+      makeMove(moves, 0);
+      return;
+    }
 
-      if (
-        currentMove.order !== 0 &&
-        currentMove.order % 2 !== 0 &&
-        currentMove.order < moves.length - 1
-      ) {
-        handleAutoMove();
-        return;
-      }
+    if (
+      currentMove.move !== moves[currentMove.order] &&
+      currentMove.order % 2 !== 0 &&
+      !chessboardRef.current?.getState().in_checkmate
+    ) {
+      handleErrorMove(currentMove.move);
+      return;
+    }
 
-      handlePlayerMove();
-    });
+    if (
+      currentMove.order !== 0 &&
+      currentMove.order % 2 !== 0 &&
+      currentMove.order < moves.length - 1
+    ) {
+      handleAutoMove(moves, currentMove.order + 1);
+      return;
+    }
+
+    handlePlayerMove(currentMove.order);
   }, [currentMove, moves]);
 
   useEffect(() => {
@@ -168,8 +169,9 @@ export const ChessGame = () => {
       }
 
       if (puzzles[currentPuzzle]) {
-        setMoves(puzzles[currentPuzzle].moves.split(' '));
-        setCurrentMove({ order: 0, move: null });
+        const localMoves = puzzles[currentPuzzle].moves.split(' ');
+        setMoves(localMoves);
+        setCurrentMove({ order: 0, move: 'auto' });
         setPlayerColor(undefined);
         chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);
       }
@@ -236,7 +238,7 @@ export const ChessGame = () => {
             setIsReset={setIsReset}
             resetGameState={resetGameState}
             setIsStats={setIsGameStats}
-            puzzlesCopy={puzzlesCopy}
+            puzzlesCopy={currentPuzzleCopy}
           />
         </View>
         {!isActiveTimer && (

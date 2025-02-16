@@ -3,7 +3,6 @@ import { Pressable, View } from 'react-native';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { MIN_PUZZLES, TIMER_SECONDS } from '@/src/features/ChessGame/lib/consts';
 import { useFocusEffect } from 'expo-router';
-import { Puzzle } from '@/src/shared/model/types/puzzles.types';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 
 interface TimerProps {
@@ -13,7 +12,7 @@ interface TimerProps {
   setIsReset: (e: boolean) => void;
   resetGameState: () => void;
   setIsStats: (e: boolean) => void;
-  puzzlesCopy: Puzzle[];
+  puzzlesCopy: number;
 }
 
 export const Timer = React.memo((props: TimerProps) => {
@@ -33,7 +32,7 @@ export const Timer = React.memo((props: TimerProps) => {
   useEffect(() => {
     if (seconds === 0) {
       console.log(puzzlesCopy);
-      if (puzzlesCopy.length >= MIN_PUZZLES) {
+      if (puzzlesCopy >= MIN_PUZZLES) {
         setIsStats(true);
       }
       clearInterval(timerId);

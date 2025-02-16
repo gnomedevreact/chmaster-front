@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { TasksService } from '@/src/shared/api/services/tasks.service';
 import { toast } from '@/src/shared/lib/utils/toast';
 import { useState, useTransition } from 'react';
+import { storage } from '@/src/core/lib/store/storage';
 
 export const useCompleteTask = () => {
   const queryClient = useQueryClient();
@@ -14,6 +15,7 @@ export const useCompleteTask = () => {
     onSuccess() {
       setIsComplete(true);
       startTransition(() => {
+        storage.delete('puzzles');
         queryClient.invalidateQueries({
           queryKey: ['tasks'],
         });

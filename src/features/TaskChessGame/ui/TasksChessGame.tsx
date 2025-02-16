@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Dimensions, InteractionManager, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { ChessboardRef } from '@gnomedevreact/ch-private';
 import { Move, Square } from 'chess.js';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
@@ -16,9 +16,6 @@ import ConfettiCannon from 'react-native-confetti-cannon';
 import { PUZZLES_QUANTITY } from '@/src/features/TaskChessGame/lib/consts';
 import { useCompleteTask } from '@/src/shared/api/hooks/TasksHooks/useCompleteTask';
 import { Board } from '@/src/features/ChessGame/ui/components/Board';
-
-const width = Dimensions.get('window').width;
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const TasksChessGame = ({
   task,
@@ -45,6 +42,8 @@ export const TasksChessGame = ({
   const [isConfetti, setIsConfetti] = useState<boolean>(false);
   const [hints, setHints] = useState(3);
 
+  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
   const resetGameStateLocal = () => {
     setIsTrainingStart(false);
     setMoves(undefined);
@@ -68,16 +67,13 @@ export const TasksChessGame = ({
     resetPuzzles();
   };
 
-  const makeMove = useCallback(
-    (index: number) => {
-      if (!chessboardRef.current || !moves) return;
-      chessboardRef.current.move({
-        from: moves[index].substring(0, 2) as Square,
-        to: moves[index].substring(2) as Square,
-      });
-    },
-    [moves],
-  );
+  const makeMove = useCallback((moves: string[] | undefined, index: number) => {
+    if (!moves) return;
+    chessboardRef?.current?.move({
+      from: moves[index].substring(0, 2) as Square,
+      to: moves[index].substring(2) as Square,
+    });
+  }, []);
 
   const formatMove = useCallback((currMove: Move) => {
     let move = currMove.from + currMove.to;
@@ -87,100 +83,100 @@ export const TasksChessGame = ({
     return move;
   }, []);
 
-  useEffect(() => {
-    if (moves && chessboardRef?.current) {
-      InteractionManager.runAfterInteractions(() => {
-        makeMove(0);
-        setMoveEnabled(true);
-      });
-    }
-  }, [moves]);
-
-  const handleErrorMove = useCallback(async () => {
+  const handleErrorMove = useCallback(async (move: string) => {
     chessboardRef?.current?.highlight({
-      square: currentMove?.move?.substring(2, 4) as Square,
+      square: move.substring(2, 4) as Square,
       color: '#da8f7f',
     });
 
     await sleep(500);
 
     chessboardRef?.current?.undo();
-    setCurrentMove({ order: currentMove.order, move: null });
+    setCurrentMove((prevState) => ({ order: prevState.order, move: null }));
     setMoveEnabled(true);
     return;
-  }, [currentMove.move]);
+  }, []);
 
-  const handleAutoMove = useCallback(() => {
-    const nextOrder = currentMove.order + 1;
-    setCurrentMove((prevState) => ({
-      order: nextOrder,
-      move: null,
-    }));
+  const handleAutoMove = useCallback(
+    (moves: string[], index: number) => {
+      setCurrentMove((prevState) => ({
+        order: index || prevState.order + 1,
+        move: null,
+      }));
 
-    makeMove(nextOrder);
-    return;
-  }, [currentMove.order, moves, makeMove]);
+      setTimeout(() => {
+        makeMove(moves, index);
+      }, 40);
+      return;
+    },
+    [currentMove.order],
+  );
 
-  const handlePlayerMove = useCallback(() => {
-    if (moves) {
-      setCurrentMove({ order: currentMove.order + 1, move: null });
+  const handlePlayerMove = useCallback(
+    (currentOrder: number) => {
+      if (moves) {
+        setCurrentMove((prevState) => ({ order: prevState.order + 1, move: null }));
 
-      if (currentMove.order >= moves.length - 1) {
-        setCurrentPuzzle((prevState) => prevState + 1);
+        if (currentOrder >= moves.length - 1) {
+          setCurrentPuzzle((prevState) => prevState + 1);
+        }
       }
-    }
-  }, [moves, currentMove.order]);
+    },
+    [moves],
+  );
 
   useEffect(() => {
     if (!moves || !currentMove.move) return;
 
-    InteractionManager.runAfterInteractions(() => {
-      if (
-        currentMove.move !== moves[currentMove.order] &&
-        currentMove.order % 2 !== 0 &&
-        !chessboardRef.current?.getState().in_checkmate
-      ) {
-        handleErrorMove();
-        return;
-      }
+    if (currentMove.order === 0 && currentMove.move === 'auto') {
+      makeMove(moves, 0);
+      return;
+    }
 
-      if (
-        currentMove.order !== 0 &&
-        currentMove.order % 2 !== 0 &&
-        currentMove.order < moves.length - 1
-      ) {
-        handleAutoMove();
-        return;
-      }
+    if (
+      currentMove.move !== moves[currentMove.order] &&
+      currentMove.order % 2 !== 0 &&
+      !chessboardRef.current?.getState().in_checkmate
+    ) {
+      handleErrorMove(currentMove.move);
+      return;
+    }
 
-      handlePlayerMove();
-    });
+    if (
+      currentMove.order !== 0 &&
+      currentMove.order % 2 !== 0 &&
+      currentMove.order < moves.length - 1
+    ) {
+      handleAutoMove(moves, currentMove.order + 1);
+      return;
+    }
+
+    handlePlayerMove(currentMove.order);
   }, [currentMove, moves]);
 
   useEffect(() => {
     if (puzzles.length > 0 && isTrainingStart) {
-      InteractionManager.runAfterInteractions(() => {
-        if (currentPuzzle === PUZZLES_QUANTITY) {
-          completeTask();
-          setIsConfetti(true);
-          resetGameState();
-          return;
-        }
+      if (currentPuzzle === PUZZLES_QUANTITY) {
+        completeTask();
+        setIsConfetti(true);
+        resetGameState();
+        return;
+      }
 
-        if (puzzles.length === currentPuzzle && lastInvalidated !== currentPuzzle) {
-          queryClient.invalidateQueries({ queryKey: ['puzzles tasks', task.id] });
-          setLastInvalidated(currentPuzzle);
-          return;
-        }
+      if (puzzles.length === currentPuzzle && lastInvalidated !== currentPuzzle) {
+        queryClient.invalidateQueries({ queryKey: ['puzzles tasks', task.id] });
+        setLastInvalidated(currentPuzzle);
+        return;
+      }
 
-        if (puzzles[currentPuzzle]) {
-          setMoves(puzzles[currentPuzzle].moves.split(' '));
-          setCurrentMove({ order: 0, move: null });
-          setPlayerColor(undefined);
-          chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);
-          setHints(3);
-        }
-      });
+      if (puzzles[currentPuzzle]) {
+        const localMoves = puzzles[currentPuzzle].moves.split(' ');
+        setMoves(localMoves);
+        setCurrentMove({ order: 0, move: 'auto' });
+        setPlayerColor(undefined);
+        setHints(3);
+        chessboardRef?.current?.resetBoard(puzzles[currentPuzzle].fen);
+      }
     }
   }, [puzzles, currentPuzzle, isTrainingStart]);
 
@@ -190,7 +186,7 @@ export const TasksChessGame = ({
   }, []);
 
   const highLightNextMove = useCallback(() => {
-    if (moves && hints > 0) {
+    if (moves && hints > 0 && chessboardRef.current) {
       chessboardRef?.current?.highlight({
         square: moves[currentMove.order].substring(0, 2) as Square,
         color: '#50C87880',

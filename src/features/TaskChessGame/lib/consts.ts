@@ -1,1 +1,1 @@
-export const PUZZLES_QUANTITY = 3;
+export const PUZZLES_QUANTITY = 1;

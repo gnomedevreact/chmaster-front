@@ -33,7 +33,6 @@ export const Board = React.memo((props: BoardProps) => {
 
   const handleOnMove = useCallback(
     (move: Move) => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
       if (playerColor && playerColor === move.color) {
         setMoveEnabled(false);
       } else {
@@ -46,6 +45,7 @@ export const Board = React.memo((props: BoardProps) => {
       setCurrentMove((prevState) => {
         return { order: prevState.order, move: formattedMove };
       });
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     },
     [playerColor],
   );

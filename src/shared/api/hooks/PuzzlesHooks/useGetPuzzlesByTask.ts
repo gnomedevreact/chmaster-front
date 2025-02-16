@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Puzzle } from '@/src/shared/model/types/puzzles.types';
 import { toast } from '@/src/shared/lib/utils/toast';
 import { TaskType } from '@/src/shared/model/types/tasks.types';
+import { storage } from '@/src/core/lib/store/storage';
 
 export const useGetPuzzlesByTheme = ({
   isTrainingStart,
@@ -14,6 +15,7 @@ export const useGetPuzzlesByTheme = ({
   resetGameStateLocal: () => void;
   task: TaskType;
 }) => {
+  const savedPuzzles = storage.getString('puzzles');
   const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
 
   const queryClient = useQueryClient();
@@ -27,7 +29,7 @@ export const useGetPuzzlesByTheme = ({
     queryFn: () =>
       PuzzlesService.getPuzzlesBySearchTerm({ opening: task.opening, theme: task.theme }),
     select: ({ data }) => data,
-    enabled: isTrainingStart,
+    enabled: isTrainingStart && !savedPuzzles,
   });
 
   const resetPuzzles = () => {
@@ -37,9 +39,20 @@ export const useGetPuzzlesByTheme = ({
 
   useEffect(() => {
     if (fetchedPuzzles) {
-      setPuzzles((prevState) => [...prevState, ...fetchedPuzzles]);
+      storage.set('puzzles', JSON.stringify(fetchedPuzzles));
+      setPuzzles(fetchedPuzzles);
     }
   }, [fetchedPuzzles]);
+
+  useEffect(() => {
+    if (savedPuzzles) {
+      const parsedPuzzles = JSON.parse(savedPuzzles);
+
+      if (parsedPuzzles.length > 0) {
+        setPuzzles(parsedPuzzles);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (error) {

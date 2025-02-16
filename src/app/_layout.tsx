@@ -17,6 +17,7 @@ import { Platform } from 'react-native';
 import Purchases from 'react-native-purchases';
 import SplashScreenCustom from '@/src/shared/ui/SplashScreenCustom';
 import { Asset } from 'expo-asset';
+import { scheduleDailyNotification } from '@/src/core/notification';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -95,6 +96,13 @@ const APIKeys = {
   apple: 'appl_yfABHlQRJlkvQYVTRMHjVpuenyP',
   google: 'goog_JPQuCXThfpxujKWvBxfGvupPoXE',
 };
+// Notifications.setNotificationHandler({
+//   handleNotification: async () => ({
+//     shouldShowAlert: true,
+//     shouldPlaySound: false,
+//     shouldSetBadge: false,
+//   }),
+// });
 
 function RootLayoutNav() {
   const [isSplashVisible, setIsSplashVisible] = useState(true);
@@ -121,6 +129,8 @@ function RootLayoutNav() {
     };
 
     setup();
+
+    scheduleDailyNotification();
   }, []);
 
   if (isSplashVisible) {

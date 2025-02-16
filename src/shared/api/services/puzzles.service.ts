@@ -22,7 +22,7 @@ export const PuzzlesService = {
       params: {
         searchTerm: theme,
         opening,
-        limit: 2,
+        limit: 15,
       },
     });
   },
