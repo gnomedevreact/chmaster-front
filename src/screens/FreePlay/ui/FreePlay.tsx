@@ -1,8 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Dimensions, Keyboard, TouchableWithoutFeedback, View } from 'react-native';
 import Chessboard, { ChessboardRef } from '@gnomedevreact/ch-private';
 import { EvaluationBar } from '@/src/features/EvaluationBar/ui/EvaluationBar';
-import { Square } from 'chess.js';
+import { Move, Square } from 'chess.js';
 import * as Haptics from 'expo-haptics';
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import { Button } from '@/src/shared/ui/Button';
@@ -11,6 +11,7 @@ import { Input } from '@/src/shared/ui/Input';
 import { useForm } from 'react-hook-form';
 import { validateFen } from '@/src/shared/lib/utils/validateFen';
 import { useEvaluateFen } from '@/src/features/EvaluationBar/api/hooks/useEvaluateFen';
+import { presentPaywallIfNeeded } from '@/src/shared/lib/utils/presentPaywall';
 
 const width = Dimensions.get('window').width;
 
@@ -34,6 +35,25 @@ export const FreePlay = () => {
       reset({ fen: '' });
     }
   };
+
+  const handleEvaluate = async () => {
+    const isSubscribed = await presentPaywallIfNeeded();
+
+    if (isSubscribed) {
+      evaluateFen(chessboardRef.current?.getState().fen!);
+    }
+  };
+
+  const handleMove = useCallback((move: Move) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    setPlayerColor(move.color === 'w' ? 'b' : 'w');
+    setCurrMove((prev) => prev + 1);
+    setLastMove((prev) =>
+      prev.some((el) => el.from === move.from && el.to === move.to)
+        ? [...prev]
+        : [...prev, { from: move.from, to: move.to, color: move.color }],
+    );
+  }, []);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>
@@ -59,16 +79,7 @@ export const FreePlay = () => {
           />
           <View style={{ minHeight: width, minWidth: width }} className={'items-center'}>
             <Chessboard
-              onMove={({ state, move }) => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-                setPlayerColor(move.color === 'w' ? 'b' : 'w');
-                setCurrMove((prev) => prev + 1);
-                setLastMove((prev) =>
-                  prev.some((el) => el.from === move.from && el.to === move.to)
-                    ? [...prev]
-                    : [...prev, { from: move.from, to: move.to, color: move.color }],
-                );
-              }}
+              onMove={({ state, move }) => handleMove(move)}
               ref={chessboardRef}
               colors={{ black: '#b58863', white: '#f0d9b5' }}
               durations={{ move: 120 }}
@@ -119,7 +130,7 @@ export const FreePlay = () => {
               </Button>
             </View>
             <Button
-              onPress={() => evaluateFen(chessboardRef.current?.getState().fen!)}
+              onPress={handleEvaluate}
               isLoading={isPending}
               disabled={isPending || chessboardRef.current?.getState().game_over}
               isLight={false}

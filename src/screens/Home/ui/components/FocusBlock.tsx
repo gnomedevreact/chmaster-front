@@ -3,6 +3,7 @@ import { Pressable, View } from 'react-native';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { cn } from '@/src/shared/lib/utils/cnUtils';
+import { router } from 'expo-router';
 
 export const FocusBlock = ({ satisfied }: { satisfied: boolean }) => {
   return (
@@ -17,6 +18,7 @@ export const FocusBlock = ({ satisfied }: { satisfied: boolean }) => {
           className={
             'flex items-center px-4 py-1 bg-primary-100 max-w-[150px] rounded-[14px]'
           }
+          onPress={() => router.push('/(tabs)/trainer')}
         >
           <TextStyled className={'text-base'}>Check progress</TextStyled>
         </Pressable>

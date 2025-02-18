@@ -5,7 +5,7 @@ import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { Button } from '@/src/shared/ui/Button';
 import { AntDesign } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { presentPaywallIfNeeded } from '@/src/shared/lib/utils/presentPaywall';
+import { handleLink } from '@/src/shared/lib/utils/handleLink';
 
 interface LinkBlockProps {
   title: string;
@@ -15,27 +15,14 @@ interface LinkBlockProps {
 }
 
 export const LinkBlock = (props: LinkBlockProps) => {
-  const { title, link, image, subscription } = props;
+  const { title, link, image, subscription = true } = props;
 
   const { push } = useRouter();
-
-  const handleLink = async () => {
-    if (subscription) {
-      const isNeeded = await presentPaywallIfNeeded();
-      if (isNeeded) {
-        push(link);
-      }
-
-      return;
-    }
-
-    push(link);
-  };
 
   return (
     <Pressable
       className={'w-full h-[150px] rounded-[8px] overflow-hidden'}
-      onPress={handleLink}
+      onPress={() => handleLink(subscription, link)}
     >
       <ImageBackground source={image} className={'h-full'}>
         <BlurView
@@ -49,7 +36,10 @@ export const LinkBlock = (props: LinkBlockProps) => {
             >
               {title}
             </TextStyled>
-            <Button className={'bg-primary-100 p-2'} onPress={handleLink}>
+            <Button
+              className={'bg-primary-100 p-2'}
+              onPress={() => handleLink(subscription, link)}
+            >
               <AntDesign name="arrowright" size={24} color="white" />
             </Button>
           </View>

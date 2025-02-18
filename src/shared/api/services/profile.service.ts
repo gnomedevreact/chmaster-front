@@ -29,4 +29,8 @@ export const ProfileService = {
   async getTopProfiles() {
     return await axiosAuth.get<ProfileType[]>('/profiles/top-profiles');
   },
+
+  async resetTasks() {
+    return await axiosAuth.post('/profiles/reset-tasks');
+  },
 };

@@ -18,6 +18,7 @@ export type ProfileType = {
   current_phase: number;
   current_exercise: number;
   exercise_done: boolean;
+  blocked: boolean;
 };
 
 export type UpdateProfileType = {

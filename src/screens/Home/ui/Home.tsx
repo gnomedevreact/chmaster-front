@@ -9,14 +9,15 @@ import { LinkBlock } from '@/src/screens/Home/ui/components/LinkBlock';
 import { Pressable, View } from 'react-native';
 import { Entypo, MaterialIcons } from '@expo/vector-icons';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
-import { router } from 'expo-router';
+import { handleLink } from '@/src/shared/lib/utils/handleLink';
+import { ActivityIndicator } from 'react-native-paper';
 
 export const Home = () => {
   const profile = useProfileStore((state) => state.profileData);
   useGetProfile();
 
   if (!profile) {
-    return null;
+    return <ActivityIndicator color={'#FAFAFA'} />;
   }
 
   return (
@@ -28,7 +29,7 @@ export const Home = () => {
           className={
             'flex items-center justify-center flex-1 bg-primary-200 h-[150px] rounded-[14px] border border-primary-300'
           }
-          onPress={() => router.push('/feed')}
+          onPress={() => handleLink(true, '/feed')}
         >
           <Entypo name="chat" size={80} color="white" />
           <TextStyled className={'text-primary-600'} fontFamilyName={'NunitoSansBold'}>
@@ -39,7 +40,7 @@ export const Home = () => {
           className={
             'flex items-center justify-center flex-1 bg-primary-200 h-[150px] rounded-[14px] border border-primary-300'
           }
-          onPress={() => router.push('/plan')}
+          onPress={() => handleLink(true, '/plan')}
         >
           <MaterialIcons name="task-alt" size={80} color="white" />
           <TextStyled className={'text-primary-600'} fontFamilyName={'NunitoSansBold'}>

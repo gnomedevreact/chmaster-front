@@ -13,6 +13,7 @@ export const AuthHelpers = {
     await supabase.auth.signOut();
     await GoogleSignin.signOut();
     await AsyncStorage.clear();
+    storage.clearAll();
     useProfileStore.getState().clearProfileData();
     storage.clearAll();
     useProfileStore.getState().clearProfileData();

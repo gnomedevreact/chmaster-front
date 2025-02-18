@@ -10,6 +10,8 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { TasksChessGame } from '@/src/features/TaskChessGame';
 import { presentPaywallIfNeeded } from '@/src/shared/lib/utils/presentPaywall';
 import { ActivityIndicator } from 'react-native-paper';
+import { Button } from '@/src/shared/ui/Button';
+import { useResetTasks } from '@/src/shared/api/hooks/TasksHooks/useResetTasks';
 
 const TaskBlock = ({
   index,
@@ -33,7 +35,7 @@ const TaskBlock = ({
 
   return (
     <Pressable
-      onPress={index === 9 ? handlePress : setActiveTask}
+      onPress={index >= 9 ? handlePress : setActiveTask}
       className={cn(
         'relative flex flex-col items-center justify-center gap-1 w-[30%] h-[110px] p-2 bg-primary-200 rounded-md border border-transparent',
         {
@@ -76,10 +78,12 @@ const TaskBlock = ({
 };
 
 export const TasksList = () => {
-  const { allTasks, isLoadingTasks } = useGetTasks();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [activeTask, setActiveTask] = useState<TaskType>();
   const [activeIndex, setActiveIndex] = useState<number>();
+
+  const { allTasks, isLoadingTasks } = useGetTasks();
+  const { resetTasks, isPending } = useResetTasks();
 
   if (isLoadingTasks) {
     return <ActivityIndicator color={'#FAFAFA'} />;
@@ -87,6 +91,16 @@ export const TasksList = () => {
 
   return (
     <View>
+      {allTasks?.current_task === allTasks?.tasks.length && (
+        <Button
+          className={'mb-5'}
+          isLoading={isPending}
+          disabled={isPending}
+          onPress={resetTasks}
+        >
+          <TextStyled className={'text-lg'}>Reset all tasks</TextStyled>
+        </Button>
+      )}
       <View className={'flex flex-row gap-4 justify-between flex-wrap'}>
         {allTasks?.tasks?.map((task, index) => {
           if (index > allTasks.current_task) {

@@ -18,6 +18,8 @@ import Purchases from 'react-native-purchases';
 import SplashScreenCustom from '@/src/shared/ui/SplashScreenCustom';
 import { Asset } from 'expo-asset';
 import { scheduleDailyNotification } from '@/src/core/notification';
+import { useProfileStore } from '@/src/core/lib/store/profile.store';
+import { AuthHelpers } from '@/src/shared/lib/helpers/auth.helpers';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -100,6 +102,8 @@ const APIKeys = {
 function RootLayoutNav() {
   const [isSplashVisible, setIsSplashVisible] = useState(true);
 
+  const profile = useProfileStore((state) => state.profileData);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsSplashVisible(false);
@@ -107,6 +111,14 @@ function RootLayoutNav() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      if (profile && profile.blocked) {
+        await AuthHelpers.logout();
+      }
+    })();
+  }, [profile]);
 
   useEffect(() => {
     const setup = async () => {
