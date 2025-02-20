@@ -4,8 +4,8 @@
     "slug": "chessmaster",
     "version": "1.0.0",
     "orientation": "portrait",
+    "scheme": "chessmaster",
     "icon": "./src/assets/images/icon.png",
-    "scheme": "ChessMaster",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -49,6 +49,14 @@
         {
           "supportsBackgroundPlayback": true,
           "supportsPictureInPicture": true
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./src/assets/images/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#0F0F0F"
         }
       ]
     ],

@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useProfileStore } from '@/src/core/lib/store/profile.store';
 import { storage } from '@/src/core/lib/store/storage';
 import { router } from 'expo-router';
+import { queryClientUtil } from '@/src/core/queryClient';
 
 export const AuthHelpers = {
   async logout(replace: boolean = true) {
@@ -17,5 +18,7 @@ export const AuthHelpers = {
     useProfileStore.getState().clearProfileData();
     storage.clearAll();
     useProfileStore.getState().clearProfileData();
+
+    queryClientUtil.clear();
   },
 };

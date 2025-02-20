@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 
 import '../../global.css';
 import { PaperProvider } from 'react-native-paper';
@@ -16,10 +16,10 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Platform } from 'react-native';
 import Purchases from 'react-native-purchases';
 import SplashScreenCustom from '@/src/shared/ui/SplashScreenCustom';
-import { Asset } from 'expo-asset';
 import { scheduleDailyNotification } from '@/src/core/notification';
 import { useProfileStore } from '@/src/core/lib/store/profile.store';
 import { AuthHelpers } from '@/src/shared/lib/helpers/auth.helpers';
+import { queryClientUtil } from '@/src/core/queryClient';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -28,66 +28,33 @@ export {
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+  initialRouteName: '/(tabs)',
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-const preloadImages = async () => {
-  const images = [
-    require('../assets/images/new.png'),
-    require('../assets/images/test.webp'),
-    require('../assets/images/horse.svg'),
-    require('../assets/images/test2.webp'),
-    require('../assets/images/horse2.svg'),
-  ];
-  const cacheImages = images.map((image) => Asset.fromModule(image).downloadAsync());
-  return Promise.all(cacheImages);
-};
-
 export default function RootLayout() {
-  const [isReady, setIsReady] = useState(false);
   const [loaded, error] = useFonts({
     NunitoSans: require('@/src/assets/fonts/NunitoSans_10pt-Regular.ttf'),
     NunitoSansBold: require('@/src/assets/fonts/NunitoSans_10pt-Bold.ttf'),
     ...FontAwesome.font,
   });
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
 
   useEffect(() => {
-    if (loaded && isReady) {
+    if (loaded) {
       SplashScreen.hideAsync();
     }
-  }, [loaded, isReady]);
+  }, [loaded]);
 
-  useEffect(() => {
-    async function loadAssets() {
-      await preloadImages();
-      setIsReady(true);
-    }
-    loadAssets();
-  }, []);
-
-  if (!loaded) {
-    return null;
-  }
+  if (!loaded) return null;
 
   return <RootLayoutNav />;
 }
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 2,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
 
 configureReanimatedLogger({
   level: ReanimatedLogLevel.warn,
@@ -142,7 +109,7 @@ function RootLayoutNav() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClientUtil}>
       <GestureHandlerRootView>
         <PaperProvider>
           <SafeAreaProvider>
