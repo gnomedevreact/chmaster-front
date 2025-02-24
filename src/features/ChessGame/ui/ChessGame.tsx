@@ -233,6 +233,7 @@ export const ChessGame = () => {
           </View>
           <Timer
             isActive={isActiveTimer}
+            isLoading={isLoading}
             setIsActive={setIsActiveTimer}
             isReset={isReset}
             setIsReset={setIsReset}
@@ -258,6 +259,11 @@ export const ChessGame = () => {
         setCurrentMove={setCurrentMove}
       />
       <View className={'flex flex-col gap-3 px-4 mt-auto'}>
+        {!isTrainingStart && !isActiveTimer && (
+          <TextStyled className={'text-primary-600 text-sm'}>
+            *Solve at least 10 puzzles to unlock detailed insights.
+          </TextStyled>
+        )}
         <Button onPress={isActiveTimer ? stopTraining : startTraining}>
           <TextStyled>{isActiveTimer ? 'Stop' : 'Start'}</TextStyled>
         </Button>

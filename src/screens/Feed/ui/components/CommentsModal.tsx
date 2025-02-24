@@ -48,7 +48,8 @@ export const CommentsModal = (props: CommentsModalProps) => {
     },
   });
 
-  const { data, fetchNextPage, isFetchingNextPage, hasNextPage } = useGetComments(postId);
+  const { data, fetchNextPage, isFetchingNextPage, hasNextPage, isLoading } =
+    useGetComments(postId);
   const { addComment, isPending } = useAddComment(toastRef);
 
   const submit = ({ content }: FormProps) => {
@@ -76,6 +77,7 @@ export const CommentsModal = (props: CommentsModalProps) => {
       className={'bg-primary-400 px-4 py-10'}
     >
       <BackButton customPress={closeModal} className={'mb-10'} />
+      {isLoading && <ActivityIndicator color={'white'} />}
       <FlatList
         data={data?.pages.flatMap((page) => page.data.comments)}
         keyExtractor={(item) => item.id}

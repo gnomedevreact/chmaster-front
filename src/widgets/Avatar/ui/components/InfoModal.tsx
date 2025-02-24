@@ -83,7 +83,7 @@ export const InfoModal = (props: InfoModalProps) => {
             </Button>
           </View>
           <TextStyled className={'self-center mt-auto text-primary-600'}>
-            chessmaster.help@gmail.com
+            info@chessmasterlinks.casa
           </TextStyled>
         </View>
       </KeyboardAvoidingView>

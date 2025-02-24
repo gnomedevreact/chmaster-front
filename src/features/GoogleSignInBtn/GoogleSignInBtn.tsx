@@ -15,7 +15,6 @@ export function GoogleSignInBtn() {
   const { createProfileMutation } = useAuthMutations();
 
   GoogleSignin.configure({
-    scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_IOS,
   });

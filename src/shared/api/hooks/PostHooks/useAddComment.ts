@@ -17,6 +17,7 @@ export const useAddComment = (toastRef: RefObject<FlashMessage>) => {
         type: 'success',
       });
       queryClient.invalidateQueries({ queryKey: ['comments'] });
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
     },
     onError(error: any) {
       toastRef?.current?.showMessage({

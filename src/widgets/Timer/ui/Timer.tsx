@@ -13,12 +13,14 @@ interface TimerProps {
   resetGameState: () => void;
   setIsStats: (e: boolean) => void;
   puzzlesCopy: number;
+  isLoading: boolean;
 }
 
 export const Timer = React.memo((props: TimerProps) => {
   const {
     setIsActive,
     isActive,
+    isLoading,
     isReset,
     setIsReset,
     resetGameState,
@@ -41,7 +43,7 @@ export const Timer = React.memo((props: TimerProps) => {
       return;
     }
 
-    if (isActive) {
+    if (isActive && !isLoading) {
       const id = setInterval(() => {
         setSeconds((prevSeconds: number) => prevSeconds - 1);
       }, 1000);
@@ -50,7 +52,7 @@ export const Timer = React.memo((props: TimerProps) => {
 
       return () => clearInterval(id);
     }
-  }, [isActive, seconds]);
+  }, [isActive, seconds, isLoading]);
 
   useEffect(() => {
     if (isReset) {

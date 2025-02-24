@@ -9,6 +9,7 @@ import { ProfileType } from '@/src/shared/model/types/profile.types';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { useQueryClient } from '@tanstack/react-query';
 import { MiniAvatar } from '@/src/shared/ui/MiniAvatar';
+import { ActivityIndicator } from 'react-native-paper';
 
 const ProfileBlock = ({ profile, index }: { profile: ProfileType; index: number }) => {
   return (
@@ -36,8 +37,6 @@ export const Top = () => {
   const queryClient = useQueryClient();
   const { topProfiles, isLoading } = useGetTopProfiles();
 
-  if (isLoading) return null;
-
   return (
     <Container
       className={'py-4 flex flex-col gap-4'}
@@ -59,6 +58,7 @@ export const Top = () => {
         </TextStyled>
       </View>
       <View className={'w-[60px] h-[3px] bg-primary-200 self-center'} />
+      {isLoading && <ActivityIndicator color={'white'} />}
       <View className={'flex flex-col gap-4'}>
         {topProfiles?.map((item, index) => (
           <ProfileBlock profile={item} index={index + 1} key={index} />
