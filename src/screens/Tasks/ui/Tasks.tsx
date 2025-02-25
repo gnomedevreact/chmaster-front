@@ -17,6 +17,9 @@ export const Tasks = () => {
           challenge yourself with engaging chess problems designed to enhance your
           gameplay.
         </TextStyled>
+        <TextStyled className={'text-sm text-primary-500'}>
+          New Tasks with Every Reset (Complete All To Unlock)
+        </TextStyled>
       </View>
       <TasksList />
     </Container>

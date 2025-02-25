@@ -26,6 +26,9 @@ export const Plan = () => {
           Improve your chess skills with daily exercises. Solve puzzles, analyze games,
           and learn new strategies every day to level up your play.
         </TextStyled>
+        <TextStyled className={'text-sm text-primary-500'}>
+          (New Phases and Exercises Coming Soon)
+        </TextStyled>
       </View>
       <ExercisesList
         setActiveExercise={setActiveExercise}

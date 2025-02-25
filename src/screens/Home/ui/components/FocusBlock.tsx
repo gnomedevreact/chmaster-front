@@ -18,9 +18,11 @@ export const FocusBlock = ({ satisfied }: { satisfied: boolean }) => {
           className={
             'flex items-center px-4 py-1 bg-primary-100 max-w-[150px] rounded-[14px]'
           }
-          onPress={() => router.push('/(tabs)/trainer')}
+          onPress={() => router.push(satisfied ? '/profile' : '/(tabs)/trainer')}
         >
-          <TextStyled className={'text-base'}>Check progress</TextStyled>
+          <TextStyled className={'text-base'}>
+            {satisfied ? 'Check progress' : 'Complete Training'}
+          </TextStyled>
         </Pressable>
       </View>
       <View

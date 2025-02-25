@@ -35,7 +35,7 @@ const TaskBlock = ({
 
   return (
     <Pressable
-      onPress={index >= 9 ? handlePress : setActiveTask}
+      onPress={index >= 3 ? handlePress : setActiveTask}
       className={cn(
         'relative flex flex-col items-center justify-center gap-1 w-[30%] h-[110px] p-2 bg-primary-200 rounded-md border border-transparent',
         {
