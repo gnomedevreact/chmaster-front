@@ -34,6 +34,7 @@ export const OptionsModal = React.memo((props: OptionsModalProps) => {
       presentationStyle={'formSheet'}
       animationType={'slide'}
       className={'flex-1'}
+      hardwareAccelerated={true}
       onRequestClose={() => setModalVisible(false)}
     >
       <ScrollView

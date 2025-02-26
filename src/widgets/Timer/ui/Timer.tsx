@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { MIN_PUZZLES, TIMER_SECONDS } from '@/src/features/ChessGame/lib/consts';
-import { useFocusEffect } from 'expo-router';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
+import { storage } from '@/src/core/lib/store/storage';
 
 interface TimerProps {
   isActive: boolean;
@@ -27,37 +27,35 @@ export const Timer = React.memo((props: TimerProps) => {
     setIsStats,
     puzzlesCopy,
   } = props;
-
-  const [seconds, setSeconds] = useState(TIMER_SECONDS);
-  const [timerId, setTimerId] = useState<NodeJS.Timeout>();
+  const [seconds, setSeconds] = useState(storage.getNumber('timer') || TIMER_SECONDS);
 
   useEffect(() => {
-    if (seconds === 0) {
-      if (puzzlesCopy >= MIN_PUZZLES) {
-        setIsStats(true);
-      }
-      clearInterval(timerId);
-      setSeconds(TIMER_SECONDS);
-      setIsReset(false);
-      resetGameState();
-      return;
-    }
-
     if (isActive && !isLoading) {
-      const id = setInterval(() => {
-        setSeconds((prevSeconds: number) => prevSeconds - 1);
+      storage.set('timer', seconds);
+      const interval = setInterval(() => {
+        setSeconds((prevSeconds) => {
+          if (prevSeconds === 1) {
+            clearInterval(interval);
+            if (puzzlesCopy >= MIN_PUZZLES) {
+              setIsStats(true);
+            }
+            setSeconds(storage.getNumber('timer') || TIMER_SECONDS);
+            setIsReset(false);
+            resetGameState();
+            return storage.getNumber('timer') || TIMER_SECONDS;
+          }
+          return prevSeconds - 1;
+        });
       }, 1000);
 
-      setTimerId(id);
-
-      return () => clearInterval(id);
+      return () => clearInterval(interval);
     }
-  }, [isActive, seconds, isLoading]);
+  }, [isActive, isLoading]);
 
   useEffect(() => {
     if (isReset) {
       setIsActive(false);
-      setSeconds(TIMER_SECONDS);
+      setSeconds(storage.getNumber('timer') || TIMER_SECONDS);
       setIsReset(false);
     }
   }, [isReset]);
@@ -98,14 +96,6 @@ export const Timer = React.memo((props: TimerProps) => {
       intervalRefMinus.current = null;
     }
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      return () => {
-        clearInterval(timerId);
-      };
-    }, []),
-  );
 
   return (
     <View className={'flex flex-row items-center gap-2'}>

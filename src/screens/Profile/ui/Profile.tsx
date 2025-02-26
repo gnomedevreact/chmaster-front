@@ -65,7 +65,7 @@ export const Profile = () => {
             <TextStyled className={'text-[24px]'} fontFamilyName={'NunitoSansBold'}>
               {profile?.streak || 0}
             </TextStyled>
-            <TextStyled className={'text-lg text-primary-600'}>Streak</TextStyled>
+            <TextStyled className={'text-lg text-primary-600'}>Days Streak</TextStyled>
           </InfoBlock>
           <InfoBlock>
             <TextStyled className={'text-[24px]'} fontFamilyName={'NunitoSansBold'}>

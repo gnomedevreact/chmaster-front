@@ -6,6 +6,7 @@ export const useGetTopProfiles = () => {
     queryKey: ['top profiles'],
     queryFn: () => ProfileService.getTopProfiles(),
     select: ({ data }) => data,
+    staleTime: 1000 * 60 * 5,
   });
 
   return { topProfiles, isLoading };

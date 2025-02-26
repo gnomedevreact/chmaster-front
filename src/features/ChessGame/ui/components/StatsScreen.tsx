@@ -36,7 +36,11 @@ function calculateAccuracy(total: number, errors: number) {
   return accuracy < 0 ? 0 : Math.round(accuracy * 100) / 100;
 }
 
-function calculateExp(puzzles: Puzzle[]) {
+function calculateExp(puzzles: Puzzle[], errors: number) {
+  if (puzzles.length < errors) {
+    return 0;
+  }
+
   let totalExp = 0;
 
   puzzles.forEach((puzzle) => {
@@ -102,7 +106,7 @@ export const StatsScreen = React.memo((props: StatsScreenProps) => {
   useEffect(() => {
     if (!isStatsUpdated) {
       updateStats({
-        exp: calculateExp(puzzles),
+        exp: calculateExp(puzzles, errors),
         puzzles: puzzles.length,
         streak: profile?.streak_satisfied ? 0 : 1,
         streak_completed: true,
@@ -154,7 +158,7 @@ export const StatsScreen = React.memo((props: StatsScreenProps) => {
                       text1={`Accuracy`}
                       text2={`${calculateAccuracy(puzzles.length, errors)}%`}
                     />
-                    <Badge text1={`+${calculateExp(puzzles)}`} text2={'EXP'} />
+                    <Badge text1={`+${calculateExp(puzzles, errors)}`} text2={'EXP'} />
                   </View>
                   <TextStyled className={'text-[28px]'}>Hardest solved puzzle</TextStyled>
                   <View className={'flex flex-row flex-wrap gap-2'}>

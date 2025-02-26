@@ -134,7 +134,12 @@ export const Auth = () => {
             <View className={'flex flex-col gap-6'}>
               <Button
                 isLoading={isPending || loading}
-                disabled={!!(errors.email || errors.password) || isFormEmpty}
+                disabled={
+                  !!(errors.email || errors.password) ||
+                  isFormEmpty ||
+                  isPending ||
+                  loading
+                }
                 onPress={
                   isAuth ? handleSubmit(signInWithEmail) : handleSubmit(signUpWithEmail)
                 }

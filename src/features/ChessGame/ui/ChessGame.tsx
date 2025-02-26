@@ -16,6 +16,7 @@ import { MIN_PUZZLES } from '@/src/features/ChessGame/lib/consts';
 import { Badge } from '@/src/shared/ui/Badge';
 import { Button } from '@/src/shared/ui/Button';
 import { Board } from '@/src/features/ChessGame/ui/components/Board';
+import { Portal } from 'react-native-paper';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -273,19 +274,25 @@ export const ChessGame = () => {
           </Button>
         )}
       </View>
-      <OptionsModal modalVisible={isModalOpen} setModalVisible={setIsModalOpen} />
+      {isModalOpen && (
+        <Portal>
+          <OptionsModal modalVisible={isModalOpen} setModalVisible={setIsModalOpen} />
+        </Portal>
+      )}
       {isGameStats && (
-        <StatsScreen
-          errors={errosCount}
-          puzzles={puzzlesCopy}
-          setErrors={setErrorCount}
-          setIsStats={setIsGameStats}
-          setPuzzlesCopy={setPuzzlesCopy}
-          setCurrentPuzzleCopy={setCurrentPuzzleCopy}
-          currentPuzzleCopy={currentPuzzleCopy}
-          isGameStats={isGameStats}
-          closeGameStatsModal={closeGameStatsModal}
-        />
+        <Portal>
+          <StatsScreen
+            errors={errosCount}
+            puzzles={puzzlesCopy}
+            setErrors={setErrorCount}
+            setIsStats={setIsGameStats}
+            setPuzzlesCopy={setPuzzlesCopy}
+            setCurrentPuzzleCopy={setCurrentPuzzleCopy}
+            currentPuzzleCopy={currentPuzzleCopy}
+            isGameStats={isGameStats}
+            closeGameStatsModal={closeGameStatsModal}
+          />
+        </Portal>
       )}
     </ScrollView>
   );
