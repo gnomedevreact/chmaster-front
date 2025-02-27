@@ -28,4 +28,18 @@ export async function scheduleDailyNotification() {
       minute: 30,
     },
   });
+
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: '♟️ Hooray, a new task is open!',
+      body: 'Time to stretch your brain—shall we go solve it?',
+      sound: true,
+      vibrate: [0, 255, 255, 255],
+    },
+    trigger: {
+      type: SchedulableTriggerInputTypes.DAILY,
+      hour: 0,
+      minute: 0,
+    },
+  });
 }
