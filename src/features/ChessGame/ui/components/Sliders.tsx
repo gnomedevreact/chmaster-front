@@ -21,7 +21,7 @@ export const Sliders = ({
   setMinSliderValue: (e: number) => void;
   setMaxSliderValue: (e: number) => void;
 }) => {
-  const { control, setValue } = useForm<FormProps>({
+  const { control, setValue, watch } = useForm<FormProps>({
     defaultValues: {
       minRating: String(minSliderValue),
       maxRating: String(maxSliderValue),
@@ -35,16 +35,15 @@ export const Sliders = ({
       const max = storage.getString('maxRating');
 
       const parsedMin = Math.max(Number(min) || 200, 200);
-      const parsedMax = Math.min(Number(max) || 800, 3400);
+      const parsedMax = Math.min(Number(max) || 3400, 3400);
 
-      setMaxSliderValue(parsedMax);
       setMinSliderValue(parsedMin);
-
+      setMaxSliderValue(parsedMax);
       setValue('minRating', String(parsedMin));
       setValue('maxRating', String(parsedMax));
     };
     getValues();
-  }, []);
+  }, [setMinSliderValue, setMaxSliderValue, setValue]);
 
   const handleMinSliderChange = (value: number) => {
     const maxLimit = maxSliderValue - 300;
@@ -60,10 +59,48 @@ export const Sliders = ({
     setValue('maxRating', String(newValue));
   };
 
+  const handleMinInputBlur = () => {
+    const inputValue = watch('minRating');
+    let newValue: number;
+
+    if (isNaN(Number(inputValue))) {
+      newValue = 200;
+    } else {
+      newValue = Number(inputValue);
+      if (newValue < 200) newValue = 200;
+      if (newValue > 3000) newValue = 3000;
+    }
+
+    setValue('minRating', String(newValue));
+    setMinSliderValue(newValue);
+  };
+
+  const handleMaxInputBlur = () => {
+    const inputValue = watch('maxRating');
+    let newValue: number;
+
+    if (isNaN(Number(inputValue))) {
+      newValue = 3400;
+    } else {
+      newValue = Number(inputValue);
+      if (newValue < 500) newValue = 500;
+      if (newValue > 3400) newValue = 3400;
+    }
+
+    setValue('maxRating', String(newValue));
+    setMaxSliderValue(newValue);
+  };
+
   return (
     <View className={'flex flex-col gap-2'}>
       <View>
-        <Input label={'Min. Rating'} control={control} name={'minRating'} readOnly />
+        <Input
+          label={'Min. Rating'}
+          control={control}
+          name={'minRating'}
+          onBlur={handleMinInputBlur}
+          keyboardType="numeric"
+        />
         <Slider
           minimumTrackTintColor={'#DA0C81'}
           thumbTintColor={'#FAFAFA'}
@@ -75,7 +112,13 @@ export const Sliders = ({
         />
       </View>
       <View className={'mb-5'}>
-        <Input label={'Max. Rating'} control={control} name={'maxRating'} readOnly />
+        <Input
+          label={'Max. Rating'}
+          control={control}
+          name={'maxRating'}
+          onBlur={handleMaxInputBlur}
+          keyboardType="numeric"
+        />
         <Slider
           minimumTrackTintColor={'#DA0C81'}
           thumbTintColor={'#FAFAFA'}

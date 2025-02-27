@@ -53,6 +53,11 @@ export const ChessGame = () => {
     setLastInvalidated(null);
     chessboardRef?.current?.resetBoard();
 
+    if (currentPuzzleCopy >= MIN_PUZZLES) {
+      setIsGameStats(true);
+      return;
+    }
+
     if (puzzlesCopy.length < MIN_PUZZLES) {
       setPuzzlesCopy([]);
       setErrorCount(0);
@@ -239,8 +244,6 @@ export const ChessGame = () => {
             isReset={isReset}
             setIsReset={setIsReset}
             resetGameState={resetGameState}
-            setIsStats={setIsGameStats}
-            puzzlesCopy={currentPuzzleCopy}
           />
         </View>
         {!isActiveTimer && (

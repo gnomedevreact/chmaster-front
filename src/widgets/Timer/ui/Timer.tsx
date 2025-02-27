@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
-import { MIN_PUZZLES, TIMER_SECONDS } from '@/src/features/ChessGame/lib/consts';
+import { TIMER_SECONDS } from '@/src/features/ChessGame/lib/consts';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { storage } from '@/src/core/lib/store/storage';
 
@@ -11,41 +11,18 @@ interface TimerProps {
   isReset: boolean;
   setIsReset: (e: boolean) => void;
   resetGameState: () => void;
-  setIsStats: (e: boolean) => void;
-  puzzlesCopy: number;
   isLoading: boolean;
 }
 
 export const Timer = React.memo((props: TimerProps) => {
-  const {
-    setIsActive,
-    isActive,
-    isLoading,
-    isReset,
-    setIsReset,
-    resetGameState,
-    setIsStats,
-    puzzlesCopy,
-  } = props;
+  const { setIsActive, isActive, isLoading, isReset, setIsReset, resetGameState } = props;
   const [seconds, setSeconds] = useState(storage.getNumber('timer') || TIMER_SECONDS);
 
   useEffect(() => {
     if (isActive && !isLoading) {
       storage.set('timer', seconds);
       const interval = setInterval(() => {
-        setSeconds((prevSeconds) => {
-          if (prevSeconds === 1) {
-            clearInterval(interval);
-            if (puzzlesCopy >= MIN_PUZZLES) {
-              setIsStats(true);
-            }
-            setSeconds(storage.getNumber('timer') || TIMER_SECONDS);
-            setIsReset(false);
-            resetGameState();
-            return storage.getNumber('timer') || TIMER_SECONDS;
-          }
-          return prevSeconds - 1;
-        });
+        setSeconds((prevSeconds) => prevSeconds - 1);
       }, 1000);
 
       return () => clearInterval(interval);
@@ -53,12 +30,19 @@ export const Timer = React.memo((props: TimerProps) => {
   }, [isActive, isLoading]);
 
   useEffect(() => {
-    if (isReset) {
+    if (seconds === 0) {
       setIsActive(false);
+      setIsReset(true);
+      resetGameState();
+    }
+  }, [seconds, setIsActive, setIsReset, resetGameState]);
+
+  useEffect(() => {
+    if (isReset) {
       setSeconds(storage.getNumber('timer') || TIMER_SECONDS);
       setIsReset(false);
     }
-  }, [isReset]);
+  }, [isReset, setIsReset]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);

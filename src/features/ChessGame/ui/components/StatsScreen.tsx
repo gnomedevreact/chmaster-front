@@ -46,7 +46,7 @@ function calculateExp(puzzles: Puzzle[], errors: number) {
   puzzles.forEach((puzzle) => {
     const { rating, attempts, average_rating } = puzzle;
     const ratingWeight = rating / 1000;
-    let puzzleExp = 10 * ratingWeight;
+    let puzzleExp = 20 * ratingWeight;
     const errorPenalty = 1 - average_rating / 100;
     puzzleExp *= 1 - errorPenalty;
     puzzleExp /= Math.sqrt(attempts);
@@ -66,10 +66,10 @@ const calculateRecommendedRating = (
   const averagePuzzleRating =
     puzzles.reduce((sum, puzzle) => sum + puzzle.rating, 0) / puzzles.length;
 
-  const errorPenalty = totalErrors / totalSolved;
+  const errorPenalty = (totalErrors / totalSolved) * 0.3;
 
   let recommendedRating = averagePuzzleRating * (1 - errorPenalty);
-  recommendedRating = Math.max(Math.min(recommendedRating, 3200), 400);
+  recommendedRating = Math.max(Math.min(recommendedRating, 3400), 200);
 
   if (accuracy < 60) {
     const penaltyFactor = 1 - accuracy / 100;
