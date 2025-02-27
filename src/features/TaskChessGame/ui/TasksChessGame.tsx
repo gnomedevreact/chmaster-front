@@ -222,7 +222,7 @@ export const TasksChessGame = ({
           overScrollMode={'never'}
           removeClippedSubviews
         >
-          <View className={'py-4 flex-1'}>
+          <View className={'flex flex-col gap-5 py-4 flex-1'}>
             <View className={'flex flex-row justify-between px-4 mb-10'}>
               <View>
                 <Button

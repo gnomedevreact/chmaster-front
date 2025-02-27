@@ -63,25 +63,40 @@ const calculateRecommendedRating = (
   totalErrors: number,
   accuracy: number,
 ) => {
-  const averagePuzzleRating =
-    puzzles.reduce((sum, puzzle) => sum + puzzle.rating, 0) / puzzles.length;
-
-  const errorPenalty = (totalErrors / totalSolved) * 0.3;
-
-  let recommendedRating = averagePuzzleRating * (1 - errorPenalty);
-  recommendedRating = Math.max(Math.min(recommendedRating, 3400), 200);
-
-  if (accuracy < 60) {
-    const penaltyFactor = 1 - accuracy / 100;
-    const penalty = Math.round(recommendedRating * penaltyFactor * 0.2);
-    recommendedRating -= penalty;
-  } else if (accuracy > 85) {
-    const bonusFactor = (accuracy - 85) / 15;
-    const bonus = Math.round(recommendedRating * bonusFactor * 0.2);
-    recommendedRating += bonus;
+  if (puzzles.length === 0) {
+    return 600;
   }
 
-  return roundToNearest50(recommendedRating);
+  const maxPuzzleRating = Math.max(...puzzles.map((puzzle) => puzzle.rating));
+
+  const baseMaxRating = roundToNearest50(maxPuzzleRating);
+
+  let shift = 0;
+  if (totalErrors === 0) {
+    shift += 300;
+  } else {
+    const errorPenalty = (totalErrors / totalSolved) * 100;
+    shift -= errorPenalty;
+  }
+
+  if (accuracy > 85) {
+    const bonusFactor = (accuracy - 85) / 15;
+    shift += bonusFactor * 50;
+  } else if (accuracy < 60) {
+    const penaltyFactor = (60 - accuracy) / 40;
+    shift -= penaltyFactor * 50;
+  }
+
+  let recommendedMaxRating = baseMaxRating + shift;
+  recommendedMaxRating = Math.max(600, Math.min(3400, recommendedMaxRating));
+
+  recommendedMaxRating = roundToNearest50(recommendedMaxRating);
+
+  if (recommendedMaxRating <= 600) {
+    return 600;
+  }
+
+  return recommendedMaxRating;
 };
 
 export const StatsScreen = React.memo((props: StatsScreenProps) => {
@@ -183,7 +198,7 @@ export const StatsScreen = React.memo((props: StatsScreenProps) => {
                           puzzles.length,
                           errors,
                           calculateAccuracy(puzzles.length, errors),
-                        ) - 200}
+                        ) - 400}
                       </TextStyled>
                       <TextStyled>To</TextStyled>
                       <TextStyled

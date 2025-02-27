@@ -58,7 +58,7 @@ export const ChessGame = () => {
       return;
     }
 
-    if (puzzlesCopy.length < MIN_PUZZLES) {
+    if (currentPuzzleCopy < MIN_PUZZLES) {
       setPuzzlesCopy([]);
       setErrorCount(0);
       setCurrentPuzzleCopy(0);
