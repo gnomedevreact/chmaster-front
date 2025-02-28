@@ -33,4 +33,8 @@ export const ProfileService = {
   async resetTasks() {
     return await axiosAuth.post('/profiles/reset-tasks');
   },
+
+  async deleteAccount() {
+    return await axiosAuth.delete('/profiles/delete');
+  },
 };

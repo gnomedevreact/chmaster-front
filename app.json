@@ -2,7 +2,7 @@
   "expo": {
     "name": "ChessMaster",
     "slug": "chessmaster",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "scheme": "chessmaster",
     "icon": "./src/assets/images/icon.png",
@@ -14,8 +14,8 @@
       "backgroundColor": "#0F0F0F"
     },
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.chessmaster.chessmaster"
+      "bundleIdentifier": "com.chessmaster.chessmaster",
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
@@ -58,7 +58,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#0F0F0F"
         }
-      ]
+      ],
+      "expo-apple-authentication"
     ],
     "experiments": {
       "typedRoutes": true

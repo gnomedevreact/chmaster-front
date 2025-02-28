@@ -186,18 +186,13 @@ export const TasksChessGame = ({
   }, []);
 
   const highLightNextMove = useCallback(() => {
-    if (
-      moves &&
-      hints > 0 &&
-      chessboardRef.current &&
-      (currentMove.order + 1) % 2 === 0
-    ) {
-      chessboardRef?.current?.highlight({
+    if (moves && hints > 0 && (currentMove.order + 1) % 2 === 0) {
+      chessboardRef.current?.highlight({
         square: moves[currentMove.order].substring(0, 2) as Square,
         color: '#50C87880',
       });
-      chessboardRef?.current?.highlight({
-        square: moves[currentMove.order].substring(2) as Square,
+      chessboardRef.current?.highlight({
+        square: moves[currentMove.order].substring(2, 4) as Square,
         color: '#50C87880',
       });
       setHints((prev) => prev - 1);

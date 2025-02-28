@@ -7,12 +7,12 @@ import GoogleIcon from '../../assets/images/googleIcon.svg';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { supabase } from '@/src/core/lib/supabase';
 import { toast } from '@/src/shared/lib/utils/toast';
-import { useAuthMutations } from '@/src/shared/api/hooks/useAuthMutations';
+import { useCreateProfileMutation } from '@/src/shared/api/hooks/ProfilesHooks/useCreateProfileMutation';
 
 export function GoogleSignInBtn() {
   const [isPressed, setIsPressed] = useState(false);
 
-  const { createProfileMutation } = useAuthMutations();
+  const { createProfileMutation } = useCreateProfileMutation();
 
   GoogleSignin.configure({
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,

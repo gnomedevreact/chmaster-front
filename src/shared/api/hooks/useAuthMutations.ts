@@ -1,15 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import { AuthService } from '@/src/shared/api/services/auth.service';
 import { toast } from '@/src/shared/lib/utils/toast';
-import { AuthHelpers } from '@/src/shared/lib/helpers/auth.helpers';
-import { router } from 'expo-router';
-import { useProfileStore } from '@/src/core/lib/store/profile.store';
 import { formatError } from '@/src/shared/lib/utils/formatError';
-import Purchases from 'react-native-purchases';
 
 export const useAuthMutations = () => {
-  const setProfile = useProfileStore((state) => state.setProfileData);
-
   const { mutate: signUpMutation, isPending } = useMutation({
     mutationKey: ['signup'],
     mutationFn: (data: { email: string; password: string }) => AuthService.signUp(data),
@@ -27,29 +21,5 @@ export const useAuthMutations = () => {
     },
   });
 
-  const { mutate: createProfileMutation, isPending: isPendingCreateProfile } =
-    useMutation({
-      mutationKey: ['create profile'],
-      mutationFn: ({ userId }: { userId: string }) =>
-        AuthService.createProfile({ userId }),
-      async onSuccess({ data }) {
-        try {
-          await Purchases.logIn(data.id);
-          setProfile(data);
-          router.replace('/(tabs)');
-        } catch (error) {
-          await AuthHelpers.logout();
-        }
-      },
-      async onError(error: any) {
-        toast({
-          type: 'danger',
-          message: formatError(error.response),
-        });
-
-        await AuthHelpers.logout();
-      },
-    });
-
-  return { signUpMutation, isPending, createProfileMutation, isPendingCreateProfile };
+  return { signUpMutation, isPending };
 };

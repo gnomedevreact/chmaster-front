@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { KeyboardAvoidingView, Modal, Platform, View } from 'react-native';
 import { Button } from '@/src/shared/ui/Button';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { Input } from '@/src/shared/ui/Input';
 import { Ionicons } from '@expo/vector-icons';
 import { useUpdateProfile } from '@/src/shared/api/hooks/ProfilesHooks/useUpdateProfile';
+import { DeleteModal } from '@/src/widgets/Avatar/ui/components/DeleteModal';
 
 interface InfoModalProps {
   modalVisible: boolean;
@@ -19,6 +20,8 @@ interface FormProps {
 
 export const InfoModal = (props: InfoModalProps) => {
   const { modalVisible, setModalVisible, name } = props;
+
+  const [isDeleteModal, setIsDeleteModal] = useState(false);
 
   const {
     control,
@@ -82,11 +85,17 @@ export const InfoModal = (props: InfoModalProps) => {
               <TextStyled className={'text-base'}>Save</TextStyled>
             </Button>
           </View>
-          <TextStyled className={'self-center mt-auto text-primary-600'}>
-            info@chessmasterlinks.casa
-          </TextStyled>
+          <View className={'mt-auto flex flex-col gap-4'}>
+            <TextStyled className={'self-center text-primary-600'}>
+              info@chessmasterlinks.casa
+            </TextStyled>
+            <Button isLight={false} onPress={() => setIsDeleteModal(true)}>
+              <TextStyled className={'text-base'}>Delete account</TextStyled>
+            </Button>
+          </View>
         </View>
       </KeyboardAvoidingView>
+      {isDeleteModal && <DeleteModal closeModal={() => setIsDeleteModal(false)} />}
     </Modal>
   );
 };

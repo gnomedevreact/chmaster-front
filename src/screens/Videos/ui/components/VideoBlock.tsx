@@ -1,5 +1,5 @@
 import React, { useMemo, useRef } from 'react';
-import { Platform, Pressable, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { BlurView } from 'expo-blur';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -56,11 +56,7 @@ export const VideoBlock = ({
           style={{ width: '100%', height: 200 }}
           nativeControls={true}
           onFullscreenExit={() => {
-            if (Platform.OS === 'android') {
-              player.pause();
-            } else {
-              videoPlayerRef?.current?.startPictureInPicture();
-            }
+            player.pause();
           }}
         />
         {!isPlaying && (
