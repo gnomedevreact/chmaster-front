@@ -169,9 +169,17 @@ export const Auth = () => {
               <View className={'mt-auto'}>
                 <TextStyled className={'text-primary-600 self-center text-[8px]'}>
                   By continuing, you agree to the{' '}
-                  <Link href={'https://chmaster-terms.vercel.app/'}>Terms of Use</Link>{' '}
+                  <Link
+                    href={'https://www.chessmasterlinks.casa/terms'}
+                    className={'text-[#0096FF] text-[10px]'}
+                  >
+                    Terms of Use
+                  </Link>{' '}
                   and{' '}
-                  <Link href={'https://chmaster-privacy.vercel.app/'}>
+                  <Link
+                    href={'https://www.chessmasterlinks.casa/policy'}
+                    className={'text-[#0096FF] text-[10px]'}
+                  >
                     Privacy Policy
                   </Link>
                   .

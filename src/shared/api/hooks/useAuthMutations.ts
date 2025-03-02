@@ -9,7 +9,7 @@ export const useAuthMutations = () => {
     mutationFn: (data: { email: string; password: string }) => AuthService.signUp(data),
     async onSuccess() {
       toast({
-        message: 'Now you can login to application',
+        message: 'Check your inbox and confirm your account in the email.',
         type: 'success',
       });
     },
