@@ -23,6 +23,7 @@ import { Button } from '@/src/shared/ui/Button';
 import { AppleAuthBtn } from '@/src/features/AppleAuthBtn/AppleAuthBtn';
 import { ActivityIndicator } from 'react-native-paper';
 import GlobalLoadingContext from '../lib/context';
+import { storage } from '@/src/core/lib/store/storage';
 
 interface FormProps {
   email: string;
@@ -90,6 +91,8 @@ export const Auth = () => {
     }
 
     if (!generalError) {
+      const introPassed = storage.getBoolean('intro');
+
       try {
         await Purchases.logIn(profileData.id);
         setProfile(profileData);
@@ -97,7 +100,11 @@ export const Auth = () => {
         console.error(error);
       }
 
-      router.replace('/(tabs)');
+      if (introPassed) {
+        router.replace('/(tabs)');
+      } else {
+        router.replace('/intro');
+      }
     }
     setLoading(false);
   }

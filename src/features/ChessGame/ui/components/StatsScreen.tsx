@@ -122,7 +122,7 @@ export const StatsScreen = React.memo((props: StatsScreenProps) => {
     if (!isStatsUpdated) {
       updateStats({
         exp: calculateExp(puzzles, errors),
-        puzzles: puzzles.length,
+        puzzles: currentPuzzleCopy,
         streak: profile?.streak_satisfied ? 0 : 1,
         streak_completed: true,
       });
@@ -171,7 +171,7 @@ export const StatsScreen = React.memo((props: StatsScreenProps) => {
                   <View className={'flex flex-row gap-5'}>
                     <Badge
                       text1={`Accuracy`}
-                      text2={`${calculateAccuracy(puzzles.length, errors)}%`}
+                      text2={`${calculateAccuracy(currentPuzzleCopy, errors)}%`}
                     />
                     <Badge text1={`+${calculateExp(puzzles, errors)}`} text2={'EXP'} />
                   </View>
@@ -195,9 +195,9 @@ export const StatsScreen = React.memo((props: StatsScreenProps) => {
                       >
                         {calculateRecommendedRating(
                           puzzles,
-                          puzzles.length,
+                          currentPuzzleCopy,
                           errors,
-                          calculateAccuracy(puzzles.length, errors),
+                          calculateAccuracy(currentPuzzleCopy, errors),
                         ) - 400}
                       </TextStyled>
                       <TextStyled>To</TextStyled>
@@ -207,9 +207,9 @@ export const StatsScreen = React.memo((props: StatsScreenProps) => {
                       >
                         {calculateRecommendedRating(
                           puzzles,
-                          puzzles.length,
+                          currentPuzzleCopy,
                           errors,
-                          calculateAccuracy(puzzles.length, errors),
+                          calculateAccuracy(currentPuzzleCopy, errors),
                         )}
                       </TextStyled>
                     </View>

@@ -122,7 +122,10 @@ function RootLayoutNav() {
                   name="auth"
                   options={{ headerShown: false, gestureEnabled: false }}
                 />
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="(tabs)"
+                  options={{ headerShown: false, gestureEnabled: false }}
+                />
                 <Stack.Screen
                   name="videos"
                   options={{ headerShown: false, gestureEnabled: false }}
@@ -134,6 +137,10 @@ function RootLayoutNav() {
                 <Stack.Screen name="top" options={{ headerShown: false }} />
                 <Stack.Screen name="feed" options={{ headerShown: false }} />
                 <Stack.Screen name="plan" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="intro"
+                  options={{ headerShown: false, gestureEnabled: false }}
+                />
               </Stack>
             </SafeAreaView>
           </SafeAreaProvider>

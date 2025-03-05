@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { KeyboardAvoidingView, Modal, Platform, View } from 'react-native';
 import { Button } from '@/src/shared/ui/Button';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
@@ -7,6 +7,7 @@ import { Input } from '@/src/shared/ui/Input';
 import { Ionicons } from '@expo/vector-icons';
 import { useUpdateProfile } from '@/src/shared/api/hooks/ProfilesHooks/useUpdateProfile';
 import { DeleteModal } from '@/src/widgets/Avatar/ui/components/DeleteModal';
+import FlashMessage from 'react-native-flash-message';
 
 interface InfoModalProps {
   modalVisible: boolean;
@@ -22,6 +23,7 @@ export const InfoModal = (props: InfoModalProps) => {
   const { modalVisible, setModalVisible, name } = props;
 
   const [isDeleteModal, setIsDeleteModal] = useState(false);
+  const toastRef = useRef<FlashMessage>(null);
 
   const {
     control,
@@ -34,7 +36,7 @@ export const InfoModal = (props: InfoModalProps) => {
     reValidateMode: 'onBlur',
   });
 
-  const { updateProfile, isPending } = useUpdateProfile();
+  const { updateProfile, isPending } = useUpdateProfile(toastRef);
 
   const submit = (data: FormProps) => {
     updateProfile(data);
@@ -96,6 +98,12 @@ export const InfoModal = (props: InfoModalProps) => {
         </View>
       </KeyboardAvoidingView>
       {isDeleteModal && <DeleteModal closeModal={() => setIsDeleteModal(false)} />}
+      <FlashMessage
+        ref={toastRef}
+        position="top"
+        style={{ zIndex: 9999, elevation: 9999 }}
+        floating={true}
+      />
     </Modal>
   );
 };

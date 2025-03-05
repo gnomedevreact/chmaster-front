@@ -8,6 +8,7 @@ import { formatError } from '@/src/shared/lib/utils/formatError';
 import { useEffect } from 'react';
 import { useGlobalLoadingContext } from '@/src/screens/Auth/lib/context';
 import { useProfileStore } from '@/src/core/lib/store/profile.store';
+import { storage } from '@/src/core/lib/store/storage';
 
 export const useCreateProfileMutation = () => {
   const { setIsGlobalLoading } = useGlobalLoadingContext();
@@ -21,9 +22,17 @@ export const useCreateProfileMutation = () => {
         AuthService.createProfile({ userId }),
       async onSuccess({ data }) {
         try {
+          const introPassed = storage.getBoolean('intro');
+
+          console.log(introPassed);
           await Purchases.logIn(data.id);
           setProfile(data);
-          router.replace('/(tabs)');
+
+          if (introPassed) {
+            router.replace('/(tabs)');
+          } else {
+            router.replace('/intro');
+          }
         } catch (error) {
           await AuthHelpers.logout();
         }
