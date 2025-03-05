@@ -24,7 +24,6 @@ export const useCreateProfileMutation = () => {
         try {
           const introPassed = storage.getBoolean('intro');
 
-          console.log(introPassed);
           await Purchases.logIn(data.id);
           setProfile(data);
 

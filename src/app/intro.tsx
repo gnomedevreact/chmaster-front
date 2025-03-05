@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '@/src/shared/ui/Button';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { router } from 'expo-router';
+import { storage } from '@/src/core/lib/store/storage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -19,6 +20,8 @@ const IntroPage = () => {
   });
 
   useEffect(() => {
+    storage.set('intro', true);
+
     Animated.timing(opacity, {
       toValue: 0,
       duration: 2000,

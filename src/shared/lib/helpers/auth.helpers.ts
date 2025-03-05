@@ -8,6 +8,7 @@ import { queryClientUtil } from '@/src/core/queryClient';
 
 export const AuthHelpers = {
   async logout(replace: boolean = true) {
+    const intro = storage.getBoolean('intro');
     if (replace) {
       router.replace('/auth');
     }
@@ -16,9 +17,9 @@ export const AuthHelpers = {
     await AsyncStorage.clear();
     storage.clearAll();
     useProfileStore.getState().clearProfileData();
-    storage.clearAll();
-    useProfileStore.getState().clearProfileData();
-
     queryClientUtil.clear();
+    if (intro) {
+      storage.set('intro', true);
+    }
   },
 };
