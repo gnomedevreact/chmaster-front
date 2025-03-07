@@ -30,7 +30,7 @@ const IntroPage = () => {
     }).start();
 
     const timer = setTimeout(() => {
-      router.replace('/(tabs)');
+      router.replace('/trainer');
     }, 77200);
 
     return () => clearTimeout(timer);

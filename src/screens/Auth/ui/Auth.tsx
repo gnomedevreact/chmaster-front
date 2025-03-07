@@ -101,7 +101,7 @@ export const Auth = () => {
       }
 
       if (introPassed) {
-        router.replace('/(tabs)');
+        router.replace('/trainer');
       } else {
         router.replace('/intro');
       }

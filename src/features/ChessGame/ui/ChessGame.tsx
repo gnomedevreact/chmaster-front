@@ -17,6 +17,7 @@ import { Badge } from '@/src/shared/ui/Badge';
 import { Button } from '@/src/shared/ui/Button';
 import { Board } from '@/src/features/ChessGame/ui/components/Board';
 import { Portal } from 'react-native-paper';
+import { GuideModal } from '@/src/features/ChessGame/ui/components/GuideModal';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -222,7 +223,7 @@ export const ChessGame = () => {
   return (
     <ScrollView
       className={'py-4'}
-      contentContainerStyle={{ flexGrow: 1 }}
+      contentContainerStyle={{ flexGrow: 1, paddingBottom: 50 }}
       alwaysBounceVertical={false}
       overScrollMode={'never'}
       removeClippedSubviews
@@ -262,7 +263,7 @@ export const ChessGame = () => {
         formatMove={formatMove}
         setCurrentMove={setCurrentMove}
       />
-      <View className={'flex flex-col gap-3 px-4 mt-auto'}>
+      <View className={'flex flex-col gap-3 px-4 mt-10'}>
         {!isTrainingStart && !isActiveTimer && (
           <TextStyled className={'text-primary-600 text-sm'}>
             *Solve at least 10 puzzles to unlock detailed insights.
@@ -297,6 +298,7 @@ export const ChessGame = () => {
           />
         </Portal>
       )}
+      <GuideModal />
     </ScrollView>
   );
 };

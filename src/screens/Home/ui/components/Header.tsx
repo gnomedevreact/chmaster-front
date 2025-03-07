@@ -19,7 +19,7 @@ export const Header = ({ profile }: { profile: ProfileType }) => {
             {profile?.name.toUpperCase()}
           </TextStyled>
         </View>
-        <TextStyled className={'text-base opacity-50'}>
+        <TextStyled className={'text-base opacity-50 max-w-[200px]'}>
           Are you ready to improve your chess skills?
         </TextStyled>
       </View>

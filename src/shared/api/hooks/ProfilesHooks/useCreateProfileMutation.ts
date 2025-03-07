@@ -28,7 +28,7 @@ export const useCreateProfileMutation = () => {
           setProfile(data);
 
           if (introPassed) {
-            router.replace('/(tabs)');
+            router.replace('/trainer');
           } else {
             router.replace('/intro');
           }

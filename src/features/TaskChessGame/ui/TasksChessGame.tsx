@@ -212,7 +212,7 @@ export const TasksChessGame = ({
       <SafeAreaView className={'flex-1 bg-[#0F0F0F]'}>
         <ScrollView
           className={'bg-primary-400'}
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 50 }}
           alwaysBounceVertical={false}
           overScrollMode={'never'}
           removeClippedSubviews
@@ -247,7 +247,7 @@ export const TasksChessGame = ({
               formatMove={formatMove}
               setCurrentMove={setCurrentMove}
             />
-            <View className={'flex flex-col gap-3 px-4 mt-auto'}>
+            <View className={'flex flex-col gap-3 px-4 mt-10'}>
               {isTrainingStart && (
                 <Button
                   className={cn('self-start p-4', {

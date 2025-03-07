@@ -1,5 +1,11 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { Dimensions, Keyboard, TouchableWithoutFeedback, View } from 'react-native';
+import {
+  Dimensions,
+  Keyboard,
+  ScrollView,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import Chessboard, { ChessboardRef } from '@gnomedevreact/ch-private';
 import { EvaluationBar } from '@/src/features/EvaluationBar/ui/EvaluationBar';
 import { Move, Square } from 'chess.js';
@@ -57,7 +63,13 @@ export const FreePlay = () => {
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>
-      <View className={'py-4 flex-1'}>
+      <ScrollView
+        className={'py-4'}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 50 }}
+        alwaysBounceVertical={false}
+        overScrollMode={'never'}
+        removeClippedSubviews
+      >
         <View className={'flex-1 justify-center'}>
           <View className={'flex flex-row items-end gap-5 px-4 mb-4'}>
             <Input
@@ -143,7 +155,7 @@ export const FreePlay = () => {
             </Button>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </TouchableWithoutFeedback>
   );
 };
