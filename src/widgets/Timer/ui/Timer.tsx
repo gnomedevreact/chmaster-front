@@ -30,7 +30,6 @@ export const Timer = React.memo((props: TimerProps) => {
 
   useEffect(() => {
     if (isActive) {
-      console.count('rerender');
       storage.set('timer', seconds);
     }
   }, [isActive]);
