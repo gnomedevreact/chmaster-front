@@ -20,7 +20,6 @@ export const Timer = React.memo((props: TimerProps) => {
 
   useEffect(() => {
     if (isActive && !isLoading) {
-      storage.set('timer', seconds);
       const interval = setInterval(() => {
         setSeconds((prevSeconds) => prevSeconds - 1);
       }, 1000);
@@ -28,6 +27,13 @@ export const Timer = React.memo((props: TimerProps) => {
       return () => clearInterval(interval);
     }
   }, [isActive, isLoading]);
+
+  useEffect(() => {
+    if (isActive) {
+      console.count('rerender');
+      storage.set('timer', seconds);
+    }
+  }, [isActive]);
 
   useEffect(() => {
     if (seconds === 0) {
