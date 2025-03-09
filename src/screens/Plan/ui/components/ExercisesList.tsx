@@ -8,6 +8,7 @@ import { Foundation, MaterialCommunityIcons } from '@expo/vector-icons';
 import { cn } from '@/src/shared/lib/utils/cnUtils';
 import { ActivityIndicator } from 'react-native-paper';
 import { useGetExercises } from '@/src/shared/api/hooks/ExercisesHooks/useGetExercises';
+import { presentPaywallIfNeeded } from '@/src/shared/lib/utils/presentPaywall';
 
 const PHASES: Record<number, string> = {
   1: 'Preparatory Phase',
@@ -44,6 +45,38 @@ const ExercisesSection = ({
   const currentExerciseRecalculated =
     phase > 1 ? currentExercise - (phase - 1) * 25 : currentExercise;
 
+  const openExercise = (
+    index: number,
+    currentExerciseRecaclCopy: number,
+    exercise: ExerciseType,
+  ) => {
+    return currentExerciseRecaclCopy === index && isLockedUntilTomorrow
+      ? undefined
+      : currentExerciseRecaclCopy >= index
+        ? () => {
+            setActiveExercise({ exercise, orderNum: index, phase });
+            openModal();
+          }
+        : undefined;
+  };
+
+  const handlePress = async (
+    index: number,
+    currentExerciseRecaclCopy: number,
+    exercise: ExerciseType,
+  ) => {
+    if (index < 2) {
+      openExercise(index, currentExerciseRecaclCopy, exercise)?.();
+      return;
+    }
+
+    const isSubscribed = await presentPaywallIfNeeded();
+
+    if (isSubscribed) {
+      openExercise(index, currentExerciseRecaclCopy, exercise)?.();
+    }
+  };
+
   return (
     <View
       className={cn('border-l border-primary-100 p-4', {
@@ -66,16 +99,7 @@ const ExercisesSection = ({
           {exercises.map((exercise, index) => (
             <Pressable
               className={'flex flex-row justify-between p-3 border-l border-primary-500'}
-              onPress={
-                currentExerciseRecalculated === index && isLockedUntilTomorrow
-                  ? undefined
-                  : currentExerciseRecalculated >= index
-                    ? () => {
-                        setActiveExercise({ exercise, orderNum: index, phase });
-                        openModal();
-                      }
-                    : undefined
-              }
+              onPress={() => handlePress(index, currentExerciseRecalculated, exercise)}
               key={index}
             >
               <TextStyled className={'text-primary-600'}>

@@ -5,12 +5,9 @@ import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { useGetVideoUrls } from '@/src/screens/Videos/hooks/useGetVideoUrls';
 import { VideoBlock } from '@/src/screens/Videos/ui/components/VideoBlock';
 import { BackButton } from '@/src/shared/ui/BackButton';
-import { useCheckSubscription } from '@/src/shared/hooks/useCheckSubscription';
 
 export const Videos = () => {
   const { urls } = useGetVideoUrls();
-
-  useCheckSubscription();
 
   return (
     <Container className={'py-4 gap-4'}>
@@ -23,10 +20,13 @@ export const Videos = () => {
           Explore a variety of chess tutorial videos, from beginner tips to advanced
           strategies, to help you improve your game.
         </TextStyled>
+        <TextStyled className={'text-sm text-primary-500'}>
+          (New Videos Coming Soon)
+        </TextStyled>
       </View>
       <View className={'flex flex-col gap-6'}>
         {urls?.map((item, i) => (
-          <VideoBlock videoSource={item.signedUrl} path={item.path!} key={i} />
+          <VideoBlock videoSource={item.signedUrl} path={item.path!} index={i} key={i} />
         ))}
       </View>
     </Container>

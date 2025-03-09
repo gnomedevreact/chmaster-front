@@ -10,7 +10,6 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import ImageView from 'react-native-image-viewing';
 import { ImageSource } from 'expo-image';
-import { useCheckSubscription } from '@/src/shared/hooks/useCheckSubscription';
 
 export const Feed = () => {
   const [modalState, setModalState] = useState<{
@@ -33,8 +32,6 @@ export const Feed = () => {
     },
     [],
   );
-
-  useCheckSubscription();
 
   return (
     <View className={'flex-1'}>

@@ -56,7 +56,7 @@ const IntroPage = () => {
         <Button
           className={'w-[100px] bg-[#00A36C] !rounded-none rounded-br-2xl'}
           isLight={false}
-          onPress={() => router.replace('/(tabs)')}
+          onPress={() => router.replace('/trainer')}
         >
           <TextStyled>Skip</TextStyled>
         </Button>

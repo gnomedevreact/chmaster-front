@@ -29,7 +29,7 @@ export const Home = () => {
           className={
             'flex items-center justify-center flex-1 bg-primary-200 h-[150px] rounded-[14px] border border-primary-300'
           }
-          onPress={() => handleLink(true, '/feed')}
+          onPress={() => handleLink(false, '/feed')}
         >
           <Entypo name="chat" size={80} color="white" />
           <TextStyled className={'text-primary-600'} fontFamilyName={'NunitoSansBold'}>
@@ -40,7 +40,7 @@ export const Home = () => {
           className={
             'flex items-center justify-center flex-1 bg-primary-200 h-[150px] rounded-[14px] border border-primary-300'
           }
-          onPress={() => handleLink(true, '/plan')}
+          onPress={() => handleLink(false, '/plan')}
         >
           <MaterialIcons name="task-alt" size={80} color="white" />
           <TextStyled className={'text-primary-600'} fontFamilyName={'NunitoSansBold'}>
@@ -53,13 +53,13 @@ export const Home = () => {
           title={'Watch Tutorials'}
           image={require('@/src/assets/images/test.webp')}
           link={'/videos'}
-          subscription={true}
+          subscription={false}
         />
         <LinkBlock
           title={'Find Your Chess Opening'}
           image={require('@/src/assets/images/test2.webp')}
           link={'/quiz'}
-          subscription={true}
+          subscription={false}
         />
       </View>
     </Container>
