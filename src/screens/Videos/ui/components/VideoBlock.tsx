@@ -6,13 +6,16 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useEvent } from 'expo';
 import { TextStyled } from '@/src/shared/ui/TextStyled';
 import { convertVideoInfo } from '@/src/screens/Videos/lib/utils/convertVideoInfo';
+import { presentPaywallIfNeeded } from '@/src/shared/lib/utils/presentPaywall';
 
 export const VideoBlock = ({
   videoSource,
   path,
+  index,
 }: {
   videoSource: string;
   path: string;
+  index: number;
 }) => {
   const videoPlayerRef = useRef<VideoView>(null);
 
@@ -22,9 +25,17 @@ export const VideoBlock = ({
 
   const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
 
-  const handlePlay = () => {
-    videoPlayerRef?.current?.enterFullscreen();
-    return isPlaying ? player.pause() : player.play();
+  const handlePlay = async () => {
+    let isSubscribed = true;
+
+    if (index > 0) {
+      isSubscribed = await presentPaywallIfNeeded();
+    }
+
+    if (isSubscribed) {
+      videoPlayerRef?.current?.enterFullscreen();
+      return isPlaying ? player.pause() : player.play();
+    }
   };
 
   const videoInfo = useMemo(() => convertVideoInfo(path), [path]);

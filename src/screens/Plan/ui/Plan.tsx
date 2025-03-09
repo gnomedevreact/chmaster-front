@@ -6,7 +6,6 @@ import { View } from 'react-native';
 import { ExercisesList } from '@/src/screens/Plan/ui/components/ExercisesList';
 import { ExerciseType } from '@/src/shared/model/types/exercises.types';
 import { ExerciseModal } from '@/src/screens/Plan/ui/components/ExerciseModal';
-import { useCheckSubscription } from '@/src/shared/hooks/useCheckSubscription';
 
 export const Plan = () => {
   const [activeExercise, setActiveExercise] = useState<{
@@ -15,8 +14,6 @@ export const Plan = () => {
     phase: number;
   }>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-
-  useCheckSubscription();
 
   return (
     <Container className={'py-4'}>
