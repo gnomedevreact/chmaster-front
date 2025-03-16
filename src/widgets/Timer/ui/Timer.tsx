@@ -12,10 +12,19 @@ interface TimerProps {
   setIsReset: (e: boolean) => void;
   resetGameState: () => void;
   isLoading: boolean;
+  isTrainingStart: boolean;
 }
 
 export const Timer = React.memo((props: TimerProps) => {
-  const { setIsActive, isActive, isLoading, isReset, setIsReset, resetGameState } = props;
+  const {
+    setIsActive,
+    isActive,
+    isLoading,
+    isReset,
+    setIsReset,
+    resetGameState,
+    isTrainingStart,
+  } = props;
   const [seconds, setSeconds] = useState(storage.getNumber('timer') || TIMER_SECONDS);
 
   useEffect(() => {
@@ -29,10 +38,10 @@ export const Timer = React.memo((props: TimerProps) => {
   }, [isActive, isLoading]);
 
   useEffect(() => {
-    if (isActive) {
+    if (isTrainingStart) {
       storage.set('timer', seconds);
     }
-  }, [isActive]);
+  }, [isTrainingStart]);
 
   useEffect(() => {
     if (seconds === 0) {

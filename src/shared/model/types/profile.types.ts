@@ -19,6 +19,7 @@ export type ProfileType = {
   current_exercise: number;
   exercise_done: boolean;
   blocked: boolean;
+  pushToken: string;
 };
 
 export type UpdateProfileType = {

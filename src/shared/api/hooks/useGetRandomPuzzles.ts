@@ -34,7 +34,7 @@ export const useGetRandomPuzzles = ({
   };
 
   useEffect(() => {
-    if (isTrainingStart && fetchedPuzzles!.length <= 0) {
+    if (isTrainingStart && fetchedPuzzles!.length < 5) {
       toast({
         message: 'No such puzzles (try to change min/max rating)',
         type: 'danger',

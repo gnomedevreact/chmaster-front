@@ -101,7 +101,8 @@ function RootLayoutNav() {
 
     setup();
 
-    scheduleDailyNotification();
+    console.log('HERE');
+    scheduleDailyNotification(profile?.pushToken);
   }, []);
 
   if (isSplashVisible) {

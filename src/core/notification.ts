@@ -1,5 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import { SchedulableTriggerInputTypes } from 'expo-notifications';
+import { axiosAuth } from '@/src/core/lib/axios/config';
 
 export async function requestNotificationPermissions() {
   const { status } = await Notifications.requestPermissionsAsync();
@@ -9,9 +10,14 @@ export async function requestNotificationPermissions() {
   return true;
 }
 
-export async function scheduleDailyNotification() {
+export async function scheduleDailyNotification(profilePushToken?: string) {
   const hasPermission = await requestNotificationPermissions();
   if (!hasPermission) return;
+
+  if (!profilePushToken) {
+    const pushTokenData = await Notifications.getExpoPushTokenAsync();
+    await axiosAuth.post('/profiles/add-push-token', { pushToken: pushTokenData.data });
+  }
 
   await Notifications.cancelAllScheduledNotificationsAsync();
 

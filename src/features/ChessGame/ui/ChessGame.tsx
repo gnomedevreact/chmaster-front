@@ -245,6 +245,7 @@ export const ChessGame = () => {
             isReset={isReset}
             setIsReset={setIsReset}
             resetGameState={resetGameState}
+            isTrainingStart={isTrainingStart}
           />
         </View>
         {!isActiveTimer && (
